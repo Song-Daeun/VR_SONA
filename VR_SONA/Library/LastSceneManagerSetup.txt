@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Selcuk Gerceker/Toon Environments - World Creator Pack Lite/Scenes/TEWCPL_Scene.unity
+- path: Assets/Scenes/TEWCPL_Scene.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

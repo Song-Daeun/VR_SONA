@@ -1,6 +1,6 @@
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "AwaiiStudio/URP_ToonLit"
+Shader "Universal Render Pipeline/Unlit"
 {
 	Properties
 	{
@@ -26,7 +26,7 @@ Shader "AwaiiStudio/URP_ToonLit"
 		
 		Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
 		
-		Cull Back
+		Cull Off
 		AlphaToMask Off
 		
 		HLSLINCLUDE
