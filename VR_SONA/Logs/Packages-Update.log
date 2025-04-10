@@ -41,3 +41,42 @@ The following packages were updated:
   com.unity.textmeshpro from version 3.0.6 to 3.0.7
   com.unity.timeline from version 1.6.2 to 1.7.6
   com.unity.visualscripting from version 1.7.6 to 1.9.4
+
+=== Thu Apr 10 20:22:09 2025
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.cinemachine from version 2.9.7 to 2.10.3
+  com.unity.inputsystem from version 1.5.1 to 1.11.2
+  com.unity.render-pipelines.universal from version 14.0.7 to 14.0.12
+
+=== Thu Apr 10 20:22:09 2025
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.cinemachine@2.10.3
+  com.unity.inputsystem@1.11.2
+
+=== Thu Apr 10 20:22:34 2025
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.cinemachine from version 2.9.7 to 2.10.3
+  com.unity.inputsystem from version 1.5.1 to 1.11.2
+  com.unity.render-pipelines.universal from version 14.0.7 to 14.0.12
+
+=== Thu Apr 10 20:22:47 2025
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.cinemachine from version 2.9.7 to 2.10.3
+  com.unity.inputsystem from version 1.5.1 to 1.11.2
+  com.unity.render-pipelines.universal from version 14.0.7 to 14.0.12
