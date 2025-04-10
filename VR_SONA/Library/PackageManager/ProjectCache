@@ -5,7 +5,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638798875580000000
+      ticks: 638799019920000000
     m_Hash: 181412690
   m_LockFileStatus:
     m_FilePath: /Users/bigeco/Documents/GitHub/VR_SONA/VR_SONA/Packages/packages-lock.json
@@ -13,7 +13,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638798875580000000
+      ticks: 638799019920000000
     m_Hash: 4294349648
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
