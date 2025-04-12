@@ -6,7 +6,7 @@ using UnityEngine;
 public class CharacterMove : MonoBehaviour
 {
     public Transform cameraTransform;
-    public float moveSpeed = 10f;
+    public float moveSpeed = 20f;
     public float jumpSpeed = 6f;
     public float gravity = -20f;
 
