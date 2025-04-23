@@ -54,7 +54,8 @@ public class CharacterMove : MonoBehaviour
         }
 
         Vector3 targetDirection = inputDirection * moveSpeed;
-        Vector3 smoothedDirection = Vector3.SmoothDamp(Vector3.zero, targetDirection, ref currentVelocity, smoothTime);
+        // Vector3 smoothedDirection = Vector3.SmoothDamp(Vector3.zero, targetDirection, ref currentVelocity, smoothTime);
+        Vector3 smoothedDirection = Vector3.SmoothDamp(currentVelocity * 0.5f, targetDirection, ref currentVelocity, smoothTime);
 
         controller.Move(smoothedDirection * Time.deltaTime);
 
@@ -64,12 +65,28 @@ public class CharacterMove : MonoBehaviour
             velocity.y = jumpSpeed;
         }
 
+        // 이동 디버깅용
+        // 움직임 디버깅
+        if (smoothedDirection.magnitude > 0.1f)
+        {
+            Debug.Log($"이동 방향: {smoothedDirection}, 속도: {smoothedDirection.magnitude}");
+        }
+
+        controller.Move(smoothedDirection * Time.deltaTime);
+
+        // 점프
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            velocity.y = jumpSpeed;
+            Debug.Log("점프!");
+        }
+        
         // 중력 적용
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    // 👇 추가된 부분
+    // 추가된 부분
     private IEnumerator SnapToGroundAfterPhysics()
     {
         yield return new WaitForFixedUpdate(); // 물리 업데이트 후 실행
@@ -82,7 +99,7 @@ public class CharacterMove : MonoBehaviour
 
         if (Physics.Raycast(origin, Vector3.down, out hit, 10f))
         {
-            Debug.Log("Ray hit: " + hit.collider.name);  // 👈 무엇을 맞췄는지 확인
+            Debug.Log("Ray hit: " + hit.collider.name);  // 무엇을 맞췄는지 확인
 
             Vector3 newPos = hit.point + Vector3.up * controller.height / 2f;
             transform.position = newPos;
