@@ -15169,43 +15169,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1050709495033318235, guid: 664dc1c0f36ba428bb8f023a56cea235, type: 3}
   m_PrefabInstance: {fileID: 3586783298642607989}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
---- !u!114 &7506748393986407716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7506748393986407712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a75039284ea5c4798a2741448c5480aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 210391050}
-  moveSpeed: 10
-  jumpSpeed: 10
-  gravity: -20
-  movementControllerNode: 4
-  jumpControllerNode: 5
-  deadZone: 0.1
---- !u!114 &7506748393986407717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7506748393986407712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 273381d5ca57c49d4b97e59b5679e0e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sesitivity: 500
-  rotationX: 0
-  rotationY: 0
-=======
->>>>>>> 95857951f8794ff93968e07142d4034411f8a863
 --- !u!136 &7506748393986407721
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -80,9 +80,6 @@ public class CharacterMove : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
-    추가된 부분
-=======
     private void STATUS()
     {
         var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
@@ -237,7 +234,6 @@ public class CharacterMove : MonoBehaviour
             animator.CrossFade(StandUpFaintState, 0.1f, 0, 0);
     }
 
->>>>>>> 95857951f8794ff93968e07142d4034411f8a863
     private IEnumerator SnapToGroundAfterPhysics()
     {
         yield return new WaitForFixedUpdate();
