@@ -12332,9 +12332,6 @@ MonoBehaviour:
   rotationSpeed: 120
   jumpPower: 8
   gravity: -20
-  movementControllerNode: 4
-  moveDeadZone: 0.2
-  turnDeadZone: 0.2
 --- !u!143 &2041016973
 CharacterController:
   m_ObjectHideFlags: 0

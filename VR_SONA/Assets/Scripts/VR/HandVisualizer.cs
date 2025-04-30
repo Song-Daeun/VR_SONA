@@ -1,25 +1,33 @@
 using UnityEngine;
-using UnityEngine.XR;
+using UnityEngine.XR.Hands;
+using UnityEngine.XR.Management;
 
-public class HandVisualizer: MonoBehaviour
+public class HandVisualizer : MonoBehaviour
 {
-    [Tooltip("LeftHand 또는 RightHand 중 하나")]
-    public XRNode handNode = XRNode.LeftHand;
+    public XRHandSubsystem handSubsystem;
+    public bool isLeft = true;
 
-    [Tooltip("XR Origin Hands 루트 (트래킹 스페이스)")]
-    public Transform xrOrigin;
-
-    void LateUpdate()
+    void Start()
     {
-        // 로컬 트래킹 스페이스 좌표
-        Vector3 localPos = InputTracking.GetLocalPosition(handNode);
-        Quaternion localRot = InputTracking.GetLocalRotation(handNode);
+        handSubsystem = XRGeneralSettings.Instance?
+            .Manager?
+            .activeLoader?
+            .GetLoadedSubsystem<XRHandSubsystem>();
+    }
 
-        // 월드 좌표로 변환
-        Vector3 worldPos = xrOrigin.TransformPoint(localPos);
-        Quaternion worldRot = xrOrigin.rotation * localRot;
+    void Update()
+    {
+        if (handSubsystem == null) return;
 
-        // 이 스크립트가 붙은 GameObject(transform)에 적용
-        transform.SetPositionAndRotation(worldPos, worldRot);
+        XRHand hand = isLeft ? handSubsystem.leftHand : handSubsystem.rightHand;
+
+        if (hand.isTracked)
+        {
+            // 손의 중심 관절 (예: Wrist) 기준 위치 가져오기
+            if (hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out Pose pose))
+            {
+                transform.SetPositionAndRotation(pose.position, pose.rotation);
+            }
+        }
     }
 }

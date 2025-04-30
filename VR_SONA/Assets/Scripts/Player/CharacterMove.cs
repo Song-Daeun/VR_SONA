@@ -47,7 +47,7 @@ public class CharacterMove : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-        viewCamera = GameObject.Find("MainCamera");
+        viewCamera = GameObject.Find("Main Camera");
         lightTransform = GameObject.Find("Directional Light").transform;
         meshRenderer = transform.Find("Player").GetComponent<SkinnedMeshRenderer>();
         StartCoroutine(SnapToGroundAfterPhysics());

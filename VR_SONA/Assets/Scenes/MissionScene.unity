@@ -13880,9 +13880,6 @@ MonoBehaviour:
   rotationSpeed: 120
   jumpPower: 10
   gravity: -20
-  movementControllerNode: 4
-  moveDeadZone: 0.2
-  turnDeadZone: 0.2
 --- !u!114 &7506748393986407717
 MonoBehaviour:
   m_ObjectHideFlags: 0
