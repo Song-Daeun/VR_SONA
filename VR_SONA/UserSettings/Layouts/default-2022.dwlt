@@ -172,7 +172,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 120
+  controlID: 180
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 60
+  controlID: 181
   draggingID: 0
 --- !u!114 &9
 MonoBehaviour:
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 61
+  controlID: 182
   draggingID: 0
 --- !u!114 &10
 MonoBehaviour:
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: AssetStoreWindow
+  m_Name: SceneView
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -245,16 +245,16 @@ MonoBehaviour:
     y: 0
     width: 765
     height: 758
-  m_MinSize: {x: 457, y: 375}
+  m_MinSize: {x: 202, y: 221}
   m_MaxSize: {x: 4002, y: 4021}
-  m_ActualView: {fileID: 18}
+  m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 15}
   - {fileID: 16}
   - {fileID: 17}
   - {fileID: 18}
-  m_Selected: 3
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 3
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -345,7 +345,7 @@ MonoBehaviour:
     m_SaveData: []
     m_OverlaysVisible: 1
   m_SearchFilter:
-    m_NameFilter: .dll
+    m_NameFilter: 
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -353,40 +353,40 @@ MonoBehaviour:
     m_SceneHandles: 
     m_ShowAllHits: 0
     m_SkipHidden: 0
-    m_SearchArea: 2
+    m_SearchArea: 0
     m_Folders:
-    - Assets/Oculus
+    - Assets/Samples/Animation Rigging/1.2.0/Animation Rigging Constraint Samples
     m_Globs: []
-    m_OriginalText: .dll
+    m_OriginalText: 
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Oculus
+  - Assets/Samples/Animation Rigging/1.2.0/Animation Rigging Constraint Samples
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\i0108\Desktop\VRAR\VR_SONA
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 67}
-    m_SelectedIDs: 9c450200
-    m_LastClickedID: 148892
-    m_ExpandedIDs: 0000000018ad00009c450200fe45020002460200044602008a48020000ca9a3bffffff7f
+    m_SelectedIDs: ac920000
+    m_LastClickedID: 37548
+    m_ExpandedIDs: 0000000002920000049200003e920000ae920000b092000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Oculus
-      m_OriginalName: Oculus
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 148892
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 11}
     m_SearchString: 
@@ -400,7 +400,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000018ad0000
+    m_ExpandedIDs: 000000000292000004920000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -431,18 +431,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: c6230000107000008665000000000000467d000036d60100cc87000016b70000b2ac0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: Plugins
-      m_OriginalName: Plugins
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 149642
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 11}
     m_CreateAssetUtility:
@@ -493,9 +493,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 1af00200
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 36f1ffff
+      m_ExpandedIDs: def9ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1075,13 +1075,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.24705017, y: -0.014523204, z: 0.006607816, w: -0.9693565}
+    m_Target: {x: -0.13077986, y: 0.001149377, z: 0.0026215161, w: -0.9918824}
     speed: 2
-    m_Value: {x: -0.24705017, y: -0.014523204, z: 0.006607816, w: -0.9693565}
+    m_Value: {x: -0.13077986, y: 0.001149377, z: 0.0026215161, w: -0.9918823}
   m_Size:
-    m_Target: 0.8537537
+    m_Target: 5.876932
     speed: 2
-    m_Value: 0.8537537
+    m_Value: 5.876932
   m_Ortho:
     m_Target: 1
     speed: 2
