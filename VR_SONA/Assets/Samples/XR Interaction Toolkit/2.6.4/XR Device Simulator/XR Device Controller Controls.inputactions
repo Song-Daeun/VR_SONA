@@ -54,7 +54,7 @@
                     "name": "Secondary Button",
                     "type": "Button",
                     "id": "970b4191-957d-4a7f-ba64-e0e701950d99",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -72,7 +72,7 @@
                     "name": "Primary 2D Axis Click",
                     "type": "Button",
                     "id": "22416e35-4897-43a8-b712-74381678af80",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -90,7 +90,7 @@
                     "name": "Primary 2D Axis Touch",
                     "type": "Button",
                     "id": "9b069098-df41-435e-9a59-ce43682df020",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -99,7 +99,7 @@
                     "name": "Secondary 2D Axis Touch",
                     "type": "Button",
                     "id": "cf4b67af-47c4-43d7-b748-b69c7709d64b",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
