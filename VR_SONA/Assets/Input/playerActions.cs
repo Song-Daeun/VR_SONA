@@ -31,7 +31,7 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""c0899982-278f-4681-8d84-eb2819f24dad"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -49,7 +49,7 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""name"": ""Run"",
                     ""type"": ""Value"",
                     ""id"": ""2ccc78d6-2ce1-47b6-b9ee-caf4445969cb"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -273,7 +273,7 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""214f57b8-a274-42a1-be97-a4d7a07bf1f0"",
-                    ""path"": """",
+                    ""path"": ""<XRSimulatedController>/thumbstick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -284,7 +284,7 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""7b4ca211-3437-49df-b5a2-43a5b4962237"",
-                    ""path"": """",
+                    ""path"": ""<XRSimulatedController>/thumbstick/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
