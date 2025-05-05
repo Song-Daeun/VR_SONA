@@ -30,7 +30,7 @@ public class PlayerMove : MonoBehaviour
         jumpInput.action.Enable();
         
         // 값 확인
-        Debug.Log($"Move Input 활성화 상태: {moveInput.action.enabled}");
+        //Debug.Log($"Move Input 활성화 상태: {moveInput.action.enabled}");
 
     }
 
@@ -65,7 +65,7 @@ public class PlayerMove : MonoBehaviour
             playerVisual.transform.position = transform.position;
             playerVisual.transform.rotation = Quaternion.Euler(0, head.eulerAngles.y, 0);
         
-            Debug.Log($"XR Origin 위치: {transform.position}, BoyPlayer 위치: {playerVisual.transform.position}");
+            //Debug.Log($"XR Origin 위치: {transform.position}, BoyPlayer 위치: {playerVisual.transform.position}");
 
         }
     }
