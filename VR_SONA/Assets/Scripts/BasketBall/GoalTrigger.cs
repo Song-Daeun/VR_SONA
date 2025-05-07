@@ -1,22 +1,18 @@
-// 공이 정상적으로 들어갔을 때만 골 판정
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GoalTrigger : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger 충돌 감지됨: " + other.name);
-
         if (other.CompareTag("Basketball"))
         {
-            Debug.Log("Basketball 태그 감지됨");
+            Rigidbody rb = other.attachedRigidbody;
 
-            if (other.attachedRigidbody != null && other.attachedRigidbody.velocity.y < 0)
+            // 아래 방향으로 충분히 떨어지고 있을 때만 득점 처리
+            if (rb != null && rb.velocity.y < -0.5f)
             {
-                Debug.Log("공이 아래로 이동 중! 점수 +1");
                 ScoreManager.Instance.AddScore(1);
+                Debug.Log("정상 득점!");
             }
         }
     }
