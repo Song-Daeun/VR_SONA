@@ -7,15 +7,16 @@ public class GoalTrigger : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Trigger 충돌 감지됨: " + other.name);
+
         if (other.CompareTag("Basketball"))
         {
-            Rigidbody rb = other.GetComponent<Rigidbody>();
+            Debug.Log("Basketball 태그 감지됨");
 
-            // 속도가 아래 방향인지 확인 (위→아래로 통과한 경우만 인정)
-            if (rb.velocity.y < 0f)
+            if (other.attachedRigidbody != null && other.attachedRigidbody.velocity.y < 0)
             {
-                ScoreManager.instance.AddScore(1);
-                Debug.Log("골인!");
+                Debug.Log("공이 아래로 이동 중! 점수 +1");
+                ScoreManager.Instance.AddScore(1);
             }
         }
     }

@@ -1,23 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager instance;
+    public static ScoreManager Instance;
 
+    public TMP_Text scoreText;
     private int score = 0;
-    public TextMeshProUGUI scoreText;
 
-    void Awake()
+    private void Awake()
     {
-        instance = this;
+        Instance = this;
     }
 
-    public void AddScore(int amount)
+    void Start()
     {
-        score += amount;
-        scoreText.text = "Score: " + score.ToString();
+        Debug.Log("ScoreManager Start()");
+        UpdateScoreUI();
+    }
+
+    public void AddScore(int value)
+    {
+        score += value;
+        UpdateScoreUI();
+    }
+
+    private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+            scoreText.text = "Score: " + score;
+        else
+            Debug.LogWarning("Score Text is not assigned!");
     }
 }

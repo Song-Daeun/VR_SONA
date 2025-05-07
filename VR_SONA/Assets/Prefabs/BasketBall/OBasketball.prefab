@@ -68,6 +68,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: OBasketball
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 278110af4afb7dc49a9b6efaa9c5209e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 278110af4afb7dc49a9b6efaa9c5209e, type: 3}
+      propertyPath: m_TagString
+      value: Basketball
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -78,6 +86,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 278110af4afb7dc49a9b6efaa9c5209e, type: 3}
       insertIndex: -1
       addedObject: {fileID: -146693645248088619}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 278110af4afb7dc49a9b6efaa9c5209e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -209969253095104800}
   m_SourcePrefab: {fileID: 100100000, guid: 278110af4afb7dc49a9b6efaa9c5209e, type: 3}
 --- !u!1 &5849473246159792786 stripped
 GameObject:
@@ -132,3 +143,15 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.12049999
   m_Center: {x: 0.00000000745058, y: 0.00000000372529, z: 0}
+--- !u!114 &-209969253095104800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849473246159792786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac7b432c455214e89af957ac828c4ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
