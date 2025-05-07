@@ -31,13 +31,12 @@ public class BasketballThrower : MonoBehaviour
         GameObject newBall = Instantiate(basketballPrefab, throwOrigin.position, Quaternion.identity);
         Rigidbody rb = newBall.GetComponent<Rigidbody>();
 
-        float angleInRadians = throwAngle * Mathf.Deg2Rad;
+        // 시선 방향 기준
+        Vector3 throwDirection = throwOrigin.forward.normalized;
 
-        Vector3 forwardXZ = new Vector3(throwOrigin.forward.x, 0, throwOrigin.forward.z).normalized;
-
-        Vector3 throwDirection =
-            forwardXZ * Mathf.Cos(angleInRadians) * forwardMultiplier +
-            Vector3.up * Mathf.Sin(angleInRadians) * upwardMultiplier;
+        // 포물선 형태 되도록 살짝 위쪽 보정
+        throwDirection.y += 0.7f; // 이 값을 조절해서 곡률 조절
+        throwDirection = throwDirection.normalized;
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         rb.AddTorque(Vector3.right * spinForce, ForceMode.Impulse);
