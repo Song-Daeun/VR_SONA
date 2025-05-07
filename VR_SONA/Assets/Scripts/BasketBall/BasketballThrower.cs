@@ -6,11 +6,16 @@ public class BasketballThrower : MonoBehaviour
 {
     public GameObject basketballPrefab;   // 프리팹 연결용
     public Transform throwOrigin;         // 던지는 위치
-    public float throwForce = 10f;
+    public float throwForce = 14f;
     public float spinForce = 3f;
 
     public float throwCooldown = 1f;      // 던질 수 있는 간격 (초)
     private float lastThrowTime = -Mathf.Infinity;
+
+    [Header("포물선 조정")]
+    [Range(0f, 2f)] public float forwardMultiplier = 1.0f;
+    [Range(0f, 2f)] public float upwardMultiplier = 0.9f;
+    public float throwAngle = 35f;
 
     void Update()
     {
@@ -21,14 +26,20 @@ public class BasketballThrower : MonoBehaviour
         }
     }
 
-    void ThrowNewBall()    {
+    void ThrowNewBall()
+    {
         GameObject newBall = Instantiate(basketballPrefab, throwOrigin.position, Quaternion.identity);
         Rigidbody rb = newBall.GetComponent<Rigidbody>();
 
-        Vector3 direction = throwOrigin.forward + Vector3.up * 0.2f;
-        Debug.Log("던지는 방향: " + direction);
+        float angleInRadians = throwAngle * Mathf.Deg2Rad;
 
-        rb.AddForce(direction.normalized * throwForce, ForceMode.Impulse);
+        Vector3 forwardXZ = new Vector3(throwOrigin.forward.x, 0, throwOrigin.forward.z).normalized;
+
+        Vector3 throwDirection =
+            forwardXZ * Mathf.Cos(angleInRadians) * forwardMultiplier +
+            Vector3.up * Mathf.Sin(angleInRadians) * upwardMultiplier;
+
+        rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         rb.AddTorque(Vector3.right * spinForce, ForceMode.Impulse);
     }
 }
