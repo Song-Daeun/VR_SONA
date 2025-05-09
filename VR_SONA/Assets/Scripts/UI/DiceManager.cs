@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class DiceManager : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class DiceManager : MonoBehaviour
     
     public void DiceButton_clicked()
     {
+        Debug.Log("Dice 버튼 눌림!");
         StartCoroutine(LoadDiceScene());
     }
 
