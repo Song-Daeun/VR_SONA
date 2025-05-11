@@ -1285,6 +1285,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1 &100240132 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4121915452331890060, guid: 36c69635d16b64e46a29ec445e299989, type: 3}
@@ -2589,6 +2591,26 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab2d2dee9182bf249869d8b0bc5cdcc6, type: 3}
+--- !u!1 &232366680 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7171823405527562801, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
+  m_PrefabInstance: {fileID: 1538532169}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &232366686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232366680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0d59f8186e539448bbf47179dbb47ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!4 &235017122 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8069669015559325251, guid: 27f81868b760cc64ebc1c4eba25c95c5, type: 3}
@@ -4749,6 +4771,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1001 &436319115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5616,6 +5640,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1001 &510251733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5848,6 +5874,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinUIManager: {fileID: 0}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
+  returnButton: {fileID: 0}
+  uiTerrain: {fileID: 1458396542}
 --- !u!4 &523057121
 Transform:
   m_ObjectHideFlags: 0
@@ -9006,6 +9036,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinUIManager: {fileID: 63800757}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
+  returnButton: {fileID: 0}
+  uiTerrain: {fileID: 0}
 --- !u!1001 &791821913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10558,6 +10592,7 @@ GameObject:
   - component: {fileID: 902121345}
   - component: {fileID: 902121344}
   - component: {fileID: 902121343}
+  - component: {fileID: 902121347}
   m_Layer: 5
   m_Name: ButtonCanvas
   m_TagString: Untagged
@@ -10649,6 +10684,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &902121347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902121342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29fb46b42b7c37b418c7795846d561ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &903763703
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10875,8 +10922,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 190026710845066473, guid: 56ec1b96a6888444abeca665161c5ce9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -93.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 190026710845066473, guid: 56ec1b96a6888444abeca665161c5ce9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 190026710845066473, guid: 56ec1b96a6888444abeca665161c5ce9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 57.4
       objectReference: {fileID: 0}
     - target: {fileID: 2609953844851659772, guid: 56ec1b96a6888444abeca665161c5ce9, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -12822,6 +12877,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!4 &1095176479 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9170577495445612818, guid: 67d3abe897c93a08e9593b0a183f2bb4, type: 3}
@@ -12960,6 +13017,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1001 &1116869873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17084,6 +17143,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8424503528261755352, guid: 01731519c681e5f45bc294844493d2b4, type: 3}
   m_PrefabInstance: {fileID: 1455365535}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1458396542 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7697992499408092261, guid: d0aed8937f333684ca9b34db06bd667f, type: 3}
+  m_PrefabInstance: {fileID: 1638884756}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1460248088
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17710,6 +17774,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1 &1533240760
 GameObject:
   m_ObjectHideFlags: 0
@@ -18144,6 +18210,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8739053859298823281, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1786995022}
+    - targetCorrespondingSourceObject: {fileID: 7171823405527562801, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 232366686}
     - targetCorrespondingSourceObject: {fileID: 204065838413963231, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1113880774}
@@ -20545,6 +20614,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonCanvas: {fileID: 902121342}
+  loadButton: {fileID: 788546955}
+  unloadButton: {fileID: 766329404}
 --- !u!1001 &1790456702
 PrefabInstance:
   m_ObjectHideFlags: 0
