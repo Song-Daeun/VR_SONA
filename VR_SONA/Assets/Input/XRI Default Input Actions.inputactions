@@ -2399,10 +2399,10 @@
                 {
                     "name": "",
                     "id": "f432ca4f-bdaa-4a32-af2e-ba8ef98b14d8",
-                    "path": "<XRController>{LeftHand}/{PrimaryTrigger}",
-                    "interactions": "Press",
+                    "path": "<XRController>{LeftHand}/trigger.",
+                    "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Generic XR Controller",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false

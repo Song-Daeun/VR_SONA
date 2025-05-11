@@ -94,4 +94,14 @@ public class DiceManager : MonoBehaviour
         //backButton?.SetActive(false);
         backButton = null; 
     }
+    
+    public void LogHoverEnter()
+    {
+        Debug.Log("✅ Hover 됨!");
+    }
+
+    public void LogClicked()
+    {
+        Debug.Log("🎯 버튼 클릭됨!");
+    }
 }
