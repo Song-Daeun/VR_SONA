@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Basketball
+  - GoalTriggerBottom
+  - GoalTriggerTop
   layers:
   - Default
   - TransparentFX
