@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DiceResultDetector : MonoBehaviour
 {
@@ -115,6 +116,30 @@ public class DiceResultDetector : MonoBehaviour
         
         // 초기화 후 자동으로 디버깅 정보 출력
         DebugAllFacePositions();
+    }
+
+    private void Start()
+    {
+        // 주사위 면이 초기화되지 않았다면 자동 초기화
+        if (diceNumbers == null || diceNumbers.Length == 0)
+        {
+            Debug.Log("주사위 면 정보가 없어서 자동 초기화를 시작합니다.");
+            InitializeDiceFacesBasedOnLayout();
+        }
+        
+        // 카메라 자동 찾기
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+            if (playerCamera != null)
+            {
+                Debug.Log($"카메라 자동 할당: {playerCamera.name}");
+            }
+            else
+            {
+                Debug.LogWarning("메인 카메라를 찾을 수 없습니다.");
+            }
+        }
     }
     
     // 모든 면의 위치 정보를 출력하는 디버깅 함수
@@ -337,23 +362,54 @@ public class DiceResultDetector : MonoBehaviour
                 continue;
             }
             
-            // 나머지 로직...
+            // 로컬 좌표를 월드 좌표로 변환
+            Vector3 worldPosition = transform.TransformPoint(diceNumber.localPosition);
+            Vector3 worldNormal = transform.TransformDirection(diceNumber.localNormal);
+            Vector3 worldUpDirection = transform.TransformDirection(diceNumber.numberUpDirection);
+            
+            // 카메라로부터의 방향 계산
+            Vector3 toCamera = (playerCamera.transform.position - worldPosition).normalized;
+            
+            // 1. 숫자가 카메라를 향하고 있는지 확인 (법선과 카메라 방향의 내적)
+            float facingCamera = Vector3.Dot(worldNormal, toCamera);
+            
+            // 2. 숫자가 올바른 방향으로 서 있는지 확인 (숫자의 위 방향과 월드 위 방향의 내적)
+            float uprightScore = Vector3.Dot(worldUpDirection, Vector3.up);
+            
+            // 3. 종합적인 점수 계산 (둘 다 고려)
+            float totalScore = facingCamera * uprightScore;
+            
+            // 디버깅용 로그
+            if (showDebugLogs)
+            {
+                Debug.Log($"[면 {diceNumber.number}] facing={facingCamera:F3}, upright={uprightScore:F3}, total={totalScore:F3}");
+            }
+            
+            // 가장 높은 점수의 숫자 선택
+            if (totalScore > bestScore && facingCamera > 0.5f) // 최소한 반 이상 카메라를 향해야 함
+            {
+                bestScore = totalScore;
+                bestNumber = diceNumber.number;
+            }
         }
         
-        Debug.Log($"최종 결과: 숫자 {bestNumber} (점수: {bestScore:F3})");
+        if (showDebugLogs)
+        {
+            Debug.Log($"최종 결과: 숫자 {bestNumber} (점수: {bestScore:F3})");
+        }
+        
         return bestNumber;
     }
     
     // Update 함수 추가: 실시간 디버깅
     private void Update()
     {
-        // 키보드 단축키로 디버깅 함수 호출
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Keyboard.current.dKey.wasPressedThisFrame)
         {
             DebugCurrentVisibleFace();
         }
-        
-        if (Input.GetKeyDown(KeyCode.S))
+
+        if (Keyboard.current.sKey.wasPressedThisFrame)
         {
             SimulateDiceRolls();
         }

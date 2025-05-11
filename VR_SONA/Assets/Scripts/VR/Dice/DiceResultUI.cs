@@ -48,22 +48,34 @@ public class DiceResultUI : MonoBehaviour
     // 주사위 결과를 화면에 표시하는 메서드
     public void ShowResult(int diceNumber)
     {
+        Debug.Log($"ShowResult 호출됨 - 숫자: {diceNumber}");
+        
         // 이전 표시가 진행 중이면 멈추기
         if (displayCoroutine != null)
         {
             StopCoroutine(displayCoroutine);
+            Debug.Log("이전 디스플레이 코루틴 중지");
         }
         
         // 결과 표시 시작
         displayCoroutine = StartCoroutine(DisplayResultCoroutine(diceNumber));
+        Debug.Log("새로운 결과 표시 코루틴 시작");
     }
-    
+
     private IEnumerator DisplayResultCoroutine(int diceNumber)
     {
+        Debug.Log($"DisplayResultCoroutine 시작 - 숫자: {diceNumber}");
+        
         // 패널 활성화
         if (resultPanel != null)
         {
             resultPanel.SetActive(true);
+            Debug.Log("결과 패널 활성화됨");
+        }
+        else
+        {
+            Debug.LogError("resultPanel이 null입니다!");
+            yield break;
         }
         
         // 결과 텍스트 설정
@@ -71,23 +83,17 @@ public class DiceResultUI : MonoBehaviour
         {
             resultNumberText.text = diceNumber.ToString();
             resultNumberText.color = GetNumberColor(diceNumber);
+            Debug.Log($"결과 텍스트 설정: {diceNumber}");
+        }
+        else
+        {
+            Debug.LogError("resultNumberText가 null입니다!");
         }
         
         if (resultMessageText != null)
         {
-            resultMessageText.text = $"주사위 결과";
-        }
-        
-        // 페이드 인 애니메이션
-        yield return StartCoroutine(FadeInAnimation());
-        
-        // 설정된 시간 동안 표시 (0이면 무한)
-        if (displayDuration > 0)
-        {
-            yield return new WaitForSeconds(displayDuration);
-            
-            // 자동으로 숨기기
-            yield return StartCoroutine(FadeOutAnimation());
+            resultMessageText.text = "주사위 결과";
+            Debug.Log("결과 메시지 텍스트 설정");
         }
     }
     
