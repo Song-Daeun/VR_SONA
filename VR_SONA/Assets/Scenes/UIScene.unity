@@ -1287,7 +1287,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!1 &100240132 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4121915452331890060, guid: 36c69635d16b64e46a29ec445e299989, type: 3}
@@ -4775,7 +4775,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!1001 &436319115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12924,7 +12924,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!4 &1095176479 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9170577495445612818, guid: 67d3abe897c93a08e9593b0a183f2bb4, type: 3}
@@ -13065,7 +13065,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!1001 &1116869873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17823,7 +17823,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!1 &1533240760
 GameObject:
   m_ObjectHideFlags: 0
@@ -20800,7 +20800,7 @@ MonoBehaviour:
   buttonCanvas: {fileID: 902121342}
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
-  missionMessageText: {fileID: 0}
+  missionMessageText: {fileID: 1536815597}
 --- !u!1001 &1790456702
 PrefabInstance:
   m_ObjectHideFlags: 0
