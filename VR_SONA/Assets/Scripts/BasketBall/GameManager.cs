@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-
-using UnityEngine;
-using TMPro;
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
