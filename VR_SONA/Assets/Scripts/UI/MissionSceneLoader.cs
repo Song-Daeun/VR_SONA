@@ -6,6 +6,7 @@ public class MissionSceneLoader : MonoBehaviour
     public CoinUIManager coinUIManager; // Inspector에서 연결할 예정
     public GameObject loadButton;
     public GameObject unloadButton;
+    public GameObject returnButton; // 되돌아가기 버튼 (미션 씬에서만 표시)
 
     void Start()
     {
@@ -24,8 +25,12 @@ public class MissionSceneLoader : MonoBehaviour
             // 미션 씬 올라와 있는 상태면 load/unload 숨기고 되돌아가기 버튼 표시
             if (loadButton != null) loadButton.SetActive(false);
             if (unloadButton != null) unloadButton.SetActive(false);
+            if (returnButton != null) returnButton.SetActive(true);
         }
-
+        else
+        {
+            if (returnButton != null) returnButton.SetActive(false);
+        }
     }
 
     public void LoadMissionScene()
@@ -49,6 +54,7 @@ public class MissionSceneLoader : MonoBehaviour
                 // Load/Unload 버튼 숨기고 Return 버튼 표시
                 if (loadButton != null) loadButton.SetActive(false);
                 if (unloadButton != null) unloadButton.SetActive(false);
+                if (returnButton != null) returnButton.SetActive(true);
             }
             else
             {
@@ -78,6 +84,7 @@ public class MissionSceneLoader : MonoBehaviour
             // 다시 Load/Unload 버튼 표시
             if (loadButton != null) loadButton.SetActive(true);
             if (unloadButton != null) unloadButton.SetActive(true);
+            if (returnButton != null) returnButton.SetActive(false);
 
             Debug.Log("미션 씬에서 UI 씬으로 돌아옴");
         }
