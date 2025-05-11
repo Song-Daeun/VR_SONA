@@ -63,7 +63,7 @@ public class DiceManager : MonoBehaviour
             {
                 // Canvas를 플레이어 앞 적절한 위치로 배치
                 Vector3 playerForward = playerTransform.forward;
-                float canvasDistance = 3.0f; // 플레이어로부터의 거리
+                float canvasDistance = 5.0f; // 플레이어로부터의 거리
                 
                 obj.transform.position = playerTransform.position + playerForward * canvasDistance;
                 
