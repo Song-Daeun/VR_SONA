@@ -3,18 +3,26 @@ using UnityEngine;
 public class ShowBasketButtonsOnCameraEnter : MonoBehaviour
 {
     public GameObject buttonCanvas;
+    public GameObject loadButton;
+    public GameObject unloadButton;
 
     void Start()
     {
-        buttonCanvas.SetActive(false); // 시작할 때 꺼두기
+        buttonCanvas.SetActive(false);
+        if (loadButton != null) loadButton.SetActive(false);
+        if (unloadButton != null) unloadButton.SetActive(false);
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("MainCamera"))
         {
-            Debug.Log("Entered Tile2(7): " + other.name);
+            Debug.Log("Entered Tile: " + other.name);
             buttonCanvas.SetActive(true);
+
+            // 버튼들도 다시 켜줌
+            if (loadButton != null) loadButton.SetActive(true);
+            if (unloadButton != null) unloadButton.SetActive(true);
         }
     }
 
@@ -22,8 +30,11 @@ public class ShowBasketButtonsOnCameraEnter : MonoBehaviour
     {
         if (other.CompareTag("MainCamera"))
         {
-            Debug.Log("Exited Tile2(7): " + other.name);
+            Debug.Log("Exited Tile: " + other.name);
             buttonCanvas.SetActive(false);
+
+            if (loadButton != null) loadButton.SetActive(false);
+            if (unloadButton != null) unloadButton.SetActive(false);
         }
     }
 }
