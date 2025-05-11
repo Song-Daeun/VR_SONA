@@ -9,6 +9,7 @@ public class MissionSceneLoader : MonoBehaviour
     public GameObject returnButton; // 되돌아가기 버튼 (미션 씬에서만 표시)
     
     public GameObject uiTerrain;
+    public GameObject missionMessageText;
 
     void Start()
     {
@@ -30,6 +31,8 @@ public class MissionSceneLoader : MonoBehaviour
             if (loadButton != null) loadButton.SetActive(false);
             if (unloadButton != null) unloadButton.SetActive(false);
             if (returnButton != null) returnButton.SetActive(true);
+
+            if (missionMessageText != null) missionMessageText.SetActive(false);
         }
         else
         {
@@ -61,6 +64,9 @@ public class MissionSceneLoader : MonoBehaviour
                 if (loadButton != null) loadButton.SetActive(false);
                 if (unloadButton != null) unloadButton.SetActive(false);
                 if (returnButton != null) returnButton.SetActive(true);
+
+                if (missionMessageText != null) missionMessageText.SetActive(false);
+
             }
             else
             {
@@ -78,6 +84,8 @@ public class MissionSceneLoader : MonoBehaviour
         // 버튼만 숨김
         if (loadButton != null) loadButton.SetActive(false);
         if (unloadButton != null) unloadButton.SetActive(false);
+
+        if (missionMessageText != null) missionMessageText.SetActive(false);
     }
 
     public void ReturnToUI()
@@ -92,6 +100,7 @@ public class MissionSceneLoader : MonoBehaviour
             if (loadButton != null) loadButton.SetActive(true);
             if (unloadButton != null) unloadButton.SetActive(true);
             if (returnButton != null) returnButton.SetActive(false);
+
 
             Debug.Log("미션 씬에서 UI 씬으로 돌아옴");
         }

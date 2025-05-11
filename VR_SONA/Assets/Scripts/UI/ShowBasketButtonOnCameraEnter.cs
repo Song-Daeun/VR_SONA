@@ -1,16 +1,20 @@
 using UnityEngine;
+using TMPro;
 
 public class ShowBasketButtonsOnCameraEnter : MonoBehaviour
 {
     public GameObject buttonCanvas;
     public GameObject loadButton;
     public GameObject unloadButton;
+    public GameObject missionMessageText;
 
     void Start()
     {
         buttonCanvas.SetActive(false);
         if (loadButton != null) loadButton.SetActive(false);
         if (unloadButton != null) unloadButton.SetActive(false);
+
+        if (missionMessageText != null) missionMessageText.SetActive(false);
     }
 
     void OnTriggerEnter(Collider other)
@@ -23,6 +27,8 @@ public class ShowBasketButtonsOnCameraEnter : MonoBehaviour
             // 버튼들도 다시 켜줌
             if (loadButton != null) loadButton.SetActive(true);
             if (unloadButton != null) unloadButton.SetActive(true);
+
+            if (missionMessageText != null) missionMessageText.SetActive(true);
         }
     }
 
@@ -35,6 +41,8 @@ public class ShowBasketButtonsOnCameraEnter : MonoBehaviour
 
             if (loadButton != null) loadButton.SetActive(false);
             if (unloadButton != null) unloadButton.SetActive(false);
+            
+            if (missionMessageText != null) missionMessageText.SetActive(false);
         }
     }
 }
