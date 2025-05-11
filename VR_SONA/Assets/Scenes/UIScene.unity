@@ -5847,6 +5847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8e2672654014cc498a91aa274ace880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinUIManager: {fileID: 0}
 --- !u!4 &523057121
 Transform:
   m_ObjectHideFlags: 0
@@ -8870,6 +8871,7 @@ GameObject:
   - component: {fileID: 788546959}
   - component: {fileID: 788546958}
   - component: {fileID: 788546957}
+  - component: {fileID: 788546961}
   m_Layer: 5
   m_Name: LoadButton
   m_TagString: Untagged
@@ -8991,6 +8993,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 788546955}
   m_CullTransparentMesh: 1
+--- !u!114 &788546961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 788546955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e2672654014cc498a91aa274ace880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinUIManager: {fileID: 63800757}
 --- !u!1001 &791821913
 PrefabInstance:
   m_ObjectHideFlags: 0
