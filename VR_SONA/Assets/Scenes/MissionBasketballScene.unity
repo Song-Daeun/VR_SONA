@@ -2419,6 +2419,7 @@ MonoBehaviour:
   gameStateText: {fileID: 837010071}
   goalCount: 0
   requiredGoals: 1
+  returnButton: {fileID: 1147262717}
 --- !u!4 &878880130
 Transform:
   m_ObjectHideFlags: 0

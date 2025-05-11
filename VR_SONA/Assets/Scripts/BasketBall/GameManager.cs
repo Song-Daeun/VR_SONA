@@ -17,9 +17,13 @@ public class GameManager : MonoBehaviour
 
     private bool isGameEnded = false;
 
+    public GameObject returnButton;
+
     private void Awake()
     {
         Instance = this;
+
+        if (returnButton != null) returnButton.SetActive(false);
     }
 
     public void AddGoal()
@@ -53,5 +57,7 @@ public class GameManager : MonoBehaviour
         }
 
         Time.timeScale = 0f;
+
+        if (returnButton != null) returnButton.SetActive(true);
     }
 }
