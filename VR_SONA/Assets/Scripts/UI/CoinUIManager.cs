@@ -4,7 +4,7 @@ using TMPro;
 public class CoinUIManager : MonoBehaviour
 {
     public TextMeshProUGUI coinText;
-    public GameObject coinBackground; // 타원형 배경을 위한 Image 오브젝트
+    public GameObject coinBackground; // 타원형 배경 이미지
 
     private int coinCount = 800;
 
@@ -13,9 +13,14 @@ public class CoinUIManager : MonoBehaviour
         UpdateCoinUI();
     }
 
+    public bool HasEnoughCoins()
+    {
+        return coinCount >= 100;
+    }
+
     public void SubtractCoinsForMission()
     {
-        if (coinCount >= 100)
+        if (HasEnoughCoins())
         {
             coinCount -= 100;
             UpdateCoinUI();
