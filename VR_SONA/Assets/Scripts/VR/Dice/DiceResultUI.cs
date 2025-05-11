@@ -4,24 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; 
 
-// DiceResultUI.cs - DiceScene 내부의 결과 표시 UI를 관리하는 스크립트
 public class DiceResultUI : MonoBehaviour
 {
-    [Header("UI 컴포넌트")]
-    public GameObject resultPanel;           // 결과를 표시할 패널
+    [Header("UI Components")]
+    public GameObject resultPanel;           
     public TextMeshProUGUI resultNumberText;
     public TextMeshProUGUI resultMessageText;
-    public Button replayButton;             // 다시 굴리기 버튼
+    // public Button replayButton;             // 다시 굴리기 버튼
     public Button backButton;               // 뒤로가기 버튼
     
-    [Header("애니메이션 설정")]
+    [Header("Animation Settings")]
     public float fadeInDuration = 0.5f;     // 나타나는 시간
-    public float displayDuration = 5.0f;    // 표시 유지 시간 (0이면 무한)
-    
-    [Header("색상 설정")]
-    public Color defaultColor = Color.white;
-    public Color highRollColor = Color.green;   // 높은 숫자일 때 색상
-    public Color lowRollColor = Color.red;      // 낮은 숫자일 때 색상
+    public float displayDuration = 5.0f;    // 표시 유지 시간
     
     private Coroutine displayCoroutine;
     
@@ -33,11 +27,11 @@ public class DiceResultUI : MonoBehaviour
             resultPanel.SetActive(false);
         }
         
-        // 버튼 이벤트 연결
-        if (replayButton != null)
-        {
-            replayButton.onClick.AddListener(OnReplayClicked);
-        }
+        // 다시 굴리기 버튼 이벤트 연결
+        // if (replayButton != null)
+        // {
+        //     replayButton.onClick.AddListener(OnReplayClicked);
+        // }
         
         if (backButton != null)
         {
@@ -45,56 +39,48 @@ public class DiceResultUI : MonoBehaviour
         }
     }
     
-    // 주사위 결과를 화면에 표시하는 메서드
+    // 주사위 결과 표시
     public void ShowResult(int diceNumber)
-    {
-        Debug.Log($"ShowResult 호출됨 - 숫자: {diceNumber}");
-        
+    {        
         // 이전 표시가 진행 중이면 멈추기
         if (displayCoroutine != null)
         {
             StopCoroutine(displayCoroutine);
-            Debug.Log("이전 디스플레이 코루틴 중지");
         }
         
-        // 결과 표시 시작
-        displayCoroutine = StartCoroutine(DisplayResultCoroutine(diceNumber));
-        Debug.Log("새로운 결과 표시 코루틴 시작");
+        // 결과 표시
+        displayCoroutine = StartCoroutine(DisplayResultCoroutine(diceNumber, Color.white));
     }
 
-    private IEnumerator DisplayResultCoroutine(int diceNumber)
+    private IEnumerator DisplayResultCoroutine(int diceNumber, Color numberColor)
     {
-        Debug.Log($"DisplayResultCoroutine 시작 - 숫자: {diceNumber}");
-        
         // 패널 활성화
         if (resultPanel != null)
         {
             resultPanel.SetActive(true);
-            Debug.Log("결과 패널 활성화됨");
         }
         else
         {
-            Debug.LogError("resultPanel이 null입니다!");
-            yield break;
+            // resultpanel이 null값이면면 코루틴 종료
+            yield break; 
         }
         
         // 결과 텍스트 설정
         if (resultNumberText != null)
         {
             resultNumberText.text = diceNumber.ToString();
-            resultNumberText.color = GetNumberColor(diceNumber);
-            Debug.Log($"결과 텍스트 설정: {diceNumber}");
+            resultNumberText.color = numberColor; 
         }
         else
         {
-            Debug.LogError("resultNumberText가 null입니다!");
+            Debug.LogError("resultNumberText is null!");
         }
         
         if (resultMessageText != null)
         {
-            resultMessageText.text = "주사위 결과";
-            Debug.Log("결과 메시지 텍스트 설정");
+            resultMessageText.text = "Dice Result :";
         }
+        yield return null;
     }
     
     private IEnumerator FadeInAnimation()
@@ -134,42 +120,23 @@ public class DiceResultUI : MonoBehaviour
         resultPanel.SetActive(false);
     }
     
-    private Color GetNumberColor(int number)
-    {
-        // 팔면체 주사위의 경우 8이 최대값
-        if (number >= 7)
-        {
-            return highRollColor;  // 높은 숫자 (7, 8)
-        }
-        else if (number <= 2)
-        {
-            return lowRollColor;   // 낮은 숫자 (1, 2)
-        }
-        else
-        {
-            return defaultColor;   // 중간 숫자 (3~6)
-        }
-    }
-    
-    private void OnReplayClicked()
-    {
-        // 다시 굴리기 버튼이 클릭되었을 때
-        // 결과 패널 숨기기
-        if (displayCoroutine != null)
-        {
-            StopCoroutine(displayCoroutine);
-        }
+    // private void OnReplayClicked()
+    // {
+    //     // 다시 굴리기 버튼이 클릭되었을 때
+    //     // 결과 패널 숨기기
+    //     if (displayCoroutine != null)
+    //     {
+    //         StopCoroutine(displayCoroutine);
+    //     }
         
-        resultPanel.SetActive(false);
+    //     resultPanel.SetActive(false);
         
-        // 주사위를 초기 위치로 리셋하는 로직 호출
-        FindObjectOfType<DiceSceneManager>()?.ResetDice();
-    }
+    //     // 주사위를 초기 위치로 리셋하는 로직 호출
+    //     FindObjectOfType<DiceSceneManager>()?.ResetDice();
+    // }
     
     private void OnBackClicked()
     {
-        // 뒤로가기 버튼이 클릭되었을 때
-        // DiceManager의 뒤로가기 기능 호출
         FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
     }
 }

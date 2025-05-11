@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class DiceSceneManager : MonoBehaviour
 {
-    [Header("참조")]
-    public Rigidbody diceRigidbody;              // 주사위의 Rigidbody
-    public DiceResultDetector diceDetector;      // 결과 감지기
+    [Header("Reference")]
+    public Rigidbody diceRigidbody;              // 주사위 Rigidbody
+    public DiceResultDetector diceDetector;      // 결과 감지
     public DiceResultUI resultUI;                // 결과 표시 UI
     
-    [Header("감지 설정")]
+    [Header("Result Detection settings")]
     public float stoppedVelocityThreshold = 0.1f;
     public float stoppedAngularThreshold = 0.1f;
-    public float settleTime = 1.0f;              // 멈춘 상태 유지해야 하는 시간
+    public float settleTime = 1.0f;              // 멈춘 상태 유지
     
-    [Header("디버깅")]
+    [Header("Debugging")]
     public bool showDebugLogs = true;
     public bool drawDebugVisuals = true;
     
@@ -43,65 +43,40 @@ public class DiceSceneManager : MonoBehaviour
             if (mainCamera != null)
             {
                 diceDetector.playerCamera = mainCamera;
-                if (showDebugLogs)
-                {
-                    Debug.Log($"DiceResultManager: 카메라 자동 할당 - {mainCamera.name}");
-                }
             }
         }
         
         if (showDebugLogs)
         {
-            Debug.Log("DiceResultManager 초기화 완료");
+            Debug.Log("DiceResultManager Initialization Complete");
         }
     }
     
     private void Update()
     {
-        // 실행확인
-        if (Time.timeSinceLevelLoad < 5f && Time.frameCount % 60 == 0)
-        {
-            Debug.Log($"DiceSceneManager Update 실행 중 - 시간: {Time.timeSinceLevelLoad:F1}초");
-        }
-    
+        // 실행확인    
         CheckDiceState();
     }
     
     private void CheckDiceState()
-    {
-        if (diceRigidbody == null)
-        {
-            Debug.LogError("diceRigidbody가 null입니다!");
-            return;
-        }
-        
-        // 주사위의 현재 속도 값들
+    {       
+        // 주사위의 현재 속도 값
         float velocity = diceRigidbody.velocity.magnitude;
         float angularVelocity = diceRigidbody.angularVelocity.magnitude;
         
-        // 주사위가 움직이기 시작했는데 아직 결과가 표시되어 있다면
+        // 주사위가 움직이면 이전 화면 언로드
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {
-            // 이전 결과 완전히 초기화
+            // 이전 결과 초기화
             if (resultUI != null && resultUI.resultPanel != null)
             {
                 resultUI.resultPanel.SetActive(false);
-                Debug.Log("이전 결과 UI 숨김");
             }
             
-            // 중요: 모든 상태 플래그 초기화
+            // 모든 상태 플래그 초기화
             isResultDisplayed = false;
             resultShown = false;
             stoppedTimer = 0f;
-            Debug.Log("주사위가 다시 움직이기 시작 - 모든 상태 초기화");
-        }
-
-        // 디버깅을 위한 상태 로그 (매 초마다)
-        if (Time.frameCount % 60 == 0)
-        {
-            Debug.Log($"[상태] 속도: {velocity:F3}, 회전: {angularVelocity:F3}, " +
-                    $"isRolling: {isRolling}, resultShown: {resultShown}, " +
-                    $"isResultDisplayed: {isResultDisplayed}");
         }
         
         // 주사위가 멈췄는지 확인 (임계값 조정)
@@ -110,16 +85,10 @@ public class DiceSceneManager : MonoBehaviour
         if (isStill && isRolling)
         {
             stoppedTimer += Time.deltaTime;
-            
-            if (stoppedTimer % 0.5f < Time.deltaTime) // 0.5초마다 로그
-            {
-                Debug.Log($"주사위 정지 중... ({stoppedTimer:F1}초 / {settleTime}초 필요)");
-            }
-            
-            // 충분히 멈춘 후 결과 계산
+      
+            // 결과 계산
             if (stoppedTimer >= settleTime && !resultShown)
             {
-                Debug.Log("===== 결과 감지 시작! =====");
                 ShowDiceResult();
             }
         }
@@ -128,14 +97,12 @@ public class DiceSceneManager : MonoBehaviour
             // 주사위가 움직이기 시작했을 때
             if (!isRolling)
             {
-                Debug.Log("주사위가 움직이기 시작함");
                 isRolling = true;
                 
-                // 이전 결과 즉시 숨기기
+                // 이전 결과 숨기기
                 if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
                 {
                     resultUI.resultPanel.SetActive(false);
-                    Debug.Log("이전 결과 UI 즉시 숨김");
                 }
             }
             
@@ -145,40 +112,36 @@ public class DiceSceneManager : MonoBehaviour
     
     private void ShowDiceResult()
     {
-        Debug.Log("ShowDiceResult 함수 진입");
         
         // 이미 결과가 표시되었다면 실행하지 않음
         if (isResultDisplayed)
         {
-            Debug.Log("이미 결과가 표시됨 - 반환");
+            Debug.Log("Results already displayed");
             return;
         }
         
         if (diceDetector == null)
         {
-            Debug.LogError("diceDetector가 null입니다!");
+            Debug.LogError("diceDetector is null!");
             return;
         }
         
         if (resultUI == null)
         {
-            Debug.LogError("resultUI가 null입니다!");
+            Debug.LogError("resultUI is null!");
             return;
         }
         
         // 결과 감지
         int result = diceDetector.GetVisibleNumber();
-        Debug.Log($"감지된 주사위 결과: {result}");
         
         // UI에 결과 표시
         resultUI.ShowResult(result);
-        Debug.Log("UI에 결과 표시 요청 완료");
         
         // 상태 업데이트
         resultShown = true;
         isRolling = false;
-        isResultDisplayed = true; // 이 줄 추가!
-        Debug.Log("결과 표시 완료");
+        isResultDisplayed = true; 
         
         // 결과 확정 이벤트 발생
         OnDiceResultConfirmed(result);
@@ -186,15 +149,14 @@ public class DiceSceneManager : MonoBehaviour
     
     private void OnDiceResultConfirmed(int result)
     {
-        // 나중에 게임 로직 확장 시 사용
-        // 예: 플레이어 이동, 점수 계산 등
+        // 나중에 게임 로직 확장 시 사용 (플레이어 이동, 점수 계산)
         if (showDebugLogs)
         {
-            Debug.Log($"주사위 결과 {result}에 대한 게임 로직 실행 준비");
+            // Debug.Log($"Prepare to execute game logic for dice result {result}");
         }
     }
     
-    // 주사위를 초기 위치로 리셋
+    // 주사위 초기 위치로 리셋
     public void ResetDice()
     {
         if (diceRigidbody == null) return;
