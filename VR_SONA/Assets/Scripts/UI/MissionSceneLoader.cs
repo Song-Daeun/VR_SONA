@@ -4,10 +4,14 @@ using UnityEngine.SceneManagement;
 public class MissionSceneLoader : MonoBehaviour
 {
     public CoinUIManager coinUIManager; // Inspector에서 연결할 예정
+    public GameObject loadButton;
+    public GameObject unloadButton;
+    public GameObject returnButton; // 되돌아가기 버튼 (미션 씬에서만 표시)
+    
+    public GameObject uiTerrain;
 
     void Start()
     {
-        // 자동으로 CoinUIManager 찾기 (보조용)
         if (coinUIManager == null)
         {
             coinUIManager = FindObjectOfType<CoinUIManager>();
@@ -15,6 +19,21 @@ public class MissionSceneLoader : MonoBehaviour
             {
                 Debug.LogError("CoinUIManager가 씬에 존재하지 않습니다!");
             }
+        }
+
+        // 씬 상태 확인해서 버튼 조정
+        if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+        {
+            if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
+
+            // 미션 씬 올라와 있는 상태면 load/unload 숨기고 되돌아가기 버튼 표시
+            if (loadButton != null) loadButton.SetActive(false);
+            if (unloadButton != null) unloadButton.SetActive(false);
+            if (returnButton != null) returnButton.SetActive(true);
+        }
+        else
+        {
+            if (returnButton != null) returnButton.SetActive(false);
         }
     }
 
@@ -29,8 +48,24 @@ public class MissionSceneLoader : MonoBehaviour
         if (coinUIManager.HasEnoughCoins())
         {
             coinUIManager.SubtractCoinsForMission();
-            SceneManager.LoadScene("MissionBasketballScene", LoadSceneMode.Additive);
-            Debug.Log("미션 씬 로드 및 코인 차감 완료");
+
+            // 로드할 씬이 이미 로드되어 있지 않다면 추가
+            if (!SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+            {
+                SceneManager.LoadScene("MissionBasketballScene", LoadSceneMode.Additive);
+                Debug.Log("미션 씬 로드 및 코인 차감 완료");
+
+                if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
+
+                // Load/Unload 버튼 숨기고 Return 버튼 표시
+                if (loadButton != null) loadButton.SetActive(false);
+                if (unloadButton != null) unloadButton.SetActive(false);
+                if (returnButton != null) returnButton.SetActive(true);
+            }
+            else
+            {
+                Debug.Log("이미 미션 씬이 로드되어 있습니다.");
+            }
         }
         else
         {
@@ -40,6 +75,25 @@ public class MissionSceneLoader : MonoBehaviour
 
     public void UnloadMissionScene()
     {
-        SceneManager.UnloadSceneAsync("MissionBasketballScene");
+        // 버튼만 숨김
+        if (loadButton != null) loadButton.SetActive(false);
+        if (unloadButton != null) unloadButton.SetActive(false);
+    }
+
+    public void ReturnToUI()
+    {
+        // 되돌아가기: 미션 씬만 언로드
+        if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+        {
+            SceneManager.UnloadSceneAsync("MissionBasketballScene");
+            if (uiTerrain != null) uiTerrain.SetActive(true); // ui씬의 terrain 활성화
+
+            // 다시 Load/Unload 버튼 표시
+            if (loadButton != null) loadButton.SetActive(true);
+            if (unloadButton != null) unloadButton.SetActive(true);
+            if (returnButton != null) returnButton.SetActive(false);
+
+            Debug.Log("미션 씬에서 UI 씬으로 돌아옴");
+        }
     }
 }
