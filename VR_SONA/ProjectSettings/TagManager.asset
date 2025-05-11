@@ -7,6 +7,7 @@ TagManager:
   - Basketball
   - GoalTriggerBottom
   - GoalTriggerTop
+  - ShowButtonTile
   layers:
   - Default
   - TransparentFX
