@@ -7,6 +7,8 @@ public class MissionSceneLoader : MonoBehaviour
     public GameObject loadButton;
     public GameObject unloadButton;
     public GameObject returnButton; // 되돌아가기 버튼 (미션 씬에서만 표시)
+    
+    public GameObject uiTerrain;
 
     void Start()
     {
@@ -22,6 +24,8 @@ public class MissionSceneLoader : MonoBehaviour
         // 씬 상태 확인해서 버튼 조정
         if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
         {
+            if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
+
             // 미션 씬 올라와 있는 상태면 load/unload 숨기고 되돌아가기 버튼 표시
             if (loadButton != null) loadButton.SetActive(false);
             if (unloadButton != null) unloadButton.SetActive(false);
@@ -50,6 +54,8 @@ public class MissionSceneLoader : MonoBehaviour
             {
                 SceneManager.LoadScene("MissionBasketballScene", LoadSceneMode.Additive);
                 Debug.Log("미션 씬 로드 및 코인 차감 완료");
+
+                if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
 
                 // Load/Unload 버튼 숨기고 Return 버튼 표시
                 if (loadButton != null) loadButton.SetActive(false);
@@ -80,6 +86,7 @@ public class MissionSceneLoader : MonoBehaviour
         if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
         {
             SceneManager.UnloadSceneAsync("MissionBasketballScene");
+            if (uiTerrain != null) uiTerrain.SetActive(true); // ui씬의 terrain 활성화
 
             // 다시 Load/Unload 버튼 표시
             if (loadButton != null) loadButton.SetActive(true);
