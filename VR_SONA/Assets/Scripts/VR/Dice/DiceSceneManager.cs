@@ -75,38 +75,43 @@ public class DiceSceneManager : MonoBehaviour
             return;
         }
         
-        // 주사위의 현재 속도 값들을 한 번만 가져오기
+        // 주사위의 현재 속도 값들
         float velocity = diceRigidbody.velocity.magnitude;
         float angularVelocity = diceRigidbody.angularVelocity.magnitude;
         
         // 주사위가 움직이기 시작했는데 아직 결과가 표시되어 있다면
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {
-            // 이전 결과 숨기기
-            if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
+            // 이전 결과 완전히 초기화
+            if (resultUI != null && resultUI.resultPanel != null)
             {
                 resultUI.resultPanel.SetActive(false);
-                Debug.Log("주사위가 다시 움직이기 시작 - 결과 초기화");
+                Debug.Log("이전 결과 UI 숨김");
             }
+            
+            // 중요: 모든 상태 플래그 초기화
             isResultDisplayed = false;
+            resultShown = false;
+            stoppedTimer = 0f;
+            Debug.Log("주사위가 다시 움직이기 시작 - 모든 상태 초기화");
         }
 
-        // 속도 변화가 클 때만 로그 출력 (성능 최적화)
-        if (Time.frameCount % 60 == 0) // 약 1초마다
+        // 디버깅을 위한 상태 로그 (매 초마다)
+        if (Time.frameCount % 60 == 0)
         {
-            Debug.Log($"주사위 상태 - 속도: {velocity:F3}, 회전속도: {angularVelocity:F3}, isRolling: {isRolling}");
+            Debug.Log($"[상태] 속도: {velocity:F3}, 회전: {angularVelocity:F3}, " +
+                    $"isRolling: {isRolling}, resultShown: {resultShown}, " +
+                    $"isResultDisplayed: {isResultDisplayed}");
         }
         
-        // 주사위가 멈췄는지 확인
+        // 주사위가 멈췄는지 확인 (임계값 조정)
         bool isStill = velocity < stoppedVelocityThreshold && angularVelocity < stoppedAngularThreshold;
         
         if (isStill && isRolling)
         {
-            // 멈춘 시간 누적
             stoppedTimer += Time.deltaTime;
             
-            // 정지 상태 로그 (0.2초마다)
-            if (stoppedTimer % 0.2f < Time.deltaTime)
+            if (stoppedTimer % 0.5f < Time.deltaTime) // 0.5초마다 로그
             {
                 Debug.Log($"주사위 정지 중... ({stoppedTimer:F1}초 / {settleTime}초 필요)");
             }
@@ -123,19 +128,18 @@ public class DiceSceneManager : MonoBehaviour
             // 주사위가 움직이기 시작했을 때
             if (!isRolling)
             {
-                Debug.Log("주사위가 처음으로 움직이기 시작함");
+                Debug.Log("주사위가 움직이기 시작함");
                 isRolling = true;
+                
+                // 이전 결과 즉시 숨기기
+                if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
+                {
+                    resultUI.resultPanel.SetActive(false);
+                    Debug.Log("이전 결과 UI 즉시 숨김");
+                }
             }
             
             stoppedTimer = 0f;
-            resultShown = false;
-            
-            // 이전 결과 UI 숨기기
-            if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
-            {
-                resultUI.resultPanel.SetActive(false);
-                Debug.Log("이전 결과 UI 숨김");
-            }
         }
     }
     
