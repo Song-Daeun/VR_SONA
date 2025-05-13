@@ -15,13 +15,13 @@ public class DiceResultDetector : MonoBehaviour
         public Transform faceObject;    
     }
     
-    [Header("주사위 숫자 설정")]
+    [Header("Dice Numbers Settings")]
     public DiceNumber[] diceNumbers = new DiceNumber[8];
     
-    [Header("카메라 참조")]
+    [Header("Camera Reference")]
     public Camera playerCamera; // 플레이어의 시점 카메라
     
-    [Header("디버깅 설정")]
+    [Header("Debugging Settings")]
     public bool showDebugLogs = true;    // 디버그 로그 표시 여부
     public bool drawDebugGizmos = true;  // Scene 뷰에서 기즈모 표시 여부
     

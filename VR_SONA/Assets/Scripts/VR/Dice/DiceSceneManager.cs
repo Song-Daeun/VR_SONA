@@ -64,6 +64,11 @@ public class DiceSceneManager : MonoBehaviour
         float velocity = diceRigidbody.velocity.magnitude;
         float angularVelocity = diceRigidbody.angularVelocity.magnitude;
         
+        if (showDebugLogs && Time.frameCount % 60 == 0) // 60프레임마다 로그 출력
+        {
+            Debug.Log($"Dice Velocity: {velocity}, Angular: {angularVelocity}, isRolling: {isRolling}, resultShown: {resultShown}");
+        }
+
         // 주사위가 움직이면 이전 화면 언로드
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {

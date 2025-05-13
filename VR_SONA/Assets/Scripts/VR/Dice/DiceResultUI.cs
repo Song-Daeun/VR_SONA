@@ -21,6 +21,7 @@ public class DiceResultUI : MonoBehaviour
     
     private void Start()
     {
+        Debug.Log("DiceResultUI Start called");
         // 시작할 때 패널 숨기기
         if (resultPanel != null)
         {
@@ -58,6 +59,7 @@ public class DiceResultUI : MonoBehaviour
         if (resultPanel != null)
         {
             resultPanel.SetActive(true);
+            // yield return StartCoroutine(FadeInAnimation());
         }
         else
         {
@@ -80,7 +82,7 @@ public class DiceResultUI : MonoBehaviour
         {
             resultMessageText.text = "Dice Result :";
         }
-        yield return null;
+        yield return new WaitForSeconds(displayDuration);
     }
     
     private IEnumerator FadeInAnimation()

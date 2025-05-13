@@ -70,8 +70,9 @@ public class AutoCameraRender : MonoBehaviour
             return;
         }
         
-        // Canvas를 카메라 앞 적절한 위치에 배치
-        Vector3 cameraForward = cameraTransform.forward;
-        float distance = 2.0f; // 카메라로부터의 거리
+        // // Canvas를 카메라 앞 적절한 위치에 배치
+        // Vector3 cameraForward = cameraTransform.forward;
+        // float distance = 2.0f; // 카메라로부터의 거리
+
     }
 }
