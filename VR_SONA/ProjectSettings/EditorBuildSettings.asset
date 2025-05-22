@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DiceScene.unity
     guid: d6e9c579c14c54a4aaba3c3212f777b2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UIScene.unity
     guid: f102547791f04d84384f187b53223a35
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MissionBasketballScene.unity
     guid: e6efda5f24580f44e8172884c8abac32
   - enabled: 1
