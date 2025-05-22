@@ -5,38 +5,41 @@ using UnityEngine;
 public class DiceSceneManager : MonoBehaviour
 {
     [Header("Reference")]
-    public Rigidbody diceRigidbody;              // 주사위 Rigidbody
-    public DiceResultDetector diceDetector;      // 결과 감지
-    public DiceResultUI resultUI;                // 결과 표시 UI
-    
-    [Header("Result Detection settings")]
+    public Rigidbody diceRigidbody;
+    public DiceResultDetector diceDetector;
+    public DiceResultUI resultUI;
+
+    [Header("Result Detection Settings")]
     public float stoppedVelocityThreshold = 0.1f;
     public float stoppedAngularThreshold = 0.1f;
-    public float settleTime = 1.0f;              // 멈춘 상태 유지
-    
+    public float settleTime = 1.0f;
+
+    [Header("Game Flow Settings")]
+    public float uiDisplayDelay = 1.0f;
+    public float moveCompleteDelay = 2.0f;
+
     [Header("Debugging")]
-    public bool showDebugLogs = true;
-    public bool drawDebugVisuals = true;
-    
+    public bool showDebugLogs = false;
+    public bool drawDebugVisuals = false;
+
     private bool isRolling = false;
     private bool resultShown = false;
     private float stoppedTimer = 0f;
     private Vector3 diceInitialPosition;
     private Quaternion diceInitialRotation;
 
-    private bool isResultDisplayed = false; // 결과 표시 여부
-    private float minVelocityThreshold = 0.1f; // 움직임 감지 임계값
-    
+    private bool isResultDisplayed = false;
+    private float minVelocityThreshold = 0.1f;
+    private bool isProcessingResult = false;
+
     private void Start()
     {
-        // 주사위 초기 위치 저장
         if (diceRigidbody != null)
         {
             diceInitialPosition = diceRigidbody.transform.position;
             diceInitialRotation = diceRigidbody.transform.rotation;
         }
-        
-        // 카메라 설정 확인
+
         if (diceDetector != null && diceDetector.playerCamera == null)
         {
             Camera mainCamera = Camera.main;
@@ -45,53 +48,36 @@ public class DiceSceneManager : MonoBehaviour
                 diceDetector.playerCamera = mainCamera;
             }
         }
-        
-        if (showDebugLogs)
-        {
-            Debug.Log("DiceResultManager Initialization Complete");
-        }
     }
-    
+
     private void Update()
     {
-        // 실행확인    
         CheckDiceState();
     }
-    
+
     private void CheckDiceState()
-    {       
-        // 주사위의 현재 속도 값
+    {
         float velocity = diceRigidbody.velocity.magnitude;
         float angularVelocity = diceRigidbody.angularVelocity.magnitude;
-        
-        if (showDebugLogs && Time.frameCount % 60 == 0) // 60프레임마다 로그 출력
-        {
-            Debug.Log($"Dice Velocity: {velocity}, Angular: {angularVelocity}, isRolling: {isRolling}, resultShown: {resultShown}");
-        }
 
-        // 주사위가 움직이면 이전 화면 언로드
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {
-            // 이전 결과 초기화
             if (resultUI != null && resultUI.resultPanel != null)
             {
                 resultUI.resultPanel.SetActive(false);
             }
-            
-            // 모든 상태 플래그 초기화
+
             isResultDisplayed = false;
             resultShown = false;
             stoppedTimer = 0f;
+            isProcessingResult = false;
         }
-        
-        // 주사위가 멈췄는지 확인 (임계값 조정)
+
         bool isStill = velocity < stoppedVelocityThreshold && angularVelocity < stoppedAngularThreshold;
-        
+
         if (isStill && isRolling)
         {
             stoppedTimer += Time.deltaTime;
-      
-            // 결과 계산
             if (stoppedTimer >= settleTime && !resultShown)
             {
                 ShowDiceResult();
@@ -99,116 +85,159 @@ public class DiceSceneManager : MonoBehaviour
         }
         else if (!isStill)
         {
-            // 주사위가 움직이기 시작했을 때
             if (!isRolling)
             {
                 isRolling = true;
-                
-                // 이전 결과 숨기기
+
                 if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
                 {
                     resultUI.resultPanel.SetActive(false);
                 }
             }
-            
+
             stoppedTimer = 0f;
         }
     }
-    
+
     private void ShowDiceResult()
     {
-        
-        // 이미 결과가 표시되었다면 실행하지 않음
-        if (isResultDisplayed)
-        {
-            Debug.Log("Results already displayed");
-            return;
-        }
-        
-        if (diceDetector == null)
-        {
-            Debug.LogError("diceDetector is null!");
-            return;
-        }
-        
-        if (resultUI == null)
-        {
-            Debug.LogError("resultUI is null!");
-            return;
-        }
-        
-        // 결과 감지
+        if (diceDetector == null || resultUI == null) return;
+
         int result = diceDetector.GetVisibleNumber();
-        
-        // UI에 결과 표시
         resultUI.ShowResult(result);
-        
-        // 상태 업데이트
+
         resultShown = true;
         isRolling = false;
-        isResultDisplayed = true; 
-        
-        // 결과 확정 이벤트 발생
+        isResultDisplayed = true;
+
         OnDiceResultConfirmed(result);
     }
-    
-    private void OnDiceResultConfirmed(int result)
+
+    public void OnDiceResultDetected(int result)
     {
-        // 나중에 게임 로직 확장 시 사용 (플레이어 이동, 점수 계산)
-        if (showDebugLogs)
-        {
-            // Debug.Log($"Prepare to execute game logic for dice result {result}");
-        }
+        isProcessingResult = true;
+        StartCoroutine(HandleDiceResultFlow(result));
     }
-    
-    // 주사위 초기 위치로 리셋
-    public void ResetDice()
+
+    private IEnumerator HandleDiceResultFlow(int result)
     {
-        if (diceRigidbody == null) return;
-        
-        // 물리 상태 리셋
-        diceRigidbody.velocity = Vector3.zero;
-        diceRigidbody.angularVelocity = Vector3.zero;
-        
-        // 위치와 회전 리셋
-        diceRigidbody.transform.position = diceInitialPosition;
-        diceRigidbody.transform.rotation = diceInitialRotation;
-        
-        // 상태 초기화
-        isRolling = false;
-        resultShown = false;
-        stoppedTimer = 0f;
-        
-        if (showDebugLogs)
+        if (resultUI != null)
         {
-            Debug.Log("주사위가 초기 위치로 리셋됨");
-        }
-    }
-    
-    // Scene 뷰에서 디버그 정보 표시
-    private void OnDrawGizmos()
-    {
-        if (!drawDebugVisuals || diceRigidbody == null) return;
-        
-        // 주사위 속력 표시
-        Gizmos.color = Color.cyan;
-        Vector3 dicePos = diceRigidbody.transform.position;
-        Gizmos.DrawRay(dicePos, diceRigidbody.velocity);
-        
-        // 정지 상태 표시
-        if (isRolling)
-        {
-            Gizmos.color = Color.yellow;
-        }
-        else if (resultShown)
-        {
-            Gizmos.color = Color.green;
+            resultUI.ShowResult(result, null);
         }
         else
         {
-            Gizmos.color = Color.gray;
+            yield break;
         }
-        
+
+        float totalUITime = resultUI.fadeInDuration + 0.5f;
+        yield return new WaitForSeconds(totalUITime + uiDisplayDelay);
+
+        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
+        if (playerManager != null)
+        {
+            playerManager.MovePlayer(result);
+        }
+
+        float estimatedMoveTime = playerManager != null ? playerManager.moveDuration : 0.5f;
+        yield return new WaitForSeconds(estimatedMoveTime + moveCompleteDelay);
+
+        DiceManager diceManager = FindObjectOfType<DiceManager>();
+        if (diceManager != null)
+        {
+            diceManager.OnBackButtonClicked();
+        }
+
+        isProcessingResult = false;
+    }
+
+    private void OnDiceResultConfirmed(int result)
+    {
+        // 결과 확정 이후 로직 훅
+    }
+
+    public void ResetDice()
+    {
+        if (diceRigidbody == null) return;
+
+        diceRigidbody.velocity = Vector3.zero;
+        diceRigidbody.angularVelocity = Vector3.zero;
+
+        diceRigidbody.transform.position = diceInitialPosition;
+        diceRigidbody.transform.rotation = diceInitialRotation;
+
+        isRolling = false;
+        resultShown = false;
+        stoppedTimer = 0f;
+        isResultDisplayed = false;
+        isProcessingResult = false;
+
+        if (resultUI != null && resultUI.resultPanel != null)
+        {
+            resultUI.resultPanel.SetActive(false);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!drawDebugVisuals || diceRigidbody == null) return;
+
+        Vector3 dicePos = diceRigidbody.transform.position;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(dicePos, diceRigidbody.velocity);
+
+        if (isProcessingResult)
+            Gizmos.color = Color.magenta;
+        else if (isRolling)
+            Gizmos.color = Color.yellow;
+        else if (resultShown)
+            Gizmos.color = Color.green;
+        else
+            Gizmos.color = Color.gray;
+
         Gizmos.DrawWireSphere(dicePos, 0.3f);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireCube(diceInitialPosition, Vector3.one * 0.1f);
+
+#if UNITY_EDITOR
+        string statusText = "";
+        if (isProcessingResult) statusText = "Processing Result";
+        else if (isRolling) statusText = "Rolling";
+        else if (resultShown) statusText = "Result Shown";
+        else statusText = "Waiting";
+
+        UnityEditor.Handles.color = Color.white;
+        UnityEditor.Handles.Label(dicePos + Vector3.up * 0.5f, $"Dice Status: {statusText}");
+
+        float velocity = diceRigidbody.velocity.magnitude;
+        float angularVel = diceRigidbody.angularVelocity.magnitude;
+        UnityEditor.Handles.Label(dicePos + Vector3.up * 0.7f, $"V: {velocity:F2} | AV: {angularVel:F2}");
+#endif
+    }
+
+    public bool IsProcessingResult() => isProcessingResult;
+    public bool IsRolling() => isRolling;
+    public bool IsResultShown() => resultShown;
+
+    public void ForceStopResultProcessing()
+    {
+        StopAllCoroutines();
+        isProcessingResult = false;
+
+        if (resultUI != null && resultUI.resultPanel != null)
+        {
+            resultUI.resultPanel.SetActive(false);
+        }
+    }
+
+    public void SetUIDisplayDelay(float delay)
+    {
+        uiDisplayDelay = Mathf.Max(0f, delay);
+    }
+
+    public void SetMoveCompleteDelay(float delay)
+    {
+        moveCompleteDelay = Mathf.Max(0f, delay);
     }
 }

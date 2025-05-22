@@ -10,135 +10,129 @@ public class DiceResultUI : MonoBehaviour
     public GameObject resultPanel;           
     public TextMeshProUGUI resultNumberText;
     public TextMeshProUGUI resultMessageText;
-    // public Button replayButton;             // 다시 굴리기 버튼
-    public Button backButton;               // 뒤로가기 버튼
+    public Button backButton;               
     
     [Header("Animation Settings")]
     public float fadeInDuration = 0.5f;     // 나타나는 시간
-    public float displayDuration = 5.0f;    // 표시 유지 시간
+    public float displayDuration = 3.0f;    // 표시 유지 시간
     
+    private System.Action onResultDisplayComplete;
     private Coroutine displayCoroutine;
     
     private void Start()
-    {
-        Debug.Log("DiceResultUI Start called");
+    {      
         // 시작할 때 패널 숨기기
         if (resultPanel != null)
         {
             resultPanel.SetActive(false);
         }
         
-        // 다시 굴리기 버튼 이벤트 연결
-        // if (replayButton != null)
-        // {
-        //     replayButton.onClick.AddListener(OnReplayClicked);
-        // }
-        
         if (backButton != null)
         {
             backButton.onClick.AddListener(OnBackClicked);
         }
     }
-    
-    // 주사위 결과 표시
+
     public void ShowResult(int diceNumber)
-    {        
+    {
+        ShowResult(diceNumber, null);
+    }
+    
+    public void ShowResult(int diceNumber, System.Action onComplete)
+    {
+        onResultDisplayComplete = onComplete;
+        
         // 이전 표시가 진행 중이면 멈추기
         if (displayCoroutine != null)
         {
             StopCoroutine(displayCoroutine);
         }
-        
-        // 결과 표시
         displayCoroutine = StartCoroutine(DisplayResultCoroutine(diceNumber, Color.white));
     }
 
     private IEnumerator DisplayResultCoroutine(int diceNumber, Color numberColor)
     {
-        // 패널 활성화
         if (resultPanel != null)
         {
             resultPanel.SetActive(true);
-            // yield return StartCoroutine(FadeInAnimation());
+            yield return StartCoroutine(FadeInAnimation());
         }
         else
         {
-            // resultpanel이 null값이면면 코루틴 종료
+            Debug.LogError("resultPanel이 null입니다!");
             yield break; 
         }
         
-        // 결과 텍스트 설정
-        if (resultNumberText != null)
-        {
-            resultNumberText.text = diceNumber.ToString();
-            resultNumberText.color = numberColor; 
-        }
-        else
-        {
-            Debug.LogError("resultNumberText is null!");
-        }
+        resultNumberText.text = diceNumber.ToString();
+        resultNumberText.color = numberColor; 
         
         if (resultMessageText != null)
         {
-            resultMessageText.text = "Dice Result :";
+            resultMessageText.text = "Dice Result:";
         }
-        yield return new WaitForSeconds(displayDuration);
+        
+        yield return new WaitForSeconds(0.5f);
+        
+        onResultDisplayComplete?.Invoke();
+
+        yield return new WaitForSeconds(displayDuration - 0.5f);
     }
     
     private IEnumerator FadeInAnimation()
     {
-        // 간단한 페이드 인 애니메이션
         CanvasGroup canvasGroup = resultPanel.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = resultPanel.AddComponent<CanvasGroup>();
         }
         
+        canvasGroup.alpha = 0f;
         float elapsedTime = 0f;
+        
         while (elapsedTime < fadeInDuration)
         {
             elapsedTime += Time.deltaTime;
             canvasGroup.alpha = Mathf.Clamp01(elapsedTime / fadeInDuration);
-            yield return null;
+            yield return null; 
         }
-        
         canvasGroup.alpha = 1f;
     }
     
-    private IEnumerator FadeOutAnimation()
-    {
-        // 페이드 아웃 애니메이션
-        CanvasGroup canvasGroup = resultPanel.GetComponent<CanvasGroup>();
-        if (canvasGroup == null) yield break;
-        
-        float elapsedTime = 0f;
-        while (elapsedTime < fadeInDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Clamp01(1f - (elapsedTime / fadeInDuration));
-            yield return null;
-        }
-        
-        resultPanel.SetActive(false);
-    }
-    
-    // private void OnReplayClicked()
+    // private IEnumerator FadeOutAnimation()
     // {
-    //     // 다시 굴리기 버튼이 클릭되었을 때
-    //     // 결과 패널 숨기기
-    //     if (displayCoroutine != null)
+    //     // 페이드 아웃 애니메이션 
+    //     CanvasGroup canvasGroup = resultPanel.GetComponent<CanvasGroup>();
+    //     if (canvasGroup == null) yield break;
+        
+    //     float elapsedTime = 0f;
+    //     while (elapsedTime < fadeInDuration)
     //     {
-    //         StopCoroutine(displayCoroutine);
+    //         elapsedTime += Time.deltaTime;
+    //         canvasGroup.alpha = Mathf.Clamp01(1f - (elapsedTime / fadeInDuration));
+    //         yield return null;
     //     }
-        
+    //     canvasGroup.alpha = 0f;
     //     resultPanel.SetActive(false);
-        
-    //     // 주사위를 초기 위치로 리셋하는 로직 호출
-    //     FindObjectOfType<DiceSceneManager>()?.ResetDice();
     // }
     
     private void OnBackClicked()
     {
+        // 뒤로가기 버튼 클릭시 DiceManager의 뒤로가기 함수 호출
         FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
     }
+    
+    // // 수동으로 패널을 숨기는 함수
+    // public void HideResult()
+    // {
+    //     if (displayCoroutine != null)
+    //     {
+    //         StopCoroutine(displayCoroutine);
+    //         displayCoroutine = null;
+    //     }
+        
+    //     if (resultPanel != null)
+    //     {
+    //         StartCoroutine(FadeOutAnimation());
+    //     }
+    // }
 }
