@@ -57,7 +57,7 @@ public class DiceManager : MonoBehaviour
         Vector3 cameraPosition = playerTransform.position; 
         Vector3 cameraForward = playerTransform.forward; 
         
-        // DiceScene 구조를 그대로 로드하기 위해 빈 오브젝트 생성
+        // DiceScene 로드
         GameObject container = new GameObject("DiceSceneContainer");
         
         foreach (var rootObject in diceScene.GetRootGameObjects())

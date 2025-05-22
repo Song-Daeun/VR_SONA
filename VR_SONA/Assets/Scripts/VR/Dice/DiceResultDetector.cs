@@ -17,13 +17,21 @@ public class DiceResultDetector : MonoBehaviour
     
     [Header("Dice Numbers Settings")]
     public DiceNumber[] diceNumbers = new DiceNumber[8];
+
+    [Header("Physics Settings")]
+    public Rigidbody diceRigidbody;               
+    public float stopThreshold = 0.1f;         
+    public float stableTime = 1.0f;
     
     [Header("Camera Reference")]
     public Camera playerCamera; // 플레이어의 시점 카메라
     
     [Header("Debugging Settings")]
-    public bool showDebugLogs = true;    // 디버그 로그 표시 여부
-    public bool drawDebugGizmos = true;  // Scene 뷰에서 기즈모 표시 여부
+    public bool showDebugLogs = true;    
+    public bool drawDebugGizmos = true;
+
+    private bool resultConfirmed = false;      
+    private int lastResult = -1;               
     
     private void Start()
     {
@@ -45,6 +53,70 @@ public class DiceResultDetector : MonoBehaviour
             {
                 Debug.LogWarning("Main camera not found.");
             }
+        }
+
+        StartCoroutine(WatchDiceUntilStop());
+    }
+
+    private IEnumerator WatchDiceUntilStop()
+    {
+        if (diceRigidbody == null)
+        {
+            Debug.LogError("🎲 Rigidbody not assigned.");
+            yield break;
+        }
+
+        float timer = 0f;
+
+        while (true)
+        {
+            if (diceRigidbody.velocity.magnitude < stopThreshold &&
+                diceRigidbody.angularVelocity.magnitude < stopThreshold)
+            {
+                timer += Time.deltaTime;
+
+                if (timer >= stableTime)
+                    break;
+            }
+            else
+            {
+                timer = 0f;
+            }
+
+            yield return null;
+        }
+
+        if (resultConfirmed) yield break;
+
+        int result = GetVisibleNumber();
+
+        if (result == lastResult)
+        {
+            Debug.Log("같은 주사위 결과가 반복됨. 처리 안 함.");
+            yield break;
+        }
+
+        resultConfirmed = true;
+        lastResult = result;
+
+        Debug.Log($"🎲 주사위 결과: {result}");
+
+        // ✅ PlayerManager 호출
+        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
+        if (playerManager != null)
+        {
+            playerManager.MovePlayer(result);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerManager가 씬에 없음.");
+        }
+
+        // ✅ DiceManager 호출
+        DiceManager diceManager = FindObjectOfType<DiceManager>();
+        if (diceManager != null)
+        {
+            diceManager.OnBackButtonClicked();
         }
     }
 
@@ -158,50 +230,6 @@ public class DiceResultDetector : MonoBehaviour
         // Debug.Log($"<color=green>바닥에 닿은 면: {bottomNumber} (Y값: {lowestY:F3})</color>");
         return bottomNumber;
     }
-    
-    // 디버깅 함수들
-    // [ContextMenu("Test Current Dice Result")]
-    // public void TestCurrentDiceResult()
-    // {
-    //     Debug.Log("=== 현재 주사위 결과 테스트 ===");
-        
-    //     int result = GetVisibleNumber();
-        
-    //     Debug.Log($"<color=yellow>주사위 결과: {result}</color>");
-    //     Debug.Log("==========================================");
-    // }
-    
-    // [ContextMenu("Debug All Face Positions")]
-    // public void DebugAllFacePositions()
-    // {
-    //     if (diceNumbers == null || diceNumbers.Length == 0)
-    //     {
-    //         Debug.LogError("주사위 면들이 초기화되지 않았습니다.");
-    //         return;
-    //     }
-        
-    //     Debug.Log("=== 주사위 면 매핑 디버깅 정보 ===");
-    //     Debug.Log($"주사위 현재 위치: {transform.position}");
-    //     Debug.Log($"주사위 현재 회전: {transform.eulerAngles}");
-        
-    //     for (int i = 0; i < diceNumbers.Length; i++)
-    //     {
-    //         var face = diceNumbers[i];
-    //         if (face.faceObject != null)
-    //         {
-    //             Debug.Log($"숫자 {face.number}: " +
-    //                      $"오브젝트={face.faceObject.name}, " +
-    //                      $"월드위치={face.faceObject.position}, " +
-    //                      $"Y값={face.faceObject.position.y:F3}");
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning($"숫자 {face.number}: 오브젝트가 연결되지 않았습니다!");
-    //         }
-    //     }
-        
-    //     Debug.Log("================================");
-    // }
     
     // Scene 뷰에서 기즈모로 시각화
     private void OnDrawGizmos()
