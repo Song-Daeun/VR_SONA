@@ -8,6 +8,7 @@ TagManager:
   - GoalTriggerBottom
   - GoalTriggerTop
   - ShowButtonTile
+  - EndPoint
   layers:
   - Default
   - TransparentFX
