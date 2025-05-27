@@ -10,17 +10,37 @@ public class WaterJetShooter : MonoBehaviour
     public float forceIncrement = 1f;
     public int maxClicks = 20;
     public float spawnInterval = 0.05f;
-    public int dropletsPerShot = 1; // 항상 같은 개수만 생성
+    public int dropletsPerShot = 1;
+
+    public float decayTime = 0.05f; // 텀 기준 시간 (0.05초 이상 쉬면 힘 급감)
+    private float lastPressTime = 0f;
 
     private int currentClick = 0;
     private bool isFiring = false;
 
+    private float currentClickDecreaseTimer = 0f;
+
     void Update()
     {
+        float interval = Time.time - lastPressTime;
+
+        // 텀이 decayTime보다 길면 힘 급감시키기
+        if (currentClick > 0 && interval > decayTime)
+        {
+            // 즉시 감소량: 현재 힘의 절반 이상으로 크게 깎기 (조절 가능)
+            int decreaseAmount = Mathf.Max(1, currentClick / 2);
+            currentClick -= decreaseAmount;
+            if (currentClick < 0) currentClick = 0;
+
+            // 감소 후 바로 시간 리셋 (또는 느리게 깎으려면 이 줄 주석처리)
+            lastPressTime = Time.time;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && currentClick < maxClicks && !isFiring)
         {
             StartCoroutine(FireWaterJet(currentClick));
             currentClick++;
+            lastPressTime = Time.time;
         }
     }
 
@@ -37,8 +57,13 @@ public class WaterJetShooter : MonoBehaviour
 
             if (rb != null)
             {
-                Vector3 launchDir = (firePoint.forward + firePoint.up).normalized;
-                rb.AddForce(launchDir * currentForce, ForceMode.Impulse);
+                float fixedVerticalForce = 5f;
+                Vector3 forwardDir = firePoint.forward.normalized;
+
+                Vector3 forceVector = forwardDir * currentForce;
+                forceVector.y = fixedVerticalForce;
+
+                rb.AddForce(forceVector, ForceMode.Impulse);
             }
 
             yield return new WaitForSeconds(spawnInterval);
