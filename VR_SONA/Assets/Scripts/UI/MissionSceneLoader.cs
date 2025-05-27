@@ -11,6 +11,7 @@ public class MissionSceneLoader : MonoBehaviour
     
     public GameObject uiTerrain;
     public GameObject missionMessageText;
+    private bool missionTriggered = false;
 
     void Start()
     {
@@ -41,6 +42,35 @@ public class MissionSceneLoader : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (missionTriggered &&
+            !SceneManager.GetSceneByName("MissionBasketballScene").isLoaded &&
+            GameManager.MissionResult.HasValue)
+        {
+            bool result = GameManager.MissionResult.Value;
+
+            if (result == true)
+            {
+                Debug.Log("✅ 미션 성공 - 건물 생성");
+
+                Vector2Int tile = PlayerState.LastEnteredTileCoords;
+
+                GameObject tileGO = BingoBoard.Instance.GetTileGameObject(tile.x, tile.y);
+                BingoBoard.Instance.SetBuildingPrefabFromTile(tileGO, tile.x, tile.y);
+                BingoBoard.Instance.OnMissionSuccess(tile.x, tile.y); // ← 이거 성공일 때만 실행!
+            }
+            else
+            {
+                Debug.Log("❌ 미션 실패 - 건물 생성 안 함");
+            }
+
+            // 상태 초기화
+            GameManager.MissionResult = null;
+            missionTriggered = false;
+        }
+    }
+
     public void LoadMissionScene()
     {
         if (coinUIManager == null)
@@ -53,21 +83,22 @@ public class MissionSceneLoader : MonoBehaviour
         {
             coinUIManager.SubtractCoinsForMission();
 
-            // 로드할 씬이 이미 로드되어 있지 않다면 추가
+            // 여기서 플레이어 타일 좌표를 저장
+            PlayerState.LastEnteredTileCoords = BingoBoard.Instance.GetPlayerTileCoords();
+            Debug.Log($"🧭 현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
+
             if (!SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
             {
                 SceneManager.LoadScene("MissionBasketballScene", LoadSceneMode.Additive);
                 Debug.Log("미션 씬 로드 및 코인 차감 완료");
 
-                if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
+                missionTriggered = true;
 
-                // Load/Unload 버튼 숨기고 Return 버튼 표시
+                if (uiTerrain != null) uiTerrain.SetActive(false);
                 if (loadButton != null) loadButton.SetActive(false);
                 if (unloadButton != null) unloadButton.SetActive(false);
                 if (returnButton != null) returnButton.SetActive(true);
-
                 if (missionMessageText != null) missionMessageText.SetActive(false);
-
             }
             else
             {
@@ -79,6 +110,7 @@ public class MissionSceneLoader : MonoBehaviour
             Debug.Log("코인이 부족하여 미션 씬을 로드할 수 없습니다");
         }
     }
+
 
     public void UnloadMissionScene()
     {
