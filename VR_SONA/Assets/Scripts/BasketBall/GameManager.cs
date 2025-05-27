@@ -7,9 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    // UIScene에 결과 전달할 정적 변수
+    public static bool? MissionResult = null;
+
     public TMP_Text gameStateText;
     public int goalCount = 0;
-    public int requiredGoals = 10;
+    public int requiredGoals = 0;
 
     private bool isGameEnded = false;
 
@@ -24,7 +27,6 @@ public class GameManager : MonoBehaviour
 
     public void AddGoal()
     {
-        // 득점은 언제든 받을 수 있음 → 성공 조건 먼저 검사
         goalCount++;
 
         if (!isGameEnded && goalCount >= requiredGoals)
@@ -35,15 +37,16 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(bool success)
     {
-        // 이미 성공했으면 실패로 덮지 않도록
         if (isGameEnded)
         {
-            // 성공 후 실패가 들어오는 걸 막기 위해 성공이면 무시
             if (success) return;
-            else return; // 실패도 이미 처리했으면 무시
+            else return;
         }
 
         isGameEnded = true;
+
+        // 결과 저장 (UIScene에서 읽을 수 있도록)
+        MissionResult = success;
 
         FindObjectOfType<GameBasketballTimer>()?.StopTimer();
 

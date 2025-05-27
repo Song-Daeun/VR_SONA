@@ -15213,18 +15213,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 01731519c681e5f45bc294844493d2b4, type: 3}
---- !u!114 &899478286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7983296447611080663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d59bd4799438adf4d9c4011e06cc83b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &900481458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32875,7 +32863,6 @@ GameObject:
   - component: {fileID: 5921766130522806984}
   - component: {fileID: 8487774166346411522}
   - component: {fileID: 7216991435791338297}
-  - component: {fileID: 899478286}
   - component: {fileID: 8487774166346411523}
   m_Layer: 0
   m_Name: Dice

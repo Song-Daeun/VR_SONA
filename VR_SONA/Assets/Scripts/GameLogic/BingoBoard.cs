@@ -14,9 +14,16 @@ public class BingoBoard : MonoBehaviour
     private Dictionary<GameObject, Vector2Int> tileToCoords = new Dictionary<GameObject, Vector2Int>();
     private Dictionary<Vector2Int, GameObject> coordToTile = new Dictionary<Vector2Int, GameObject>();
 
+    public static BingoBoard Instance { get; private set; }
+    
     void Start()
     {
         InitializeTilePositions();
+    }
+
+    void Awake()
+    {
+        Instance = this;
     }
 
     /// <summary>
@@ -144,7 +151,7 @@ public class BingoBoard : MonoBehaviour
 
         while (time < duration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             float t = time / duration;
             obj.transform.position = Vector3.Lerp(startPos, targetPos, Mathf.SmoothStep(0, 1, t));
             yield return null;
@@ -152,6 +159,19 @@ public class BingoBoard : MonoBehaviour
 
         obj.transform.position = targetPos;
     }
+
+    public GameObject GetTileGameObject(int x, int y)
+    {
+        Vector2Int coord = new Vector2Int(x, y);
+        if (coordToTile.ContainsKey(coord))
+        {
+            return coordToTile[coord];
+        }
+
+        Debug.LogWarning($"🚫 coordToTile에 ({x}, {y}) 좌표가 없음");
+        return null;
+    }
+
 
     /// <summary>
     /// 해당 타일의 국가 이름에 맞는 건물 프리팹을 자동으로 설정
