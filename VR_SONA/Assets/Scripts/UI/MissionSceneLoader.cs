@@ -50,25 +50,22 @@ public class MissionSceneLoader : MonoBehaviour
         {
             bool result = GameManager.MissionResult.Value;
 
-            if (result)
+            if (result == true)
             {
                 Debug.Log("✅ 미션 성공 - 건물 생성");
 
                 Vector2Int tile = PlayerState.LastEnteredTileCoords;
 
-                // ✅ 먼저 프리팹 설정
                 GameObject tileGO = BingoBoard.Instance.GetTileGameObject(tile.x, tile.y);
                 BingoBoard.Instance.SetBuildingPrefabFromTile(tileGO, tile.x, tile.y);
-
-                // ✅ 그 후 건물 생성
-                BingoBoard.Instance.OnMissionSuccess(tile.x, tile.y);
+                BingoBoard.Instance.OnMissionSuccess(tile.x, tile.y); // ← 이거 성공일 때만 실행!
             }
             else
             {
-                Debug.Log("❌ 미션 실패 - 아무 작업 없음");
+                Debug.Log("❌ 미션 실패 - 건물 생성 안 함");
             }
 
-            // ✅ 상태 초기화
+            // 상태 초기화
             GameManager.MissionResult = null;
             missionTriggered = false;
         }
@@ -86,7 +83,7 @@ public class MissionSceneLoader : MonoBehaviour
         {
             coinUIManager.SubtractCoinsForMission();
 
-            // 🔻 여기서 플레이어 타일 좌표를 저장
+            // 여기서 플레이어 타일 좌표를 저장
             PlayerState.LastEnteredTileCoords = BingoBoard.Instance.GetPlayerTileCoords();
             Debug.Log($"🧭 현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
 

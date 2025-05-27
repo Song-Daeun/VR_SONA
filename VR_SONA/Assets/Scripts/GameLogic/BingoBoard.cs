@@ -124,16 +124,16 @@ public class BingoBoard : MonoBehaviour
             return;
         }
 
-        // ✅ 건물 원래 위치 저장
+        // 건물 원래 위치 저장
         Vector3 targetPos = building.transform.position;
 
-        // ✅ 위에서 떨어지게 초기 위치 세팅
+        // 위에서 떨어지게 초기 위치 세팅
         building.transform.position = targetPos + Vector3.up * 10f;
 
-        // ✅ 비활성화 되어 있는 오브젝트 활성화
+        // 비활성화 되어 있는 오브젝트 활성화
         building.SetActive(true);
 
-        // 🔍 디버그 출력
+        // 디버그 출력
         Debug.Log($"🏗 기존 건물 오브젝트 활성화됨 → 위치: {targetPos}, 이름: {building.name}");
 
         // 떨어지는 연출
