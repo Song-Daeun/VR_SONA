@@ -48,17 +48,34 @@ public class DiceManager : MonoBehaviour
         yield return new WaitUntil(() => asyncLoad.isDone);
         
         Scene diceScene = SceneManager.GetSceneByName("DiceScene");
-        
+
+        // 수정중(주사위 결과값따라 플레이어 이동)
+        PlayerManager pm = FindObjectOfType<PlayerManager>();
+        Debug.Log("[✅] PlayerManager: " + (pm != null ? "찾음" : "못 찾음"));
+
+        GameObject container = new GameObject("DiceSceneContainer");
+
+        foreach (var rootObject in diceScene.GetRootGameObjects())
+        {
+            rootObject.transform.SetParent(container.transform, true);
+
+            // 🟩 DiceSceneManager에 PlayerManager 할당
+            DiceSceneManager sceneManager = rootObject.GetComponentInChildren<DiceSceneManager>();
+            if (sceneManager != null)
+            {
+                sceneManager.playerManager = pm;
+            }
+        }
         // 카메라 위치 찾기
         Camera mainCamera = Camera.main;
         if (mainCamera == null) mainCamera = FindObjectOfType<Camera>();
-        
+
         // 플레이어의 위치와 방향 정보
         Vector3 targetPosition = playerTransform.position; 
         Vector3 cameraForward = playerTransform.forward; 
 
-        GameObject container = new GameObject("DiceSceneContainer");
-        
+        // GameObject container = new GameObject("DiceSceneContainer");
+
         foreach (var rootObject in diceScene.GetRootGameObjects())
         {
             rootObject.transform.SetParent(container.transform, true);

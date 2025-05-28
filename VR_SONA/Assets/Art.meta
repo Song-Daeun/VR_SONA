@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:VR_SONA/Assets/Art.meta
 guid: cecce91b3b0f242a68dc0a594d2ac8e5
+========
+guid: de45313f0002dbd46a791d2860a812f3
+>>>>>>>> 82eebea27e80d84207867bd81bb6f90b73b7acea:VR_SONA/Assets/ThirdParty/CGM_EgyptPack.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
