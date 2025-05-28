@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class DiceSceneManager : MonoBehaviour
 {
@@ -28,9 +29,13 @@ public class DiceSceneManager : MonoBehaviour
     private Vector3 diceInitialPosition;
     private Quaternion diceInitialRotation;
 
+    public XRGrabInteractable grabInteractable;
     private bool isResultDisplayed = false;
     private float minVelocityThreshold = 0.1f;
     private bool isProcessingResult = false;
+
+    // 플레이어 연결
+    public PlayerManager playerManager;
 
     private void Start()
     {
@@ -48,11 +53,21 @@ public class DiceSceneManager : MonoBehaviour
                 diceDetector.playerCamera = mainCamera;
             }
         }
+
+        resultUI?.ShowCustomMessage("🎲 주사위를 굴려주세요!");
     }
 
     private void Update()
     {
-        CheckDiceState();
+        // CheckDiceState();
+        if (!isDetectionActivated && grabInteractable != null && grabInteractable.isSelected)
+        {
+            ActivateDiceDetection();
+        }
+
+        if (!isDetectionActivated) return;
+
+    CheckDiceState();
     }
 
     private void CheckDiceState()
@@ -110,7 +125,7 @@ public class DiceSceneManager : MonoBehaviour
         isRolling = false;
         isResultDisplayed = true;
 
-        OnDiceResultConfirmed(result);
+        // OnDiceResultConfirmed(result);
     }
 
     public void OnDiceResultDetected(int result)
@@ -136,6 +151,7 @@ public class DiceSceneManager : MonoBehaviour
         PlayerManager playerManager = FindObjectOfType<PlayerManager>();
         if (playerManager != null)
         {
+            Debug.Log($"PlayerManager.MovePlayer({result}) 호출됨");
             playerManager.MovePlayer(result);
         }
 
@@ -151,10 +167,10 @@ public class DiceSceneManager : MonoBehaviour
         isProcessingResult = false;
     }
 
-    private void OnDiceResultConfirmed(int result)
-    {
-        // 결과 확정 이후 로직 훅
-    }
+    // private void OnDiceResultConfirmed(int result)
+    // {
+    //     // 결과 확정 이후 로직 훅
+    // }
 
     public void ResetDice()
     {
@@ -240,4 +256,14 @@ public class DiceSceneManager : MonoBehaviour
     {
         moveCompleteDelay = Mathf.Max(0f, delay);
     }
+
+    private bool isDetectionActivated = false;
+
+    public void ActivateDiceDetection()
+    {
+        if (showDebugLogs)
+            Debug.Log("🎲 Dice detection activated by user grab!");
+        isDetectionActivated = true;
+    }
+
 }
