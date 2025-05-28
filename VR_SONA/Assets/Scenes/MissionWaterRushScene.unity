@@ -4330,6 +4330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   successText: {fileID: 476638949}
   failText: {fileID: 1623608475}
+  returnButton: {fileID: 1381680010}
 --- !u!1001 &1214679706
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4746,7 +4747,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 370.9, y: 215.2}
+  m_AnchoredPosition: {x: 46, y: 94}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1381680012
@@ -5414,6 +5415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   successText: {fileID: 476638949}
   failText: {fileID: 1623608475}
+  returnButton: {fileID: 1381680010}
 --- !u!4 &1557708664 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400004, guid: a07d1aa7e785c5c42b299ac0cddcca95, type: 3}

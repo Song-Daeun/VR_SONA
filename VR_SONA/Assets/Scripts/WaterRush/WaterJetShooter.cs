@@ -22,17 +22,21 @@ public class WaterJetShooter : MonoBehaviour
 
     void Update()
     {
+        // 미션이 완료되었으면 아무 동작도 하지 않음
+        if (WaterCollisionHandler.missionCompleted)
+        {
+            return;
+        }
+
         float interval = Time.time - lastPressTime;
 
         // 텀이 decayTime보다 길면 힘 급감시키기
         if (currentClick > 0 && interval > decayTime)
         {
-            // 즉시 감소량: 현재 힘의 절반 이상으로 크게 깎기 (조절 가능)
             int decreaseAmount = Mathf.Max(1, currentClick / 2);
             currentClick -= decreaseAmount;
             if (currentClick < 0) currentClick = 0;
 
-            // 감소 후 바로 시간 리셋 (또는 느리게 깎으려면 이 줄 주석처리)
             lastPressTime = Time.time;
         }
 

@@ -25,7 +25,7 @@ public class MissionSceneLoader : MonoBehaviour
         }
 
         // 씬 상태 확인해서 버튼 조정
-        if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+        if (SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded)
         {
             if (uiTerrain != null) uiTerrain.SetActive(false); // ui씬의 terrain 비활성화
 
@@ -45,7 +45,7 @@ public class MissionSceneLoader : MonoBehaviour
     void Update()
     {
         if (missionTriggered &&
-            !SceneManager.GetSceneByName("MissionBasketballScene").isLoaded &&
+            !SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded &&
             GameManager.MissionResult.HasValue)
         {
             bool result = GameManager.MissionResult.Value;
@@ -87,9 +87,9 @@ public class MissionSceneLoader : MonoBehaviour
             PlayerState.LastEnteredTileCoords = BingoBoard.Instance.GetPlayerTileCoords();
             Debug.Log($"🧭 현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
 
-            if (!SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+            if (!SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded)
             {
-                SceneManager.LoadScene("MissionBasketballScene", LoadSceneMode.Additive);
+                SceneManager.LoadScene("MissionWaterRushScene", LoadSceneMode.Additive);
                 Debug.Log("미션 씬 로드 및 코인 차감 완료");
 
                 missionTriggered = true;
@@ -124,9 +124,9 @@ public class MissionSceneLoader : MonoBehaviour
     public void ReturnToUI()
     {
         // 되돌아가기: 미션 씬만 언로드
-        if (SceneManager.GetSceneByName("MissionBasketballScene").isLoaded)
+        if (SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded)
         {
-            SceneManager.UnloadSceneAsync("MissionBasketballScene");
+            SceneManager.UnloadSceneAsync("MissionWaterRushScene");
             if (uiTerrain != null) uiTerrain.SetActive(true); // ui씬의 terrain 활성화
 
             // 다시 Load/Unload 버튼 표시

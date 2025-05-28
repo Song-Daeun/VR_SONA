@@ -5,16 +5,19 @@ public class WaterCollisionHandler : MonoBehaviour
 {
     public GameObject successText;
     public GameObject failText;
+    public GameObject returnButton;
 
     private float startTime;
-    private bool missionCompleted = false;
+    public static bool missionCompleted = false;
     private Coroutine failCoroutine;
 
     void Start()
     {
         startTime = Time.time;
+        missionCompleted = false; 
         successText.SetActive(false);
         failText.SetActive(false);
+        returnButton.SetActive(false);
 
         // 10초 후 실패 체크 코루틴 시작
         failCoroutine = StartCoroutine(FailCheckAfterTime(10f));
@@ -60,34 +63,30 @@ public class WaterCollisionHandler : MonoBehaviour
             Debug.Log($"[WaterCollision] 실패! {elapsedTime:F2}초 - 시간 초과");
             ShowFailure();
         }
-
     }
 
     private void ShowSuccess()
     {
+        Debug.Log("showsuccesss called");
+
         successText.SetActive(true);
         failText.SetActive(false);
-        Debug.Log("[WaterCollision] SUCCESS 텍스트 표시");
+        returnButton.SetActive(true);
 
-        StartCoroutine(StopGameAfterDelay(1f));
+        Debug.Log("[WaterCollision] SUCCESS 텍스트 + 버튼 표시");
     }
 
     private void ShowFailure()
     {
+        Debug.Log("showfailure called");
+
         failText.SetActive(true);
         successText.SetActive(false);
-        Debug.Log("[WaterCollision] FAIL 텍스트 표시");
+        returnButton.SetActive(true);
 
-        StartCoroutine(StopGameAfterDelay(1f));
+        Debug.Log("[WaterCollision] FAIL 텍스트 + 버튼 표시");
     }
 
-
-    private IEnumerator StopGameAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);              
-        Time.timeScale = 0f;
-        Debug.Log("[WaterCollision] 게임 정지됨 (1초 지연)");
-    }
 
     IEnumerator FailCheckAfterTime(float timeLimit)
     {
