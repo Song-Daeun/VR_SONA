@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/InteractionScene.unity
     guid: e8ed2ece4feddf648914b0a15bbc1178
+  - enabled: 1
+    path: Assets/Scenes/MissionWaterRushScene.unity
+    guid: 8b5ea052824fe4751911b5a4b954c6aa
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 95958a0a35677e145b2ae0ebeb5bcce1, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
