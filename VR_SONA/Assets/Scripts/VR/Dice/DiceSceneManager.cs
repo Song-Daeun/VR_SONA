@@ -147,7 +147,10 @@ public class DiceSceneManager : MonoBehaviour
         {
             stoppedTimer += Time.deltaTime;
             if (stoppedTimer >= settleTime && !resultShown)
+            {
                 ShowDiceResult();
+                Debug.Log("🎯 주사위가 멈춤 - DiceResultDetector에서 처리 대기 중");
+            }
         }
         else if (!isStill)
         {
@@ -170,6 +173,8 @@ public class DiceSceneManager : MonoBehaviour
         resultShown = true;
         isRolling = false;
         isResultDisplayed = true;
+
+        OnDiceResultDetected(result);
     }
 
     public void OnDiceResultDetected(int result)
@@ -178,16 +183,39 @@ public class DiceSceneManager : MonoBehaviour
         StartCoroutine(HandleDiceResultFlow(result));
     }
 
+    // DiceSceneManager의 HandleDiceResultFlow 메서드를 이렇게 수정해보세요
     private IEnumerator HandleDiceResultFlow(int result)
     {
+        Debug.Log($"🎲 HandleDiceResultFlow 시작 - 결과: {result}");
+        
         resultUI?.ShowResult(result, null);
 
         float totalUITime = resultUI.fadeInDuration + 0.5f;
         yield return new WaitForSeconds(totalUITime + uiDisplayDelay);
 
-        playerManager?.MovePlayer(result);
-        float estimatedMoveTime = playerManager != null ? playerManager.moveDuration : 0.5f;
-        yield return new WaitForSeconds(estimatedMoveTime + moveCompleteDelay);
+        // PlayerManager 상태 확인
+        if (playerManager == null)
+        {
+            Debug.LogError("❌ PlayerManager가 null입니다!");
+            yield break;
+        }
+        
+        Debug.Log($"✅ PlayerManager 발견, MovePlayer 호출 중...");
+        playerManager.MovePlayer(result);
+        
+        // 이동 상태 확인
+        if (playerManager.IsMoving())
+        {
+            Debug.Log("🏃 플레이어 이동 시작됨, 완료까지 대기 중...");
+            yield return new WaitUntil(() => !playerManager.IsMoving());
+            Debug.Log("🏁 플레이어 이동 완료!");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 플레이어 이동이 시작되지 않았습니다!");
+        }
+        
+        yield return new WaitForSeconds(moveCompleteDelay);
 
         FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
         isProcessingResult = false;
