@@ -6,7 +6,7 @@ using Unity.XR.CoreUtils;
 public class PlayerMove : MonoBehaviour
 {
     public XROrigin xrOrigin;
-    public Transform playerVisual; // BoyPlayer
+    public Transform playerVisual; // 외부 시각 모델 (예: BoyPlayer)
 
     public float moveSpeed = 2.0f;
     public float runMultiplier = 1.5f;
@@ -28,10 +28,6 @@ public class PlayerMove : MonoBehaviour
         moveInput.action.Enable();
         runInput.action.Enable();
         jumpInput.action.Enable();
-        
-        // 값 확인
-        //Debug.Log($"Move Input 활성화 상태: {moveInput.action.enabled}");
-
     }
 
     void Update()
@@ -42,14 +38,13 @@ public class PlayerMove : MonoBehaviour
 
         float speed = moveSpeed * (isRunning ? runMultiplier : 1f);
 
-        // 카메라 방향 기준 이동
+        // XR 카메라 방향 기준 이동
         Transform head = xrOrigin.Camera.transform;
         Vector3 forward = new Vector3(head.forward.x, 0, head.forward.z).normalized;
         Vector3 right = new Vector3(head.right.x, 0, head.right.z).normalized;
-
         Vector3 move = (forward * input.y + right * input.x) * speed;
 
-        // 중력, 점프
+        // 중력 및 점프 처리
         if (controller.isGrounded)
             verticalVelocity = jumpPressed ? jumpPower : -1f;
         else
@@ -57,16 +52,14 @@ public class PlayerMove : MonoBehaviour
 
         move.y = verticalVelocity;
 
+        // CharacterController 기반 이동
         controller.Move(move * Time.deltaTime);
 
-        // 강제로 위치 동기화
+        // 외부 시각 모델 위치 및 회전 동기화
         if (playerVisual != null)
         {
-            playerVisual.transform.position = transform.position;
-            playerVisual.transform.rotation = Quaternion.Euler(0, head.eulerAngles.y, 0);
-        
-            //Debug.Log($"XR Origin 위치: {transform.position}, BoyPlayer 위치: {playerVisual.transform.position}");
-
+            playerVisual.position = transform.position;
+            playerVisual.rotation = Quaternion.Euler(0, head.eulerAngles.y, 0);
         }
     }
 }

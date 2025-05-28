@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -9,6 +8,8 @@ public class DiceSceneManager : MonoBehaviour
     public Rigidbody diceRigidbody;
     public DiceResultDetector diceDetector;
     public DiceResultUI resultUI;
+    public Transform planeBottomTransform;
+    public Transform rootGroupToMove;
 
     [Header("Result Detection Settings")]
     public float stoppedVelocityThreshold = 0.1f;
@@ -34,10 +35,71 @@ public class DiceSceneManager : MonoBehaviour
     private float minVelocityThreshold = 0.1f;
     private bool isProcessingResult = false;
 
-    // 플레이어 연결
     public PlayerManager playerManager;
+    private bool isDetectionActivated = false;
 
-    private void Start()
+    public void InitializeScene(PlayerManager player)
+    {
+        playerManager = player;
+        // AlignSceneToPlayer();
+    }
+
+    // public void AlignSceneToPlayer()
+    // {
+    //     if (planeBottomTransform == null || rootGroupToMove == null || playerManager == null)
+    //     {
+    //         Debug.LogWarning("AlignSceneToPlayerFeet(): 필수 참조가 누락됨");
+    //         return;
+    //     }
+
+    //     Vector3 playerFeet = playerManager.transform.position;
+    //     Vector3 planeBottom = planeBottomTransform.position;
+
+    //     Vector3 offset = playerFeet - planeBottom;
+    //     rootGroupToMove.position += offset;
+
+    //     Debug.Log($"[📌] Plane을 플레이어 위치에 정렬 완료 (offset: {offset})");
+    // }
+
+    public void AlignSceneToPlayer()
+    {
+        if (planeBottomTransform == null || rootGroupToMove == null || playerManager == null)
+        {
+            Debug.LogWarning("❌ AlignPlaneToPlayerAndStandOnIt(): 필요한 참조가 없음");
+            return;
+        }
+
+        // Step 1: Plane을 플레이어 위치로 옮기기
+        Vector3 playerFeet = playerManager.transform.position;
+        Vector3 planeBottomPos = planeBottomTransform.position;
+        Vector3 offset = playerFeet - planeBottomPos;
+
+        Rigidbody[] rigidbodies = rootGroupToMove.GetComponentsInChildren<Rigidbody>();
+        foreach (var rb in rigidbodies)
+            rb.isKinematic = true;
+
+        rootGroupToMove.position += offset;
+
+        StartCoroutine(ReenableRigidbodies(rigidbodies));
+
+        // Step 2: 플레이어를 Plane 위로 정확히 올려주기 (Y만 조정)
+        Vector3 planeTop = planeBottomTransform.position + Vector3.up * 0.05f;
+        Vector3 current = playerManager.transform.position;
+        Vector3 adjusted = new Vector3(current.x, planeTop.y, current.z);
+
+        playerManager.transform.position = adjusted;
+
+        Debug.Log($"✅ Plane 정렬 + 플레이어 위치 완료: {adjusted}");
+    }
+
+    private IEnumerator ReenableRigidbodies(Rigidbody[] rigidbodies)
+    {
+        yield return null;
+        foreach (var rb in rigidbodies)
+            rb.isKinematic = false;
+    }
+
+    void Start()
     {
         if (diceRigidbody != null)
         {
@@ -49,25 +111,20 @@ public class DiceSceneManager : MonoBehaviour
         {
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
-            {
                 diceDetector.playerCamera = mainCamera;
-            }
         }
 
-        resultUI?.ShowCustomMessage("🎲 주사위를 굴려주세요!");
+        resultUI?.ShowCustomMessage("주사위를 굴려주세요");
     }
 
-    private void Update()
+    void Update()
     {
-        // CheckDiceState();
         if (!isDetectionActivated && grabInteractable != null && grabInteractable.isSelected)
-        {
             ActivateDiceDetection();
-        }
 
         if (!isDetectionActivated) return;
 
-    CheckDiceState();
+        CheckDiceState();
     }
 
     private void CheckDiceState()
@@ -77,11 +134,7 @@ public class DiceSceneManager : MonoBehaviour
 
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {
-            if (resultUI != null && resultUI.resultPanel != null)
-            {
-                resultUI.resultPanel.SetActive(false);
-            }
-
+            resultUI?.resultPanel?.SetActive(false);
             isResultDisplayed = false;
             resultShown = false;
             stoppedTimer = 0f;
@@ -94,22 +147,15 @@ public class DiceSceneManager : MonoBehaviour
         {
             stoppedTimer += Time.deltaTime;
             if (stoppedTimer >= settleTime && !resultShown)
-            {
                 ShowDiceResult();
-            }
         }
         else if (!isStill)
         {
             if (!isRolling)
             {
                 isRolling = true;
-
-                if (resultUI != null && resultUI.resultPanel != null && resultUI.resultPanel.activeSelf)
-                {
-                    resultUI.resultPanel.SetActive(false);
-                }
+                resultUI?.resultPanel?.SetActive(false);
             }
-
             stoppedTimer = 0f;
         }
     }
@@ -124,8 +170,6 @@ public class DiceSceneManager : MonoBehaviour
         resultShown = true;
         isRolling = false;
         isResultDisplayed = true;
-
-        // OnDiceResultConfirmed(result);
     }
 
     public void OnDiceResultDetected(int result)
@@ -136,45 +180,18 @@ public class DiceSceneManager : MonoBehaviour
 
     private IEnumerator HandleDiceResultFlow(int result)
     {
-        if (resultUI != null)
-        {
-            resultUI.ShowResult(result, null);
-        }
-        else
-        {
-            yield break;
-        }
+        resultUI?.ShowResult(result, null);
 
         float totalUITime = resultUI.fadeInDuration + 0.5f;
         yield return new WaitForSeconds(totalUITime + uiDisplayDelay);
 
-        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
-        if (playerManager != null)
-        {
-            Debug.Log($"PlayerManager.MovePlayer({result}) 호출됨");
-            playerManager.MovePlayer(result);
-        }
-        else
-        {
-            Debug.LogWarning("[❌] playerManager가 null이어서 이동 실패");
-        }
-
+        playerManager?.MovePlayer(result);
         float estimatedMoveTime = playerManager != null ? playerManager.moveDuration : 0.5f;
         yield return new WaitForSeconds(estimatedMoveTime + moveCompleteDelay);
 
-        DiceManager diceManager = FindObjectOfType<DiceManager>();
-        if (diceManager != null)
-        {
-            diceManager.OnBackButtonClicked();
-        }
-
+        FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
         isProcessingResult = false;
     }
-
-    // private void OnDiceResultConfirmed(int result)
-    // {
-    //     // 결과 확정 이후 로직 훅
-    // }
 
     public void ResetDice()
     {
@@ -192,48 +209,14 @@ public class DiceSceneManager : MonoBehaviour
         isResultDisplayed = false;
         isProcessingResult = false;
 
-        if (resultUI != null && resultUI.resultPanel != null)
-        {
-            resultUI.resultPanel.SetActive(false);
-        }
+        resultUI?.resultPanel?.SetActive(false);
     }
 
-    private void OnDrawGizmos()
+    public void ActivateDiceDetection()
     {
-        if (!drawDebugVisuals || diceRigidbody == null) return;
-
-        Vector3 dicePos = diceRigidbody.transform.position;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(dicePos, diceRigidbody.velocity);
-
-        if (isProcessingResult)
-            Gizmos.color = Color.magenta;
-        else if (isRolling)
-            Gizmos.color = Color.yellow;
-        else if (resultShown)
-            Gizmos.color = Color.green;
-        else
-            Gizmos.color = Color.gray;
-
-        Gizmos.DrawWireSphere(dicePos, 0.3f);
-
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireCube(diceInitialPosition, Vector3.one * 0.1f);
-
-#if UNITY_EDITOR
-        string statusText = "";
-        if (isProcessingResult) statusText = "Processing Result";
-        else if (isRolling) statusText = "Rolling";
-        else if (resultShown) statusText = "Result Shown";
-        else statusText = "Waiting";
-
-        UnityEditor.Handles.color = Color.white;
-        UnityEditor.Handles.Label(dicePos + Vector3.up * 0.5f, $"Dice Status: {statusText}");
-
-        float velocity = diceRigidbody.velocity.magnitude;
-        float angularVel = diceRigidbody.angularVelocity.magnitude;
-        UnityEditor.Handles.Label(dicePos + Vector3.up * 0.7f, $"V: {velocity:F2} | AV: {angularVel:F2}");
-#endif
+        if (showDebugLogs)
+            Debug.Log("Dice detection activated by user grab!");
+        isDetectionActivated = true;
     }
 
     public bool IsProcessingResult() => isProcessingResult;
@@ -244,30 +227,9 @@ public class DiceSceneManager : MonoBehaviour
     {
         StopAllCoroutines();
         isProcessingResult = false;
-
-        if (resultUI != null && resultUI.resultPanel != null)
-        {
-            resultUI.resultPanel.SetActive(false);
-        }
+        resultUI?.resultPanel?.SetActive(false);
     }
 
-    public void SetUIDisplayDelay(float delay)
-    {
-        uiDisplayDelay = Mathf.Max(0f, delay);
-    }
-
-    public void SetMoveCompleteDelay(float delay)
-    {
-        moveCompleteDelay = Mathf.Max(0f, delay);
-    }
-
-    private bool isDetectionActivated = false;
-
-    public void ActivateDiceDetection()
-    {
-        if (showDebugLogs)
-            Debug.Log("🎲 Dice detection activated by user grab!");
-        isDetectionActivated = true;
-    }
-
+    public void SetUIDisplayDelay(float delay) => uiDisplayDelay = Mathf.Max(0f, delay);
+    public void SetMoveCompleteDelay(float delay) => moveCompleteDelay = Mathf.Max(0f, delay);
 }

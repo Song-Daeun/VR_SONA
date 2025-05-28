@@ -38,7 +38,7 @@ public class BingoBoard : MonoBehaviour
         {
             { "NetherlandTile", "GermanyTile", "USATile" },
             { "SpellBookTile", "JapanTile", "SeoulTile" },
-            { "SuncheonTile", "TaiwanTile", "StartTile" }
+            { "SuncheonTile", "EgyptTile", "StartTile" }
         };
 
         for (int x = 0; x < rows; x++)
