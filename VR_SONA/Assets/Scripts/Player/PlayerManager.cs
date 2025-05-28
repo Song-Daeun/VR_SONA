@@ -18,35 +18,67 @@ public class PlayerManager : MonoBehaviour
 
     public void MovePlayer(int diceResult)
     {
+        Debug.Log($"[✅] MovePlayer called with diceResult: {diceResult}");
         int targetIndex = diceResult - 1;
 
+        // debuggin log
+        if (tileList == null || tileList.Count <= targetIndex)
+        {
+            Debug.LogWarning("❌ tileList가 비어있거나 index가 범위를 벗어남!");
+            return;
+        }
+
         Vector3 targetPosition = tileList[targetIndex].position + Vector3.up * heightOffset;
+        Debug.Log($"[🏃] 이동할 위치: {targetPosition}");
         
         StartCoroutine(MoveToPosition(targetPosition));
         currentTileIndex = targetIndex;
     }
 
+    // private IEnumerator MoveToPosition(Vector3 targetPosition)
+    // {
+    //     Vector3 startPosition = playerTransform.position;
+    //     float elapsed = 0f;
+
+    //     while (elapsed < moveDuration)
+    //     {
+    //         Vector3 currentPosition = Vector3.Lerp(startPosition, targetPosition, elapsed / moveDuration);
+    //         playerTransform.position = currentPosition;
+
+    //         elapsed += Time.deltaTime;
+    //         yield return null;
+    //     }
+
+    //     playerTransform.position = targetPosition;
+    // }
+
     private IEnumerator MoveToPosition(Vector3 targetPosition)
     {
+        CharacterController cc = playerTransform.GetComponent<CharacterController>();
+
         Vector3 startPosition = playerTransform.position;
         float elapsed = 0f;
+
+        if (cc != null) cc.enabled = false;
 
         while (elapsed < moveDuration)
         {
             Vector3 currentPosition = Vector3.Lerp(startPosition, targetPosition, elapsed / moveDuration);
             playerTransform.position = currentPosition;
-            
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         playerTransform.position = targetPosition;
+
+        if (cc != null) cc.enabled = true;
     }
 
     private Vector3 CalculateSafeLandingPosition(Transform targetTile)
     {
         Collider tileCollider = targetTile.GetComponent<Collider>();
-        
+
         if (tileCollider == null)
         {
             return targetTile.position + Vector3.up * heightOffset;
@@ -56,10 +88,10 @@ public class PlayerManager : MonoBehaviour
 
         Vector3 safePosition = new Vector3(
             tileBounds.center.x,  // 타일의 중앙
-            tileBounds.max.y + heightOffset, 
-            tileBounds.center.z   
+            tileBounds.max.y + heightOffset,
+            tileBounds.center.z
         );
-        
+
         return safePosition;
     }
 

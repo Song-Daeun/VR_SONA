@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
+
 
 public class DiceResultDetector : MonoBehaviour
 {
@@ -29,9 +31,13 @@ public class DiceResultDetector : MonoBehaviour
     [Header("Debugging Settings")]
     public bool showDebugLogs = true;    
     public bool drawDebugGizmos = true;
+    public XRGrabInteractable grabInteractable;
 
     private bool resultConfirmed = false;      
-    private int lastResult = -1;               
+    private int lastResult = -1;
+    private bool isGrabbed = false;
+    private bool hasBeenThrown = false;
+    private bool isWatching = false;               
     
     private void Start()
     {
@@ -41,7 +47,36 @@ public class DiceResultDetector : MonoBehaviour
         if (playerCamera == null)
             playerCamera = Camera.main;
 
-        StartCoroutine(WatchDiceUntilStop());
+        // Grab 이벤트 등록
+        if (grabInteractable != null)
+            grabInteractable.selectEntered.AddListener(OnGrabbed);
+
+        // StartCoroutine(WatchDiceUntilStop());
+    }
+
+    private void OnGrabbed(SelectEnterEventArgs args)
+    {
+        isGrabbed = true;
+
+        if (showDebugLogs)
+            Debug.Log("🎯 주사위 Grab 감지됨");
+    }
+
+    private void Update()
+    {
+        if (!isGrabbed || isWatching || hasBeenThrown)
+            return;
+
+        if (diceRigidbody.velocity.magnitude > 0.5f || diceRigidbody.angularVelocity.magnitude > 0.5f)
+        {
+            hasBeenThrown = true;
+            isWatching = true;
+
+            if (showDebugLogs)
+                Debug.Log("🎲 주사위가 실제로 던져짐 → 감지 시작");
+
+            StartCoroutine(WatchDiceUntilStop());
+        }
     }
 
     private IEnumerator WatchDiceUntilStop()
@@ -82,6 +117,7 @@ public class DiceResultDetector : MonoBehaviour
         DiceSceneManager sceneManager = FindObjectOfType<DiceSceneManager>();
         if (sceneManager != null)
         {
+            Debug.Log("DiceSceneManager.OnDiceResultDetected() 호출");
             sceneManager.OnDiceResultDetected(result);
         }
     }

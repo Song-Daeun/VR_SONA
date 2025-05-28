@@ -33,6 +33,19 @@ public class DiceResultUI : MonoBehaviour
         }
     }
 
+    // 굴리기 전 UI
+    public void ShowCustomMessage(string message)
+    {
+        if (resultPanel != null)
+            resultPanel.SetActive(true);
+
+        if (resultMessageText != null)
+            resultMessageText.text = message;
+
+        if (resultNumberText != null)
+            resultNumberText.text = ""; // 숫자 없음
+    }
+
     public void ShowResult(int diceNumber)
     {
         ShowResult(diceNumber, null);
