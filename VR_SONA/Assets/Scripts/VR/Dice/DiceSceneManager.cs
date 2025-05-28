@@ -154,6 +154,10 @@ public class DiceSceneManager : MonoBehaviour
             Debug.Log($"PlayerManager.MovePlayer({result}) 호출됨");
             playerManager.MovePlayer(result);
         }
+        else
+        {
+            Debug.LogWarning("[❌] playerManager가 null이어서 이동 실패");
+        }
 
         float estimatedMoveTime = playerManager != null ? playerManager.moveDuration : 0.5f;
         yield return new WaitForSeconds(estimatedMoveTime + moveCompleteDelay);
