@@ -43,7 +43,7 @@ public class DiceResultUI : MonoBehaviour
             resultMessageText.text = message;
 
         if (resultNumberText != null)
-            resultNumberText.text = ""; // 숫자 없음
+            resultNumberText.text = "";
     }
 
     public void ShowResult(int diceNumber)
@@ -81,7 +81,7 @@ public class DiceResultUI : MonoBehaviour
         
         if (resultMessageText != null)
         {
-            resultMessageText.text = "Dice Result:";
+            resultMessageText.text = "결과 :";
         }
         
         yield return new WaitForSeconds(0.5f);
