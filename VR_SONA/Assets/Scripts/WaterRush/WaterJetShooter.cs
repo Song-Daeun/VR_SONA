@@ -57,6 +57,7 @@ public class WaterJetShooter : MonoBehaviour
         for (int i = 0; i < dropletsPerShot; i++)
         {
             GameObject drop = Instantiate(waterDropPrefab, firePoint.position, Quaternion.identity);
+            // Destroy(drop, 3f);
             Rigidbody rb = drop.GetComponent<Rigidbody>();
 
             if (rb != null)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class WaterCollisionHandler : MonoBehaviour
@@ -56,6 +57,7 @@ public class WaterCollisionHandler : MonoBehaviour
         if (elapsedTime <= 10f)
         {
             Debug.Log($"[WaterCollision] 성공! {elapsedTime:F2}초에 완료");
+            GameManager.MissionResult = true; // 성공 결과 저장
             ShowSuccess();
         }
         else
