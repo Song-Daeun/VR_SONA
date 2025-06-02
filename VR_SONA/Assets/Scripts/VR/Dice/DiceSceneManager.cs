@@ -41,7 +41,7 @@ public class DiceSceneManager : MonoBehaviour
     public void InitializeScene(PlayerManager player)
     {
         playerManager = player;
-        // AlignSceneToPlayer();
+        AlignSceneToPlayer();
     }
 
     // public void AlignSceneToPlayer()
