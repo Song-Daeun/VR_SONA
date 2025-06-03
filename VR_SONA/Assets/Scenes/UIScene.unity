@@ -7104,7 +7104,7 @@ Transform:
   m_GameObject: {fileID: 433320656}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.167, z: 0}
+  m_LocalPosition: {x: -501, y: 1.167, z: -21.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12085,6 +12085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xrOrigin: {fileID: 738943670}
   playerVisual: {fileID: 0}
+  enableMovement: 0
   moveSpeed: 4
   runMultiplier: 1.5
   jumpPower: 5
@@ -20245,6 +20246,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7268902120232488811, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1291200980}
+    - targetCorrespondingSourceObject: {fileID: 7268902120232488811, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1291200978}
   m_SourcePrefab: {fileID: 100100000, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
 --- !u!4 &1291200976 stripped
@@ -20264,7 +20268,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1291200977}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0d59f8186e539448bbf47179dbb47ae, type: 3}
   m_Name: 
@@ -20273,6 +20277,19 @@ MonoBehaviour:
   loadButton: {fileID: 788546955}
   unloadButton: {fileID: 766329404}
   missionMessageText: {fileID: 1536815597}
+--- !u!114 &1291200980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291200977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a27baf12f12cd9f4fbc023940a41da74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  additionalTime: 30
 --- !u!1001 &1291526610
 PrefabInstance:
   m_ObjectHideFlags: 0
