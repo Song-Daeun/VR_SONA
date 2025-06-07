@@ -50286,6 +50286,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1327674205407481541}
+  - component: {fileID: 2350652682165162118}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -50293,6 +50294,34 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &2350652682165162118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350652682165162117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea0b328ab51719a418ef4d742e934a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 1327674205407481541}
+  tileList:
+  - {fileID: 590907665}
+  - {fileID: 1859426506}
+  - {fileID: 1313113838}
+  - {fileID: 258498997}
+  - {fileID: 264789295}
+  - {fileID: 1942646620}
+  - {fileID: 1718936368}
+  - {fileID: 2135948783}
+  moveDuration: 0.5
+  heightOffset: 45
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  raycastDistance: 10
 --- !u!4 &2448805134737690738
 Transform:
   m_ObjectHideFlags: 0
