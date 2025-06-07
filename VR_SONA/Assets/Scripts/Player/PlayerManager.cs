@@ -84,6 +84,8 @@ public class PlayerManager : MonoBehaviour
 
     public void ShowMissionMessage()
     {
+        DiceManager.Instance?.SetDiceButtonVisible(false);
+        
         if (missionPanel == null)
             return;
 
@@ -95,6 +97,5 @@ public class PlayerManager : MonoBehaviour
         missionPanel.transform.position = position;
         missionPanel.SetActive(true);
 
-        DiceManager.Instance?.SetDiceButtonVisible(false);
     }
 } 

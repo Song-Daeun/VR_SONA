@@ -196,7 +196,7 @@ public class DiceSceneManager : MonoBehaviour
         // isProcessingResult = false;
 
         // DiceScene 언로드
-        DiceManager.Instance.OnBackButtonClicked();
+        DiceManager.Instance.OnBackButtonClicked(showButtonAfter: false);  
         yield return new WaitUntil(() => !SceneManager.GetSceneByName("DiceScene").isLoaded);
 
         // DiceButton 비활성화
