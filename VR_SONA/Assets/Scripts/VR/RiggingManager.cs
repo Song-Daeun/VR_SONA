@@ -33,6 +33,7 @@ public class RiggingManager : MonoBehaviour
 
         ik.position = controller.TransformPoint(offset[0]);
         ik.rotation = controller.rotation * Quaternion.Euler(offset[1]);
+        // ik.rotation = controller.rotation;
     }
 
     private void MappingBodyTransform(Transform ik, Transform hmd)
