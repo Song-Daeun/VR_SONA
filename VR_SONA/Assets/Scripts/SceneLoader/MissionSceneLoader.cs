@@ -79,38 +79,45 @@ public class MissionSceneLoader : MonoBehaviour
             return;
         }
 
-        if (coinUIManager.HasEnoughCoins())
-        {
-            coinUIManager.SubtractCoinsForMission();
-
-            // 여기서 플레이어 타일 좌표를 저장
-            PlayerState.LastEnteredTileCoords = BingoBoard.Instance.GetPlayerTileCoords();
-            Debug.Log($"현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
-
-            if (!SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded)
-            {
-                SceneManager.LoadScene("MissionWaterRushScene", LoadSceneMode.Additive);
-                Debug.Log("미션 씬 로드 및 코인 차감 완료");
-
-                missionTriggered = true;
-
-                if (uiTerrain != null) uiTerrain.SetActive(false);
-                if (loadButton != null) loadButton.SetActive(false);
-                if (unloadButton != null) unloadButton.SetActive(false);
-                if (returnButton != null) returnButton.SetActive(true);
-                if (missionMessageText != null) missionMessageText.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("이미 미션 씬이 로드되어 있습니다.");
-            }
-        }
-        else
+        if (!CoinManager.HasEnoughCoins())
         {
             Debug.Log("코인이 부족하여 미션 씬을 로드할 수 없습니다");
+            return;
+        }
+
+        Vector2Int coords = BingoBoard.Instance.GetPlayerTileCoords();
+        PlayerState.LastEnteredTileCoords = coords;
+
+        MissionType missionType = MissionManager.Instance.GetMissionType(coords);
+        string sceneName = MissionManager.Instance.GetSceneNameFromMission(missionType);
+
+        if (sceneName == null)
+        {
+            Debug.Log("해당 위치에는 미션이 없습니다.");
+            return;
+        }
+
+        if (SceneManager.GetSceneByName(sceneName).isLoaded)
+        {
+            Debug.Log("이미 해당 미션 씬이 로드되어 있습니다.");
+            return;
+        }
+
+        if (CoinManager.SubtractCoinsForMission())
+        {
+            coinUIManager.UpdateCoinUI();
+
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+            Debug.Log($"미션 씬 {sceneName} 로드됨");
+            missionTriggered = true;
+
+            if (uiTerrain != null) uiTerrain.SetActive(false);
+            if (loadButton != null) loadButton.SetActive(false);
+            if (unloadButton != null) unloadButton.SetActive(false);
+            if (returnButton != null) returnButton.SetActive(true);
+            if (missionMessageText != null) missionMessageText.SetActive(false);
         }
     }
-
 
     public void UnloadMissionScene()
     {
