@@ -52,7 +52,7 @@ public class MissionSceneLoader : MonoBehaviour
 
             if (result == true)
             {
-                Debug.Log("✅ 미션 성공 - 건물 생성");
+                Debug.Log("미션 성공 - 건물 생성");
 
                 Vector2Int tile = PlayerState.LastEnteredTileCoords;
 
@@ -62,7 +62,7 @@ public class MissionSceneLoader : MonoBehaviour
             }
             else
             {
-                Debug.Log("❌ 미션 실패 - 건물 생성 안 함");
+                Debug.Log("미션 실패 - 건물 생성 안 함");
             }
 
             // 상태 초기화
@@ -85,7 +85,7 @@ public class MissionSceneLoader : MonoBehaviour
 
             // 여기서 플레이어 타일 좌표를 저장
             PlayerState.LastEnteredTileCoords = BingoBoard.Instance.GetPlayerTileCoords();
-            Debug.Log($"🧭 현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
+            Debug.Log($"현재 타일 위치 저장됨: {PlayerState.LastEnteredTileCoords}");
 
             if (!SceneManager.GetSceneByName("MissionWaterRushScene").isLoaded)
             {

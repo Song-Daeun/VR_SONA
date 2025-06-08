@@ -90,3 +90,11 @@ The following packages were updated:
   com.unity.cinemachine from version 2.9.7 to 2.10.3
   com.unity.inputsystem from version 1.5.1 to 1.11.2
   com.unity.render-pipelines.universal from version 14.0.7 to 14.0.12
+
+=== Sat Jun  7 03:47:48 2025
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.toonshader@0.10.2-preview

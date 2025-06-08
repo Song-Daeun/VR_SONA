@@ -33,7 +33,7 @@ public class KidsScript : MonoBehaviour
     _Ctrl = this.GetComponent<CharacterController>();
     _View_Camera = GameObject.Find("Main Camera");
     _Light = GameObject.Find("Directional Light").transform;
-    _MeshRenderer = this.transform.Find("Player").gameObject.GetComponent<SkinnedMeshRenderer>();
+    _MeshRenderer = this.transform.Find("Boy0.Body").gameObject.GetComponent<SkinnedMeshRenderer>();
   }
 
   void Update()

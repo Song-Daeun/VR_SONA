@@ -1,3 +1,4 @@
+// DiceManager.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,11 +8,20 @@ public class DiceManager : MonoBehaviour
 {
     public Transform playerTransform;
     public GameObject backButton;
-    public Button diceButton;
+    [SerializeField] private Button diceButton;  
+    [SerializeField] public GameObject diceButtonCanvas;
+    public static DiceManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
 
     private void Start()
     {
-        // 버튼 연결
         if (diceButton == null)
         {
             GameObject found = GameObject.Find("DiceButton");
@@ -22,18 +32,14 @@ public class DiceManager : MonoBehaviour
         if (diceButton != null)
         {
             diceButton.onClick.RemoveAllListeners();
-            diceButton.onClick.AddListener(DiceButton_clicked);
-        }
-        else
-        {
-            Debug.LogWarning("⚠ DiceButton 못 찾음");
+            diceButton.onClick.AddListener(DiceButtonClicked);
         }
 
         if (backButton != null)
             backButton.SetActive(false);
     }
 
-    public void DiceButton_clicked()
+    public void DiceButtonClicked()
     {
         StartCoroutine(LoadDiceScene());
     }
@@ -43,18 +49,14 @@ public class DiceManager : MonoBehaviour
         var asyncLoad = SceneManager.LoadSceneAsync("DiceScene", LoadSceneMode.Additive);
         yield return new WaitUntil(() => asyncLoad.isDone);
 
-        // DiceSceneManager에 PlayerManager 할당
         PlayerManager pm = FindObjectOfType<PlayerManager>();
-        Debug.Log("PlayerManager: " + (pm != null ? "찾음" : "못 찾음"));
-
         DiceSceneManager sceneManager = FindObjectOfType<DiceSceneManager>();
-        if (sceneManager != null)
+        if (sceneManager != null && pm != null)
         {
             sceneManager.playerManager = pm;
-            sceneManager.AlignSceneToPlayer(); 
+            sceneManager.AlignSceneToPlayer();
         }
 
-        // UI 연결
         GameObject canvasObj = GameObject.Find("Canvas");
         if (canvasObj != null)
         {
@@ -68,28 +70,54 @@ public class DiceManager : MonoBehaviour
                 if (backButtonComponent != null)
                 {
                     backButtonComponent.onClick.RemoveAllListeners();
-                    backButtonComponent.onClick.AddListener(OnBackButtonClicked);
+                    // backButtonComponent.onClick.AddListener(OnBackButtonClicked);
+                    backButtonComponent.onClick.AddListener(() => OnBackButtonClicked(true));
                 }
             }
         }
 
-        // Dice 버튼 비활성화
         if (diceButton != null)
             diceButton.gameObject.SetActive(false);
     }
 
-    public void OnBackButtonClicked()
+    // public void OnBackButtonClicked()
+    // {
+    //     StartCoroutine(UnloadDiceScene());
+    // }
+
+    // private IEnumerator UnloadDiceScene()
+    // {
+    //     Scene diceScene = SceneManager.GetSceneByName("DiceScene");
+
+    //     if (!diceScene.IsValid() || !diceScene.isLoaded)
+    //     {
+    //         if (diceButton != null)
+    //             diceButton.gameObject.SetActive(true);
+    //         backButton = null;
+    //         yield break;
+    //     }
+
+    //     var asyncUnload = SceneManager.UnloadSceneAsync("DiceScene");
+    //     yield return new WaitUntil(() => asyncUnload.isDone);
+
+    //     if (diceButton != null)
+    //         diceButton.gameObject.SetActive(true);
+    //     backButton = null;
+    // }
+    // 수정
+    public void OnBackButtonClicked(bool showButtonAfter = true)
     {
-        StartCoroutine(UnloadDiceScene());
+        StartCoroutine(UnloadDiceScene(showButtonAfter));
     }
 
-    private IEnumerator UnloadDiceScene()
+    private IEnumerator UnloadDiceScene(bool showButtonAfter)
     {
         Scene diceScene = SceneManager.GetSceneByName("DiceScene");
 
         if (!diceScene.IsValid() || !diceScene.isLoaded)
         {
-            diceButton?.gameObject.SetActive(true);
+            if (showButtonAfter)
+                SetDiceButtonVisible(true);
             backButton = null;
             yield break;
         }
@@ -97,7 +125,27 @@ public class DiceManager : MonoBehaviour
         var asyncUnload = SceneManager.UnloadSceneAsync("DiceScene");
         yield return new WaitUntil(() => asyncUnload.isDone);
 
-        diceButton?.gameObject.SetActive(true);
+        if (showButtonAfter)
+            SetDiceButtonVisible(true); 
         backButton = null;
     }
+
+    public void SetDiceButtonVisible(bool visible)
+    {
+        if (diceButtonCanvas != null)
+        {
+            Debug.Log($"[DiceManager] Canvas {(visible ? "활성화" : "비활성화")}");
+            diceButtonCanvas.SetActive(visible);
+        }
+
+        if (diceButton != null)
+        {
+            diceButton.gameObject.SetActive(visible);
+        }
+        else
+        {
+            Debug.LogWarning("diceButtonCanvas가 null입니다!");
+        }
+    }
 }
+
