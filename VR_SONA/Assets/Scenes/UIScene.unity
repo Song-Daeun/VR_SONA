@@ -8839,11 +8839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinUIManager: {fileID: 0}
-  loadButton: {fileID: 788546955}
-  unloadButton: {fileID: 766329404}
-  returnButton: {fileID: 0}
   uiTerrain: {fileID: 1458396542}
-  missionMessageText: {fileID: 1536815597}
 --- !u!4 &523057121
 Transform:
   m_ObjectHideFlags: 0
@@ -14309,11 +14305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinUIManager: {fileID: 63800757}
-  loadButton: {fileID: 788546955}
-  unloadButton: {fileID: 766329404}
-  returnButton: {fileID: 0}
   uiTerrain: {fileID: 0}
-  missionMessageText: {fileID: 0}
 --- !u!1001 &791821913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19180,6 +19172,10 @@ PrefabInstance:
     - target: {fileID: 6163599340593622294, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
       propertyPath: m_Name
       value: NetherlandTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6163599340593622294, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6454660533246723265, guid: a85a62d4ad966df4689be3b07e0e3c7d, type: 3}
       propertyPath: m_Size.x

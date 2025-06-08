@@ -1,16 +1,16 @@
-// MissionUILoader.cs
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
+using UnityEngine;
 using UnityEngine.UI;
 
-public class MissionUILoader : MonoBehaviour
+public class MissionUIController : MonoBehaviour
 {
-    [Header("UI References")]
     public GameObject missionPanel;
     public Button loadButton;
     public Button unloadButton;
 
-    [Header("Settings")]
     public float distanceFromCamera = 15.0f;
     public float heightOffset = 1.5f;
 
@@ -21,22 +21,20 @@ public class MissionUILoader : MonoBehaviour
     {
         cameraTransform = Camera.main?.transform;
 
-        missionSceneLoader = GetComponent<MissionSceneLoader>(); // MissionSceneLoader 자동 연결
-
         if (missionPanel != null)
             missionPanel.SetActive(false);
 
+        missionSceneLoader = FindObjectOfType<MissionSceneLoader>();
+
         if (loadButton != null)
             loadButton.onClick.AddListener(OnConfirm);
-
         if (unloadButton != null)
             unloadButton.onClick.AddListener(OnCancel);
     }
 
     public void ShowMissionPanel()
     {
-        if (cameraTransform == null || missionPanel == null)
-            return;
+        if (cameraTransform == null || missionPanel == null) return;
 
         Vector3 position = cameraTransform.position + cameraTransform.forward * distanceFromCamera;
         position.y += heightOffset;
@@ -60,15 +58,12 @@ public class MissionUILoader : MonoBehaviour
             Debug.LogError("🔴 missionSceneLoader 가 null임 → 씬 로드 실패");
         }
 
-        if (missionPanel != null)
-            missionPanel.SetActive(false);
+        missionPanel.SetActive(false);
     }
 
     private void OnCancel()
     {
-        if (missionPanel != null)
-            missionPanel.SetActive(false);
-
+        missionPanel.SetActive(false);
         DiceManager.Instance?.SetDiceButtonVisible(true);
     }
 }

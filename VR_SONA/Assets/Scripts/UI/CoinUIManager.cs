@@ -1,38 +1,29 @@
+// [리팩토링] 게임로직과 코인UI 분리 CoinUIManager -> CoinManager
+// 코인 개수 UI 업데이트 기능 담당하는 클래스
+
 using UnityEngine;
 using TMPro;
 
 public class CoinUIManager : MonoBehaviour
 {
     public TextMeshProUGUI coinText;
-    public GameObject coinBackground; // 타원형 배경 이미지
-
-    private int coinCount = 800;
+    public GameObject coinBackground;
 
     void Start()
     {
         UpdateCoinUI();
     }
 
-    public bool HasEnoughCoins()
+    public void OnMissionStart() // 외부에서 호출
     {
-        return coinCount >= 100;
-    }
-
-    public void SubtractCoinsForMission()
-    {
-        if (HasEnoughCoins())
+        if (CoinManager.SubtractCoinsForMission())
         {
-            coinCount -= 100;
             UpdateCoinUI();
         }
-        else
-        {
-            Debug.Log("코인이 부족합니다");
-        }
     }
 
-    private void UpdateCoinUI()
+    public void UpdateCoinUI()
     {
-        coinText.text = "Coins: " + coinCount.ToString();
+        coinText.text = "Coins: " + PlayerState.CoinCount.ToString();
     }
 }
