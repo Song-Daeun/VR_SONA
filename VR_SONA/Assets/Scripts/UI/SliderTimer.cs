@@ -32,4 +32,16 @@ public class slider1 : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
         );
     }
+
+    public void AddTime(float sec)
+    {
+        TimeRemain += sec;
+        if (TimeRemain > sd.maxValue)
+            sd.maxValue = TimeRemain;
+        sd.value = TimeRemain;
+
+        Debug.Log("Current TimeRemain: " + TimeRemain);
+
+    }
+
 }
