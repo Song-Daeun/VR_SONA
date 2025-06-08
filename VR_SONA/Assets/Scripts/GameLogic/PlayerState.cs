@@ -7,5 +7,5 @@ using UnityEngine;
 public static class PlayerState
 {
     public static Vector2Int LastEnteredTileCoords = new Vector2Int(-1, -1);
-    public static int CoinCount = 100; // [리팩토링] CoinUIManager 변수 -> PlayerState
+    public static int CoinCount = 800; // [리팩토링] CoinUIManager 변수 -> PlayerState
 }

@@ -4746,7 +4746,7 @@ GameObject:
   - component: {fileID: 1381680015}
   - component: {fileID: 1381680014}
   - component: {fileID: 1381680013}
-  - component: {fileID: 1381680012}
+  - component: {fileID: 1381680016}
   m_Layer: 5
   m_Name: ReturnButton
   m_TagString: Untagged
@@ -4774,24 +4774,6 @@ RectTransform:
   m_AnchoredPosition: {x: 325, y: 155}
   m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1381680012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1381680010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8e2672654014cc498a91aa274ace880, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  coinUIManager: {fileID: 0}
-  loadButton: {fileID: 0}
-  unloadButton: {fileID: 0}
-  returnButton: {fileID: 1381680010}
-  uiTerrain: {fileID: 0}
-  missionMessageText: {fileID: 0}
 --- !u!114 &1381680013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4836,9 +4818,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1381680012}
-        m_TargetAssemblyTypeName: MissionSceneLoader, Assembly-CSharp
-        m_MethodName: ReturnToUI
+      - m_Target: {fileID: 1381680016}
+        m_TargetAssemblyTypeName: ReturnToMainGame, Assembly-CSharp
+        m_MethodName: Return
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4886,6 +4868,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381680010}
   m_CullTransparentMesh: 1
+--- !u!114 &1381680016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381680010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c87b0c9f14445c286a744461216deb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainSceneName: InteractionScene
 --- !u!1001 &1399043055
 PrefabInstance:
   m_ObjectHideFlags: 0
