@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class BasketballThrower : MonoBehaviour
 {
-    public GameObject basketballPrefab;   // 프리팹 연결용
-    public Transform throwOrigin;         // 던지는 위치
+    public GameObject basketballPrefab;
+    public Transform throwOrigin;
     public float throwForce = 14f;
     public float spinForce = 3f;
 
-    public float throwCooldown = 1f;      // 던질 수 있는 간격 (초)
+    public float throwCooldown = 1f;
     private float lastThrowTime = -Mathf.Infinity;
 
     [Header("포물선 조정")]
@@ -17,28 +17,65 @@ public class BasketballThrower : MonoBehaviour
     [Range(0f, 2f)] public float upwardMultiplier = 0.9f;
     public float throwAngle = 35f;
 
+    // 생성된 농구공을 추적할 리스트
+    private List<GameObject> spawnedBalls = new List<GameObject>();
+
+    void OnEnable()
+    {
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && Time.time - lastThrowTime > throwCooldown)
+        if (!IsMissionBasketballSceneLoaded())
+            return;
+
+        bool isThrowInput = Input.GetKeyDown(KeyCode.N)
+                            || Input.GetKeyDown(KeyCode.JoystickButton0)
+                            || Input.GetMouseButtonDown(0);
+
+        if (isThrowInput && Time.time - lastThrowTime > throwCooldown)
         {
             ThrowNewBall();
             lastThrowTime = Time.time;
         }
     }
 
+    bool IsMissionBasketballSceneLoaded()
+    {
+        return SceneManager.GetSceneByName("MissionBasketballScene").isLoaded;
+    }
+
     void ThrowNewBall()
     {
         GameObject newBall = Instantiate(basketballPrefab, throwOrigin.position, Quaternion.identity);
+        spawnedBalls.Add(newBall);
+
         Rigidbody rb = newBall.GetComponent<Rigidbody>();
-
-        // 시선 방향 기준
         Vector3 throwDirection = throwOrigin.forward.normalized;
-
-        // 포물선 형태 되도록 살짝 위쪽 보정
-        throwDirection.y += 0.7f; // 이 값을 조절해서 곡률 조절
+        throwDirection.y += 0.7f;
         throwDirection = throwDirection.normalized;
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         rb.AddTorque(Vector3.right * spinForce, ForceMode.Impulse);
+    }
+
+    void OnSceneUnloaded(Scene scene)
+    {
+        if (scene.name == "MissionBasketballScene")
+        {
+            // 생성된 농구공 모두 삭제
+            foreach (var ball in spawnedBalls)
+            {
+                if (ball != null)
+                    Destroy(ball);
+            }
+            spawnedBalls.Clear();
+        }
     }
 }

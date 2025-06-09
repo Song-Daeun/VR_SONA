@@ -3105,6 +3105,7 @@ GameObject:
   - component: {fileID: 191550064}
   - component: {fileID: 191550063}
   - component: {fileID: 191550072}
+  - component: {fileID: 191550073}
   m_Layer: 0
   m_Name: XR Origin (XR Rig)
   m_TagString: MainCamera
@@ -3343,6 +3344,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14db36e5f4a4bf142aaafd3aec40c3e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &191550073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191550061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a1aef382cbd449b9b7d4a6deeeb953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basketballPrefab: {fileID: 0}
+  throwOrigin: {fileID: 1004565119}
+  throwForce: 14
+  spinForce: 3
+  throwCooldown: 1
+  forwardMultiplier: 1
+  upwardMultiplier: 0.9
+  throwAngle: 35
 --- !u!1 &194626179
 GameObject:
   m_ObjectHideFlags: 0
