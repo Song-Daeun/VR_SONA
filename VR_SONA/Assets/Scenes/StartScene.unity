@@ -4884,6 +4884,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   raycastDistance: 10
+  missionPanel: {fileID: 0}
+  messageDistance: 2
+  messageHeight: 1.5
 --- !u!4 &962086766
 Transform:
   m_ObjectHideFlags: 0
@@ -4893,7 +4896,7 @@ Transform:
   m_GameObject: {fileID: 962086763}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.1, y: 0.7, z: -1.78}
+  m_LocalPosition: {x: 1.16, y: 0.7, z: -3.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7867,13 +7870,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d47c434fe9f0df4589b69c87bf4102f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xrOrigin: {fileID: 1841214182}
-  playerVisual: {fileID: 0}
-  enableMovement: 0
-  moveSpeed: 2
-  runMultiplier: 1.5
-  jumpPower: 5
-  gravity: -9.81
   moveInput:
     m_UseReference: 0
     m_Action:
@@ -7886,30 +7882,7 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  runInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Run Input
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 6b062411-cf64-4f14-aef7-86692cc1b55e
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  jumpInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Jump Input
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: fb84e5cc-565d-49d3-9ab4-64f5edfe3939
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  moveSpeed: 2
 --- !u!143 &1841214177
 CharacterController:
   m_ObjectHideFlags: 0

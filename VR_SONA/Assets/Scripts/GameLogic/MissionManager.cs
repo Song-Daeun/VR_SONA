@@ -35,16 +35,20 @@ public class MissionManager : MonoBehaviour
         return missionMap[coords.x, coords.y];
     }
 
+    // public string GetSceneNameFromMission(MissionType mission)
+    // {
+    //     switch (mission)
+    //     {
+    //         case MissionType.Mission1:
+    //             return "MissionBasketballScene";
+    //         case MissionType.Mission2:
+    //             return "MissionWaterRushScene";
+    //         default:
+    //             return null;
+    //     }
+    // }
     public string GetSceneNameFromMission(MissionType mission)
     {
-        switch (mission)
-        {
-            case MissionType.Mission1:
-                return "MissionBasketballScene";
-            case MissionType.Mission2:
-                return "MissionWaterRushScene";
-            default:
-                return null;
-        }
+        return "MissionBasketballScene";
     }
 }
