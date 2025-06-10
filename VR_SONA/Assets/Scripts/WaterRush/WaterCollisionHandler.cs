@@ -6,7 +6,7 @@ public class WaterCollisionHandler : MonoBehaviour
 {
     public GameObject successText;
     public GameObject failText;
-    public GameObject returnButton;
+    // returnButton 제거 - ReturnToMain에서 관리
 
     private float startTime;
     public static bool missionCompleted = false;
@@ -18,7 +18,7 @@ public class WaterCollisionHandler : MonoBehaviour
         missionCompleted = false; 
         successText.SetActive(false);
         failText.SetActive(false);
-        returnButton.SetActive(false);
+        // returnButton.SetActive(false); 제거
 
         // 10초 후 실패 체크 코루틴 시작
         failCoroutine = StartCoroutine(FailCheckAfterTime(10f));
@@ -57,12 +57,13 @@ public class WaterCollisionHandler : MonoBehaviour
         if (elapsedTime <= 10f)
         {
             Debug.Log($"[WaterCollision] 성공! {elapsedTime:F2}초에 완료");
-            GameManager.MissionResult = true; // 성공 결과 저장
+            BasGameManager.MissionResult = true; // 성공 결과 저장
             ShowSuccess();
         }
         else
         {
             Debug.Log($"[WaterCollision] 실패! {elapsedTime:F2}초 - 시간 초과");
+            BasGameManager.MissionResult = false; // 실패 결과 저장
             ShowFailure();
         }
     }
@@ -73,9 +74,9 @@ public class WaterCollisionHandler : MonoBehaviour
 
         successText.SetActive(true);
         failText.SetActive(false);
-        returnButton.SetActive(true);
+        // returnButton.SetActive(true); 제거 - ReturnToMain에서 관리
 
-        Debug.Log("[WaterCollision] SUCCESS 텍스트 + 버튼 표시");
+        Debug.Log("[WaterCollision] SUCCESS 텍스트 표시");
     }
 
     private void ShowFailure()
@@ -84,11 +85,10 @@ public class WaterCollisionHandler : MonoBehaviour
 
         failText.SetActive(true);
         successText.SetActive(false);
-        returnButton.SetActive(true);
+        // returnButton.SetActive(true); 제거 - ReturnToMain에서 관리
 
-        Debug.Log("[WaterCollision] FAIL 텍스트 + 버튼 표시");
+        Debug.Log("[WaterCollision] FAIL 텍스트 표시");
     }
-
 
     IEnumerator FailCheckAfterTime(float timeLimit)
     {
@@ -100,6 +100,7 @@ public class WaterCollisionHandler : MonoBehaviour
         {
             Debug.Log("[WaterCollision] 10초 경과 - 실패 처리");
             missionCompleted = true;
+            BasGameManager.MissionResult = false; // 실패 결과 저장
             ShowFailure();
         }
         else

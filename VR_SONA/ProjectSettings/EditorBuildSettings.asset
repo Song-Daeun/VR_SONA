@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/StartScene.unity
     guid: c78ac1a10171f449fb5fb574e32292cc
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/UIScene.unity
     guid: f102547791f04d84384f187b53223a35
   - enabled: 1

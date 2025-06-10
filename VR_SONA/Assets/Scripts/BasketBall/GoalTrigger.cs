@@ -22,7 +22,7 @@ public class GoalTrigger : MonoBehaviour
             if (passedTop)
             {
                 ScoreManager.Instance.AddScore(1);       // 점수 UI 반영
-                GameManager.Instance.AddGoal();          // 성공 조건 반영
+                BasGameManager.Instance.AddGoal();          // 성공 조건 반영
                 Debug.Log("득점 AddGoal 호출됨");
                 passedTop = false;
             }
