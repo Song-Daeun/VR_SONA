@@ -10,6 +10,9 @@ public class SpellBookManager : MonoBehaviour
 
     [Header("Settings")]
     public float resultDisplayTime = 5f; // 결과 표시 시간 (3초 → 5초로 증가)
+    
+    // 🔥 중복 호출 방지용 변수
+    private bool isSpellBookActive = false;
 
     private void Awake()
     {
@@ -20,10 +23,18 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // 스펠북 활성화
+    // 스펠북 활성화 (중복 호출 방지)
     // ================================ //
     public void ActivateSpellBook()
     {
+        // 🔥 이미 스펠북이 활성화되어 있으면 무시
+        if (isSpellBookActive)
+        {
+            Debug.Log("📖 스펠북이 이미 활성화되어 있습니다. 호출 무시.");
+            return;
+        }
+        
+        isSpellBookActive = true; // 활성화 플래그 설정
         Debug.Log("📖 스펠북 활성화!");
         
         // UIManager를 통해 스펠북 UI 표시
@@ -206,7 +217,7 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // UI 닫기
+    // UI 닫기 (수정됨)
     // ================================ //
     private IEnumerator CloseSpellBookAfterDelay()
     {
@@ -223,6 +234,9 @@ public class SpellBookManager : MonoBehaviour
         {
             UIManager.Instance.ShowSpellBookUI(false);
         }
+        
+        // 🔥 스펠북 비활성화 플래그 해제
+        isSpellBookActive = false;
         
         Debug.Log("📖 스펠북 UI 닫힘");
     }

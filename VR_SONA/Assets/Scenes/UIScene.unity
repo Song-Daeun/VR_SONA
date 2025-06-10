@@ -24438,18 +24438,8 @@ MonoBehaviour:
   - {fileID: 974224253}
   - {fileID: 136655850}
   - {fileID: 1567000416}
-  spellBookTileButtonTexts:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  spellBookUIDistance: 15
-  spellBookUIHeightOffset: 3
+  spellBookUIDistance: 10
+  spellBookUIHeightOffset: 0.5
 --- !u!1001 &1627953670
 PrefabInstance:
   m_ObjectHideFlags: 0

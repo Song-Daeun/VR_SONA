@@ -34,11 +34,11 @@ public class UIManager : MonoBehaviour
 
     [Header("SpellBook UI")]
     public GameObject spellBookCanvas;
-    // public GameObject spellBookResultPanel; // 제거 - ResultPanel 불필요
+    public GameObject spellBookResultPanel; // 다시 추가 - Inspector 연결용
     public TextMeshProUGUI spellBookResultText; // "+30초" 또는 "비행기!" 텍스트
     public GameObject spellBookAirplanePanel; // 비행기 모드 패널
     public Button[] spellBookTileButtons = new Button[9]; // 3x3 타일 버튼들
-    public TextMeshProUGUI[] spellBookTileButtonTexts = new TextMeshProUGUI[9]; // 버튼 텍스트들
+    // public TextMeshProUGUI[] spellBookTileButtonTexts = new TextMeshProUGUI[9]; // 제거 - 불필요
     public float spellBookUIDistance = 2f;         // 카메라 앞 거리
     public float spellBookUIHeightOffset = 0f;     // 카메라 높이 오프셋
 
@@ -292,58 +292,46 @@ public class UIManager : MonoBehaviour
     {
         Debug.Log($"📖 UIManager.ShowSpellBookResult() 호출됨");
         
-        // ResultPanel 단계 건너뛰고 ResultText 직접 제어
+        // 1. ResultPanel 먼저 활성화 (구조 유지)
+        if (spellBookResultPanel != null)
+        {
+            spellBookResultPanel.SetActive(true);
+            Debug.Log($"📖 SpellBook ResultPanel 활성화됨");
+        }
+        
+        // 2. ResultText는 ScreenSpaceOverlay로 설정
         if (spellBookResultText != null)
         {
-            // 1. ResultText 직접 활성화 및 설정
+            // ResultText 활성화
             spellBookResultText.gameObject.SetActive(true);
             spellBookResultText.text = resultText;
             
-            Debug.Log($"📖 SpellBook ResultText 직접 활성화: '{resultText}'");
+            Debug.Log($"📖 SpellBook ResultText 설정: '{resultText}'");
             
-            // 2. Canvas 찾기 및 설정
-            Canvas canvas = spellBookResultText.GetComponentInParent<Canvas>();
-            if (canvas != null)
+            // ResultText의 Canvas를 ScreenSpaceOverlay로 설정
+            Canvas textCanvas = spellBookResultText.GetComponentInParent<Canvas>();
+            if (textCanvas != null)
             {
-                // Canvas 설정 최적화
-                canvas.renderMode = RenderMode.WorldSpace;
-                canvas.worldCamera = FindCameraComponent();
-                canvas.sortingOrder = 100;
+                textCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                textCanvas.sortingOrder = 2000; // 매우 높은 우선순위
                 
-                Debug.Log($"📖 Canvas 설정 완료 - WorldCamera: {(canvas.worldCamera != null ? canvas.worldCamera.name : "null")}");
+                Debug.Log($"📖 ResultText Canvas를 ScreenSpaceOverlay로 설정");
             }
             
-            // 3. ResultText 크기 및 위치 최적화
+            // ResultText를 화면 중앙에 배치
             RectTransform textRect = spellBookResultText.rectTransform;
-            textRect.sizeDelta = new Vector2(800, 200); // 큰 크기
-            textRect.localScale = Vector3.one; // 정상 스케일
-            textRect.anchorMin = Vector2.one * 0.5f; // 중앙 앵커
-            textRect.anchorMax = Vector2.one * 0.5f; // 중앙 앵커
-            textRect.anchoredPosition = Vector2.zero; // 중앙 위치
+            textRect.sizeDelta = new Vector2(400, 100);
+            textRect.localScale = Vector3.one;
+            textRect.anchorMin = new Vector2(0.5f, 0.5f);
+            textRect.anchorMax = new Vector2(0.5f, 0.5f);
+            textRect.anchoredPosition = Vector2.zero;
             
-            // 4. 텍스트 스타일 강화
-            spellBookResultText.fontSize = 48; // 큰 폰트
-            spellBookResultText.color = Color.white; // 흰색
+            // 텍스트 스타일
+            spellBookResultText.fontSize = 48;
+            spellBookResultText.color = Color.yellow;
+            spellBookResultText.fontStyle = FontStyles.Bold;
             
-            Debug.Log($"📖 ResultText 크기 설정: {textRect.sizeDelta}, 스케일: {textRect.localScale}");
-            
-            // 5. Canvas를 카메라 바로 앞에 배치
-            if (canvas != null && cameraTransform != null)
-            {
-                // Canvas 자체를 카메라 앞 1미터에 배치
-                Vector3 targetPos = cameraTransform.position + cameraTransform.forward * 1.0f;
-                canvas.transform.position = targetPos;
-                canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
-                
-                // Canvas 크기 조정
-                RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-                if (canvasRect != null)
-                {
-                    canvasRect.localScale = Vector3.one * 0.003f; // 매우 작게 조정
-                }
-                
-                Debug.Log($"📖 Canvas 위치 설정: {targetPos}");
-            }
+            Debug.Log($"📖 ResultText 화면 중앙 배치 완료");
         }
         else
         {
@@ -351,7 +339,7 @@ public class UIManager : MonoBehaviour
             return;
         }
         
-        // AirplanePanel 숨기기 (있다면)
+        // AirplanePanel 숨기기
         if (spellBookAirplanePanel != null)
         {
             spellBookAirplanePanel.SetActive(false);
@@ -362,21 +350,100 @@ public class UIManager : MonoBehaviour
 
     public void ShowSpellBookAirplanePanel()
     {
+        Debug.Log("🔍 ShowSpellBookAirplanePanel() 시작");
+        
         if (spellBookAirplanePanel != null)
         {
+            Debug.Log($"🔍 spellBookAirplanePanel 발견: {spellBookAirplanePanel.name}");
+            Debug.Log($"🔍 spellBookAirplanePanel 활성화 전 상태: {spellBookAirplanePanel.activeInHierarchy}");
+            
             // ResultText 숨기기
             if (spellBookResultText != null)
+            {
                 spellBookResultText.gameObject.SetActive(false);
+                Debug.Log("🔍 ResultText 숨김 완료");
+            }
                 
             spellBookAirplanePanel.SetActive(true);
+            Debug.Log($"🔍 spellBookAirplanePanel 활성화 후 상태: {spellBookAirplanePanel.activeInHierarchy}");
             
-            // Canvas 위치 조정
-            if (spellBookCanvas != null && cameraTransform != null)
+            // Canvas 찾기 및 확인
+            Canvas canvas = spellBookAirplanePanel.GetComponentInParent<Canvas>();
+            if (canvas != null)
             {
-                PositionUIInFrontOfCamera(spellBookCanvas.transform, spellBookUIDistance, spellBookUIHeightOffset);
+                Debug.Log($"🔍 Canvas 발견: {canvas.name}");
+                Debug.Log($"🔍 Canvas 활성화 상태: {canvas.gameObject.activeInHierarchy}");
+                Debug.Log($"🔍 Canvas 현재 RenderMode: {canvas.renderMode}");
+                Debug.Log($"🔍 Canvas 현재 SortingOrder: {canvas.sortingOrder}");
+                
+                canvas.renderMode = RenderMode.WorldSpace;
+                canvas.worldCamera = Camera.main ?? FindObjectOfType<Camera>();
+                canvas.sortingOrder = 1000;
+                
+                Debug.Log($"🔍 Canvas 설정 후 - RenderMode: {canvas.renderMode}, WorldCamera: {(canvas.worldCamera != null ? canvas.worldCamera.name : "null")}");
+                
+                // Canvas를 카메라 앞에 배치
+                if (cameraTransform != null)
+                {
+                    Debug.Log($"🔍 cameraTransform 발견: {cameraTransform.name}");
+                    Debug.Log($"🔍 카메라 위치: {cameraTransform.position}");
+                    Debug.Log($"🔍 카메라 방향: {cameraTransform.forward}");
+                    
+                    Vector3 targetPos = cameraTransform.position
+                        + cameraTransform.forward * spellBookUIDistance
+                        + Vector3.up * spellBookUIHeightOffset;
+                    
+                    Debug.Log($"🔍 계산된 목표 위치: {targetPos}");
+                    Debug.Log($"🔍 Canvas 이동 전 위치: {canvas.transform.position}");
+                    
+                    canvas.transform.position = targetPos;
+                    canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                    
+                    Debug.Log($"🔍 Canvas 이동 후 위치: {canvas.transform.position}");
+                    Debug.Log($"🔍 Canvas 회전: {canvas.transform.rotation.eulerAngles}");
+                }
+                else
+                {
+                    Debug.LogError("🔍 cameraTransform이 null입니다!");
+                }
+                
+                // Canvas 크기 조정
+                RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+                if (canvasRect != null)
+                {
+                    Debug.Log($"🔍 Canvas 스케일 조정 전: {canvasRect.localScale}");
+                    canvasRect.localScale = Vector3.one * 0.01f;
+                    Debug.Log($"🔍 Canvas 스케일 조정 후: {canvasRect.localScale}");
+                }
+            }
+            else
+            {
+                Debug.LogError("🔍 Canvas를 찾을 수 없습니다!");
             }
             
-            Debug.Log($"✈️ SpellBook AirplanePanel 활성화 완료");
+            // AirplanePanel 자체 상태 확인
+            RectTransform panelRect = spellBookAirplanePanel.GetComponent<RectTransform>();
+            if (panelRect != null)
+            {
+                Debug.Log($"🔍 AirplanePanel 크기: {panelRect.sizeDelta}");
+                Debug.Log($"🔍 AirplanePanel 스케일: {panelRect.localScale}");
+                Debug.Log($"🔍 AirplanePanel 로컬 위치: {panelRect.localPosition}");
+            }
+            
+            // 버튼들 상태 확인
+            Debug.Log($"🔍 spellBookTileButtons 배열 길이: {spellBookTileButtons.Length}");
+            int activeButtonCount = 0;
+            for (int i = 0; i < spellBookTileButtons.Length; i++)
+            {
+                if (spellBookTileButtons[i] != null)
+                {
+                    activeButtonCount++;
+                    Debug.Log($"🔍 버튼 {i}: {spellBookTileButtons[i].name}, 활성화: {spellBookTileButtons[i].gameObject.activeInHierarchy}");
+                }
+            }
+            Debug.Log($"🔍 총 연결된 버튼 수: {activeButtonCount}");
+            
+            Debug.Log($"✅ ShowSpellBookAirplanePanel 완료");
         }
         else
         {
@@ -439,12 +506,13 @@ public class UIManager : MonoBehaviour
                     buttonImage.color = isOccupied ? Color.gray : Color.white;
                 }
                 
-                // 버튼 텍스트 설정 (BingoBoard의 공통 구조 사용)
+                // 버튼 텍스트 설정 (GetComponentInChildren으로 찾기)
                 int x = i / 3;
                 int y = i % 3;
-                if (spellBookTileButtonTexts[i] != null)
+                TextMeshProUGUI buttonText = spellBookTileButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
                 {
-                    spellBookTileButtonTexts[i].text = BingoBoard.GetTileNameByCoords(x, y);
+                    buttonText.text = BingoBoard.GetTileNameByCoords(x, y);
                 }
                 
                 // 클릭 이벤트 설정 (기존 리스너 제거 후 새로 추가)
