@@ -160,13 +160,15 @@ public class MissionManager : MonoBehaviour
             }
         }
 
+        // ❌ 제거: MissionCameraManager.RestoreCameraFromMission();
+
         // 미션 씬 언로드
         SceneLoader.Instance.UnloadMissionScene();
 
         // 게임 오브젝트들 재활성화
         ReactivateGameObjects();
 
-        // GameManager에 결과 전달
+        // GameManager에 결과 전달 (여기서 Player 위치 복구 처리됨)
         GameManager.Instance.OnMissionResult(success);
 
         // 현재 미션 타일 인덱스 초기화

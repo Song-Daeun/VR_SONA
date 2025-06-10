@@ -29,6 +29,13 @@ public class GameManager : MonoBehaviour
     private int currentCoins; // 현재 보유 코인
 
     // ================================ //
+    // Player 위치 저장/복구용 변수 (미션용)
+    // ================================ //
+    private Vector3 playerPositionBeforeMission;
+    private Quaternion playerRotationBeforeMission;
+    private bool hasStoredPlayerPosition = false;
+
+    // ================================ //
     // 빙고 보드 매핑 (타일 이름 → 빙고 좌표)
     // ================================ //
     private System.Collections.Generic.Dictionary<string, Vector2Int> tileToCoords = 
@@ -321,7 +328,97 @@ public class GameManager : MonoBehaviour
     }
 
     // ================================ //
-    // 미션 수락/거절 처리 (코인 체크 추가)
+    // Player 위치 저장/복구 (XR Origin 기준으로 수정)
+    // ================================ //
+    private void StorePlayerPosition()
+    {
+        // XR Origin 또는 Player 찾기
+        GameObject targetObject = FindXROriginOrPlayer();
+        
+        if (targetObject != null)
+        {
+            playerPositionBeforeMission = targetObject.transform.position;
+            playerRotationBeforeMission = targetObject.transform.rotation;
+            hasStoredPlayerPosition = true;
+            
+            Debug.Log($"💾 미션 시작 전 {targetObject.name} 위치 저장: {playerPositionBeforeMission}");
+            Debug.Log($"💾 미션 시작 전 {targetObject.name} 회전 저장: {playerRotationBeforeMission.eulerAngles}");
+        }
+    }
+
+    public void RestorePlayerPosition()
+    {
+        // XR Origin 또는 Player 찾기
+        GameObject targetObject = FindXROriginOrPlayer();
+        
+        if (targetObject != null && hasStoredPlayerPosition)
+        {
+            targetObject.transform.position = playerPositionBeforeMission;
+            targetObject.transform.rotation = playerRotationBeforeMission;
+            
+            Debug.Log($"🔄 {targetObject.name} 위치 복구 완료: {playerPositionBeforeMission}");
+            Debug.Log($"🔄 {targetObject.name} 회전 복구 완료: {playerRotationBeforeMission.eulerAngles}");
+            
+            // Player 활성화 확인
+            if (!targetObject.activeInHierarchy)
+            {
+                targetObject.SetActive(true);
+                Debug.Log($"🔄 {targetObject.name} 활성화 완료");
+            }
+            
+            // 카메라 활성화 (XR Origin 또는 Player 내부에서)
+            Camera[] cameras = targetObject.GetComponentsInChildren<Camera>(true);
+            foreach (Camera cam in cameras)
+            {
+                cam.gameObject.SetActive(true);
+                Debug.Log($"🔄 카메라 활성화: {cam.name}");
+            }
+            
+            // 위치 저장 플래그 초기화
+            hasStoredPlayerPosition = false;
+        }
+        else
+        {
+            Debug.LogError("❌ 위치 복구 실패: 대상 오브젝트가 null이거나 저장된 위치가 없습니다!");
+        }
+    }
+    
+    private GameObject FindXROriginOrPlayer()
+    {
+        // 1. XR Origin 찾기 시도
+        GameObject xrOrigin = GameObject.Find("XR Origin (XR Rig)");
+        if (xrOrigin == null)
+            xrOrigin = GameObject.Find("XR Origin");
+        if (xrOrigin == null)
+            xrOrigin = GameObject.Find("XROrigin");
+            
+        if (xrOrigin != null)
+        {
+            Debug.Log($"🎯 XR Origin 찾음: {xrOrigin.name}");
+            return xrOrigin;
+        }
+        
+        // 2. Player 찾기 (fallback)
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
+        {
+            Debug.Log($"🎯 Player 찾음: {player.name}");
+            return player;
+        }
+        
+        // 3. 기존 player 변수 사용 (최후의 수단)
+        if (player != null)
+        {
+            Debug.Log($"🎯 기존 player 변수 사용: {player.name}");
+            return player;
+        }
+        
+        Debug.LogError("❌ XR Origin 또는 Player를 찾을 수 없습니다!");
+        return null;
+    }
+
+    // ================================ //
+    // 미션 수락/거절 처리 (Player 위치 저장 추가)
     // ================================ //
     public void OnMissionConfirmed(bool accepted)
     {
@@ -346,6 +443,9 @@ public class GameManager : MonoBehaviour
             // 코인 차감
             if (SubtractCoinsForMission())
             {
+                // 🔥 미션 시작 전 Player 위치 저장
+                StorePlayerPosition();
+                
                 Debug.Log("✅ 미션 수락됨 → MissionManager 호출");
                 MissionManager.Instance.LoadMissionScene(currentTileIndex);
             }
@@ -358,10 +458,13 @@ public class GameManager : MonoBehaviour
     }
 
     // ================================ //
-    // 미션 결과 처리 (MissionManager에서 호출)
+    // 미션 결과 처리 (Player 위치 복구 추가)
     // ================================ //
     public void OnMissionResult(bool success)
     {
+        // 🔥 미션 완료 후 Player 위치 복구
+        RestorePlayerPosition();
+        
         if (success)
         {
             Debug.Log("🎉 미션 성공! 건물 생성 및 빙고 체크");

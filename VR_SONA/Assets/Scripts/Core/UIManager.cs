@@ -224,25 +224,10 @@ public class UIManager : MonoBehaviour
     {
         if (spellBookResultText != null)
         {
-            // 부모들도 모두 활성화 (순서가 중요!)
-            if (spellBookCanvas != null)
-            {
-                spellBookCanvas.SetActive(true);
-                Debug.Log($"📖 SpellBook Canvas 활성화 시도: {spellBookCanvas.activeInHierarchy}");
-            }
-            if (spellBookResultPanel != null)
-            {
-                spellBookResultPanel.SetActive(true);
-                Debug.Log($"📖 SpellBook ResultPanel 활성화 시도: {spellBookResultPanel.activeInHierarchy}");
-            }
-                
             spellBookResultText.text = resultText;
             spellBookResultText.gameObject.SetActive(true);
             
-            // 활성화 후 상태 재확인
-            Debug.Log($"📖 SpellBook Canvas 최종 상태: {spellBookCanvas != null && spellBookCanvas.activeInHierarchy}");
-            Debug.Log($"📖 SpellBook ResultPanel 최종 상태: {spellBookResultPanel != null && spellBookResultPanel.activeInHierarchy}");
-            Debug.Log($"📖 SpellBook ResultText 최종 상태: {spellBookResultText.gameObject.activeInHierarchy}");
+            Debug.Log($"📖 SpellBook ResultText 활성화됨: {spellBookResultText.gameObject.activeInHierarchy}");
             
             // AirplanePanel 숨기기 (있다면)
             if (spellBookAirplanePanel != null)

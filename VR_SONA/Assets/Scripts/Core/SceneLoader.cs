@@ -64,6 +64,10 @@ public class SceneLoader : MonoBehaviour
             SceneManager.SetActiveScene(loadedScene);
             Debug.Log($"🎯 활성 씬 변경: {sceneName}");
         }
+
+        // 미션 씬 로드 완료 후 카메라 전환 수행
+        yield return new WaitForSeconds(0.1f); // 씬 초기화 대기
+        MissionCameraManager.SetupCameraForMission();
     }
 
     // ================================ //
