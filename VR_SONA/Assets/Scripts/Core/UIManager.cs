@@ -32,6 +32,16 @@ public class UIManager : MonoBehaviour
     public GameObject coinBackground; // 타원형 배경 이미지
     public GameObject insufficientCoinsMessage; // 코인 부족 메시지 UI
 
+    [Header("SpellBook UI")]
+    public GameObject spellBookCanvas;
+    public GameObject spellBookResultPanel; // 결과 표시 패널
+    public TextMeshProUGUI spellBookResultText; // "+30초" 또는 "비행기!" 텍스트
+    public GameObject spellBookAirplanePanel; // 비행기 모드 패널
+    public Button[] spellBookTileButtons = new Button[9]; // 3x3 타일 버튼들
+    public TextMeshProUGUI[] spellBookTileButtonTexts = new TextMeshProUGUI[9]; // 버튼 텍스트들
+    public float spellBookUIDistance = 2f;         // 카메라 앞 거리
+    public float spellBookUIHeightOffset = 0f;     // 카메라 높이 오프셋
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -50,6 +60,7 @@ public class UIManager : MonoBehaviour
         ShowDiceUI(true);
         ShowMissionPrompt(false);
         ShowInsufficientCoinsMessage(false); // 코인 부족 메시지 초기 숨김
+        ShowSpellBookUI(false); // 스펠북 UI 초기 숨김
     }
 
     // ================================ //
@@ -191,6 +202,136 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         ShowInsufficientCoinsMessage(false);
+    }
+
+    // ================================ //
+    // SpellBook UI 처리
+    // ================================ //
+    public void ShowSpellBookUI(bool show)
+    {
+        if (spellBookCanvas != null)
+        {
+            spellBookCanvas.SetActive(show);
+            Debug.Log($"📖 SpellBook Canvas 활성화: {show}");
+        }
+        else
+        {
+            Debug.LogError("❌ spellBookCanvas가 null입니다!");
+        }
+    }
+
+    public void ShowSpellBookResult(string resultText)
+    {
+        if (spellBookResultText != null)
+        {
+            // 부모들도 모두 활성화 (순서가 중요!)
+            if (spellBookCanvas != null)
+            {
+                spellBookCanvas.SetActive(true);
+                Debug.Log($"📖 SpellBook Canvas 활성화 시도: {spellBookCanvas.activeInHierarchy}");
+            }
+            if (spellBookResultPanel != null)
+            {
+                spellBookResultPanel.SetActive(true);
+                Debug.Log($"📖 SpellBook ResultPanel 활성화 시도: {spellBookResultPanel.activeInHierarchy}");
+            }
+                
+            spellBookResultText.text = resultText;
+            spellBookResultText.gameObject.SetActive(true);
+            
+            // 활성화 후 상태 재확인
+            Debug.Log($"📖 SpellBook Canvas 최종 상태: {spellBookCanvas != null && spellBookCanvas.activeInHierarchy}");
+            Debug.Log($"📖 SpellBook ResultPanel 최종 상태: {spellBookResultPanel != null && spellBookResultPanel.activeInHierarchy}");
+            Debug.Log($"📖 SpellBook ResultText 최종 상태: {spellBookResultText.gameObject.activeInHierarchy}");
+            
+            // AirplanePanel 숨기기 (있다면)
+            if (spellBookAirplanePanel != null)
+                spellBookAirplanePanel.SetActive(false);
+            
+            // ResultText를 카메라 앞에 배치 (주사위 ResultText 방식과 동일)
+            if (cameraTransform != null)
+            {
+                Transform uiRoot = spellBookResultText.transform;
+                Vector3 targetPos = cameraTransform.position
+                    + cameraTransform.forward * spellBookUIDistance
+                    + Vector3.up * spellBookUIHeightOffset;
+                uiRoot.position = targetPos;
+                uiRoot.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                
+                Debug.Log($"📖 SpellBook ResultText 위치 설정: {targetPos}, 텍스트: {resultText}");
+                Debug.Log($"📖 카메라 위치: {cameraTransform.position}, 카메라 방향: {cameraTransform.forward}");
+            }
+        }
+        else
+        {
+            Debug.LogError("❌ spellBookResultText가 null입니다!");
+        }
+    }
+
+    public void ShowSpellBookAirplanePanel()
+    {
+        if (spellBookAirplanePanel != null)
+        {
+            // ResultText 숨기기
+            if (spellBookResultText != null)
+                spellBookResultText.gameObject.SetActive(false);
+                
+            spellBookAirplanePanel.SetActive(true);
+            
+            // AirplanePanel을 카메라 앞에 배치 (주사위 UI 방식과 동일)
+            if (cameraTransform != null)
+            {
+                Transform uiRoot = spellBookAirplanePanel.transform;
+                Vector3 targetPos = cameraTransform.position
+                    + cameraTransform.forward * spellBookUIDistance
+                    + Vector3.up * spellBookUIHeightOffset;
+                uiRoot.position = targetPos;
+                uiRoot.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                
+                Debug.Log($"✈️ SpellBook AirplanePanel 위치 설정: {targetPos}");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ cameraTransform이 null입니다! SpellBook UI 위치 설정 실패");
+            }
+        }
+        else
+        {
+            Debug.LogError("❌ spellBookAirplanePanel이 null입니다!");
+        }
+    }
+
+    public void UpdateSpellBookTileButtons(bool[] tileStates, System.Action<int> onTileClicked)
+    {
+        for (int i = 0; i < spellBookTileButtons.Length && i < tileStates.Length; i++)
+        {
+            if (spellBookTileButtons[i] != null)
+            {
+                // 버튼 활성화/비활성화
+                bool isOccupied = tileStates[i];
+                spellBookTileButtons[i].interactable = !isOccupied;
+                
+                // 버튼 색상 변경
+                Image buttonImage = spellBookTileButtons[i].GetComponent<Image>();
+                if (buttonImage != null)
+                {
+                    buttonImage.color = isOccupied ? Color.gray : Color.white;
+                }
+                
+                // 버튼 텍스트 설정 (BingoBoard의 공통 구조 사용)
+                int x = i / 3;
+                int y = i % 3;
+                if (spellBookTileButtonTexts[i] != null)
+                {
+                    spellBookTileButtonTexts[i].text = BingoBoard.GetTileNameByCoords(x, y);
+                }
+                
+                // 클릭 이벤트 설정 (기존 리스너 제거 후 새로 추가)
+                spellBookTileButtons[i].onClick.RemoveAllListeners();
+                int buttonIndex = i; // 클로저 문제 해결
+                spellBookTileButtons[i].onClick.AddListener(() => onTileClicked(buttonIndex));
+            }
+        }
     }
 
     // ================================ //

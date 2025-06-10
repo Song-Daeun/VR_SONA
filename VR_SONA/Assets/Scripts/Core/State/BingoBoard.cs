@@ -20,6 +20,16 @@ public class BingoBoard : MonoBehaviour
     public static BingoBoard Instance { get; private set; }
     
     // ================================ //
+    // 타일 그리드 구조 (공통 사용)
+    // ================================ //
+    public static string[,] TileGrid = new string[3, 3]
+    {
+        { "Netherlands", "Germany", "USA" },
+        { "SpellBook", "Japan", "Seoul" },
+        { "Suncheon", "Taiwan", "Start" }
+    };
+    
+    // ================================ //
     // 초기화
     // ================================ //
     void Awake()
@@ -33,25 +43,21 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
-    // 이름 기반 타일들 정확한 (x, y) 좌표에 매핑
+    // 타일 위치 초기화
     // ================================ //
+    /// <summary>
+    /// 이름 기반으로 타일들을 정확한 (x,y) 좌표에 매핑
+    /// </summary>
     private void InitializeTilePositions()
     {
         tiles = new TileData[rows, cols];
         tilePositions = new Transform[rows, cols];
 
-        string[,] expectedOrder = new string[3, 3]
-        {
-            { "Netherlands", "Germany", "USA" },
-            { "SpellBook", "Japan", "Seoul" },
-            { "Suncheon", "Taiwan", "Start" }
-        };
-
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < cols; y++)
             {
-                string tileName = expectedOrder[x, y];
+                string tileName = TileGrid[x, y];
                 GameObject go = GameObject.Find(tileName);
 
                 if (go != null)
@@ -88,8 +94,11 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
-    // 플레이어가 가장 가까이 있는 타일 좌표 반환
+    // 플레이어 위치 관련
     // ================================ //
+    /// <summary>
+    /// 플레이어가 가장 가까이 있는 타일의 (x,y) 좌표를 반환
+    /// </summary>
     public Vector2Int GetPlayerTileCoords()
     {
         GameObject player = GameObject.FindGameObjectWithTag("MainCamera");
@@ -127,9 +136,9 @@ public class BingoBoard : MonoBehaviour
         return closestCoord;
     }
 
-    // ================================ //
-    // 미션 성공 시 해당 위치에 건물 생성
-    // ================================ //
+    /// <summary>
+    /// 미션 성공 시 해당 위치에 건물 생성
+    /// </summary>
     public void OnMissionSuccess(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -166,8 +175,11 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
-    // 건물이 위에서 떨어지는 애니메이션 연출
+    // 건물 생성 관련
     // ================================ //
+    /// <summary>
+    /// 건물이 위에서 떨어지는 애니메이션 연출
+    /// </summary>
     private IEnumerator DropBuilding(GameObject obj, Vector3 targetPos)
     {
         float time = 0f;
@@ -185,9 +197,9 @@ public class BingoBoard : MonoBehaviour
         obj.transform.position = targetPos;
     }
 
-    // ================================ //
-    // 해당 타일 건물 프리팹을 자동으로 설정
-    // ================================ //
+    /// <summary>
+    /// 해당 타일의 국가 이름에 맞는 건물 프리팹을 자동으로 설정
+    /// </summary>
     public void SetBuildingPrefabFromTile(GameObject tileGO, int x, int y)
     {
         string countryName = tileGO.name.Replace("Tile", "");
@@ -215,6 +227,43 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
+    // 공통 유틸리티 메소드
+    // ================================ //
+    /// <summary>
+    /// 타일 이름으로 좌표 반환
+    /// </summary>
+    public static Vector2Int GetTileCoordsByName(string tileName)
+    {
+        for (int x = 0; x < 3; x++)
+        {
+            for (int y = 0; y < 3; y++)
+            {
+                if (TileGrid[x, y] == tileName)
+                {
+                    return new Vector2Int(x, y);
+                }
+            }
+        }
+        
+        Debug.LogWarning($"⚠️ 타일 '{tileName}'의 좌표를 찾을 수 없습니다.");
+        return new Vector2Int(-1, -1);
+    }
+
+    /// <summary>
+    /// 좌표로 타일 이름 반환
+    /// </summary>
+    public static string GetTileNameByCoords(int x, int y)
+    {
+        if (x >= 0 && x < 3 && y >= 0 && y < 3)
+        {
+            return TileGrid[x, y];
+        }
+        
+        Debug.LogWarning($"⚠️ 잘못된 좌표: ({x}, {y})");
+        return "";
+    }
+
+    // ================================ //
     // 타일 상태 관리
     // ================================ //
     public GameObject GetTileGameObject(int x, int y)
@@ -229,9 +278,9 @@ public class BingoBoard : MonoBehaviour
         return null;
     }
 
-    // ================================ //
-    // 미션 완료 상태 설정 (MissionManager에서 호출)
-    // ================================ //
+    /// <summary>
+    /// 미션 완료 상태 설정 (MissionManager에서 호출)
+    /// </summary>
     public void SetTileMissionCleared(int x, int y, bool cleared)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -244,9 +293,9 @@ public class BingoBoard : MonoBehaviour
         Debug.Log($"💾 타일 ({x}, {y}) 미션 완료 상태: {cleared}");
     }
 
-    // ================================ //
-    // 미션 완료 상태 확인 (GameManager에서 호출)
-    // ================================ //
+    /// <summary>
+    /// 미션 완료 상태 확인 (GameManager에서 호출)
+    /// </summary>
     public bool IsTileMissionCleared(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -256,5 +305,33 @@ public class BingoBoard : MonoBehaviour
         }
 
         return tiles[x, y].isMissionCleared;
+    }
+
+    // ================================ //
+    // 디버그 및 테스트
+    // ================================ //
+    /// <summary>
+    /// 테스트용: B 키 누르면 현재 플레이어 위치에 건물 생성
+    /// </summary>
+    void Update()
+    {
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Debug.Log("🔍 B 키 눌림 감지됨!");
+
+            Vector2Int coords = GetPlayerTileCoords();
+            if (coords.x == -1)
+            {
+                Debug.LogWarning("🚫 플레이어가 타일 위에 없음");
+                return;
+            }
+
+            GameObject tileGO = coordToTile[coords];
+            Debug.Log("🎯 타일 찾음: " + tileGO.name);
+            SetBuildingPrefabFromTile(tileGO, coords.x, coords.y);
+            OnMissionSuccess(coords.x, coords.y);
+        }
+#endif
     }
 }

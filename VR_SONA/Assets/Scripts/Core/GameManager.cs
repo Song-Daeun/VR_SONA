@@ -11,10 +11,6 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public string startTileName = "Start"; // NOTE: 시작 타일 이름. 변경하지 말 것
 
-    [Header("Game Economy")]
-    public int startingCoins = 800;
-    public int missionCost = 100;
-
     [Header("Tile Movement")]
     public string[] tileNames = { 
         "Netherlands",  // 주사위 1
@@ -59,8 +55,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // 코인 초기화
-        currentCoins = startingCoins;
+        // PlayerState에서 초기 코인 설정 가져오기
+        currentCoins = PlayerState.InitialCoins;
         UpdateCoinUI();
         
         MovePlayerToStart(); // 플레이어 Start 타일에서 시작
@@ -240,7 +236,24 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerArrived()
     {
-        // 미션 프롬프트 표시 (Start 타일이 아닌 경우)
+        // SpellBook 타일 특별 처리
+        if (currentTileIndex >= 0 && tileNames[currentTileIndex] == "SpellBook")
+        {
+            Debug.Log("📖 SpellBook 타일 도착! SpellBookManager 활성화");
+            
+            if (SpellBookManager.Instance != null)
+            {
+                SpellBookManager.Instance.ActivateSpellBook();
+            }
+            else
+            {
+                Debug.LogError("❌ SpellBookManager.Instance를 찾을 수 없습니다!");
+                StartTurn(); // 실패 시 다음 턴
+            }
+            return;
+        }
+        
+        // 일반 타일 미션 프롬프트 표시
         if (currentTileIndex >= 0)
         {
             Invoke(nameof(ShowMissionPrompt), 0.5f); // 0.5초 후 미션 UI 표시
@@ -273,16 +286,16 @@ public class GameManager : MonoBehaviour
 
     public bool HasEnoughCoins()
     {
-        return currentCoins >= missionCost;
+        return currentCoins >= PlayerState.MissionCost;
     }
 
     public bool SubtractCoinsForMission()
     {
         if (HasEnoughCoins())
         {
-            currentCoins -= missionCost;
+            currentCoins -= PlayerState.MissionCost;
             UpdateCoinUI();
-            Debug.Log($"💰 코인 차감: -{missionCost}, 잔액: {currentCoins}");
+            Debug.Log($"💰 코인 차감: -{PlayerState.MissionCost}, 잔액: {currentCoins}");
             return true;
         }
         else
@@ -378,6 +391,62 @@ public class GameManager : MonoBehaviour
 
         // 다음 턴 시작
         StartTurn();
+    }
+
+    // ================================ //
+    // 텔레포트 기능 (SpellBook에서 사용)
+    // ================================ //
+    public void TeleportToTile(int targetTileIndex)
+    {
+        if (targetTileIndex < 0 || targetTileIndex >= tileNames.Length)
+        {
+            Debug.LogError($"❌ 잘못된 타일 인덱스: {targetTileIndex}");
+            StartTurn();
+            return;
+        }
+        
+        Debug.Log($"✈️ {tileNames[targetTileIndex]} 타일로 텔레포트!");
+        StartCoroutine(TeleportToTileCoroutine(targetTileIndex));
+    }
+    
+    public void TeleportToStart()
+    {
+        Debug.Log("✈️ Start 타일로 텔레포트!");
+        MovePlayerToStart();
+        currentTileIndex = -1;
+        StartTurn(); // Start 타일은 바로 다음 턴
+    }
+    
+    private System.Collections.IEnumerator TeleportToTileCoroutine(int targetIndex)
+    {
+        // 목표 타일 찾기
+        GameObject targetTile = GameObject.Find(tileNames[targetIndex]);
+        if (targetTile == null)
+        {
+            Debug.LogError($"❌ {tileNames[targetIndex]} 타일을 찾을 수 없습니다!");
+            StartTurn();
+            yield break;
+        }
+
+        // 순간이동 효과 (빠른 이동)
+        Vector3 targetPosition = CalculateTilePosition(targetTile);
+        player.transform.position = targetPosition;
+
+        // 이동 완료
+        currentTileIndex = targetIndex;
+        Debug.Log($"✅ 플레이어가 {tileNames[targetIndex]}에 텔레포트되었습니다!");
+
+        // PlayerState 업데이트
+        string tileName = tileNames[targetIndex];
+        if (tileToCoords.ContainsKey(tileName))
+        {
+            PlayerState.LastEnteredTileCoords = tileToCoords[tileName];
+            Debug.Log($"📍 PlayerState 업데이트: {tileName} → {PlayerState.LastEnteredTileCoords}");
+        }
+
+        // 잠깐 대기 후 도착 처리
+        yield return new WaitForSeconds(0.5f);
+        OnPlayerArrived();
     }
 
     // ================================ //
@@ -480,16 +549,81 @@ public class GameManager : MonoBehaviour
     }
 
     // ================================ //
-    // 게임 승리 처리
+    // 시간 종료 처리 (SliderTimer에서 호출)
+    // ================================ //
+    public void OnTimeUp()
+    {
+        Debug.Log("⏰ 게임 시간 종료! 게임 오버 처리");
+        
+        // 게임 일시정지
+        Time.timeScale = 0f;
+        
+        // 게임 오버 UI 표시 (UIManager 확장 필요)
+        if (UIManager.Instance != null)
+        {
+            // UIManager.Instance.ShowGameOverUI(); // 구현 필요
+        }
+        
+        // 게임 오버 로직 (빙고 달성 여부 체크)
+        bool hasAnyBingo = CheckBingoCompletion();
+        
+        if (hasAnyBingo)
+        {
+            Debug.Log("🎉 시간은 부족했지만 빙고를 달성했습니다!");
+            // 부분 승리 처리
+            OnPartialWin();
+        }
+        else
+        {
+            Debug.Log("💥 시간 종료로 인한 게임 오버!");
+            // 완전 패배 처리
+            OnGameOver();
+        }
+    }
+
+    private void OnPartialWin()
+    {
+        Debug.Log("🏆 부분 승리! (시간 부족하지만 빙고 달성)");
+        
+        // TODO: 부분 승리 UI 또는 씬 전환
+        // 예: 점수 계산, 달성 빙고 수에 따른 보상 등
+        
+        // 임시: 3초 후 재시작
+        Invoke(nameof(RestartGame), 3f);
+    }
+
+    private void OnGameOver()
+    {
+        Debug.Log("☠️ 게임 오버! (시간 종료 + 빙고 미달성)");
+        
+        // TODO: 게임 오버 UI 또는 씬 전환
+        
+        // 임시: 3초 후 재시작
+        Invoke(nameof(RestartGame), 3f);
+    }
+
+    private void RestartGame()
+    {
+        // 시간 스케일 복구
+        Time.timeScale = 1f;
+        
+        // 씬 재시작
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+        );
+    }
+
+    // ================================ //
+    // 게임 승리 처리 (수정됨)
     // ================================ //
     private void OnGameWin()
     {
-        Debug.Log("🎊🎉 게임 승리! 빙고 2줄 완성! 🎉🎊");
+        Debug.Log("🎊🎉 완전 승리! 빙고 2줄 완성! 🎉🎊");
         
         // 게임 승리 UI 표시 또는 승리 씬 로드
         // TODO: 승리 UI 구현 또는 엔딩 씬 전환
         
-        // 임시로 게임 일시정지
+        // 게임 일시정지
         Time.timeScale = 0f;
         
         // 승리 메시지 UI 표시 (UIManager에 추가 필요)
@@ -497,6 +631,9 @@ public class GameManager : MonoBehaviour
         {
             // UIManager.Instance.ShowGameWinUI(); // 구현 필요
         }
+        
+        // 임시: 5초 후 재시작 (승리는 더 오래 보여주기)
+        Invoke(nameof(RestartGame), 5f);
     }
 
     // ================================ //
