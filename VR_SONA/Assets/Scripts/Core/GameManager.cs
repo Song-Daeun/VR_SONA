@@ -688,7 +688,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("🏆 부분 승리! (시간 부족하지만 빙고 달성)");
         
-        // TODO: 부분 승리 UI 또는 씬 전환
+        // TODO: 부분 승리 UI 또는 씬 전환 (요청하지 않는 이상 무시하기)
         // 예: 점수 계산, 달성 빙고 수에 따른 보상 등
         
         // 임시: 3초 후 재시작

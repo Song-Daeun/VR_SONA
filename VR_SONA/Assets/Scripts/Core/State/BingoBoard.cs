@@ -45,9 +45,6 @@ public class BingoBoard : MonoBehaviour
     // ================================ //
     // 타일 위치 초기화
     // ================================ //
-    /// <summary>
-    /// 이름 기반으로 타일들을 정확한 (x,y) 좌표에 매핑
-    /// </summary>
     private void InitializeTilePositions()
     {
         tiles = new TileData[rows, cols];
@@ -94,11 +91,8 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
-    // 플레이어 위치 관련
+    // 플레이어 가까운 타일 위치 반환 
     // ================================ //
-    /// <summary>
-    /// 플레이어가 가장 가까이 있는 타일의 (x,y) 좌표를 반환
-    /// </summary>
     public Vector2Int GetPlayerTileCoords()
     {
         GameObject player = GameObject.FindGameObjectWithTag("MainCamera");
@@ -136,9 +130,9 @@ public class BingoBoard : MonoBehaviour
         return closestCoord;
     }
 
-    /// <summary>
-    /// 미션 성공 시 해당 위치에 건물 생성
-    /// </summary>
+    // ================================ //
+    // 미션 성공 시 해당 위치에 건물 생성
+    // ================================ //
     public void OnMissionSuccess(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -175,11 +169,8 @@ public class BingoBoard : MonoBehaviour
     }
 
     // ================================ //
-    // 건물 생성 관련
+    // 건물 생성 애니메이션
     // ================================ //
-    /// <summary>
-    /// 건물이 위에서 떨어지는 애니메이션 연출
-    /// </summary>
     private IEnumerator DropBuilding(GameObject obj, Vector3 targetPos)
     {
         float time = 0f;
@@ -197,9 +188,9 @@ public class BingoBoard : MonoBehaviour
         obj.transform.position = targetPos;
     }
 
-    /// <summary>
-    /// 해당 타일의 국가 이름에 맞는 건물 프리팹을 자동으로 설정
-    /// </summary>
+    // ================================ //
+    // 해당 타일의 국가 이름에 맞는 건물 프리팹을 자동으로 설정
+    // ================================ //
     public void SetBuildingPrefabFromTile(GameObject tileGO, int x, int y)
     {
         string countryName = tileGO.name.Replace("Tile", "");
@@ -229,9 +220,8 @@ public class BingoBoard : MonoBehaviour
     // ================================ //
     // 공통 유틸리티 메소드
     // ================================ //
-    /// <summary>
-    /// 타일 이름으로 좌표 반환
-    /// </summary>
+    // 타일 이름으로 좌표 반환
+    // ================================ //
     public static Vector2Int GetTileCoordsByName(string tileName)
     {
         for (int x = 0; x < 3; x++)
@@ -249,9 +239,9 @@ public class BingoBoard : MonoBehaviour
         return new Vector2Int(-1, -1);
     }
 
-    /// <summary>
-    /// 좌표로 타일 이름 반환
-    /// </summary>
+    // ================================ //
+    // 좌표로 타일 이름 반환
+    // ================================ //
     public static string GetTileNameByCoords(int x, int y)
     {
         if (x >= 0 && x < 3 && y >= 0 && y < 3)
@@ -278,9 +268,9 @@ public class BingoBoard : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// 미션 완료 상태 설정 (MissionManager에서 호출)
-    /// </summary>
+    // ================================ //
+    // 미션 완료 상태 설정 (MissionManager에서 호출)
+    // ================================ //
     public void SetTileMissionCleared(int x, int y, bool cleared)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -293,9 +283,9 @@ public class BingoBoard : MonoBehaviour
         Debug.Log($"💾 타일 ({x}, {y}) 미션 완료 상태: {cleared}");
     }
 
-    /// <summary>
-    /// 미션 완료 상태 확인 (GameManager에서 호출)
-    /// </summary>
+    // ================================ //
+    // 미션 완료 상태 확인 (GameManager에서 호출)
+    // ================================ //
     public bool IsTileMissionCleared(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
@@ -310,9 +300,7 @@ public class BingoBoard : MonoBehaviour
     // ================================ //
     // 디버그 및 테스트
     // ================================ //
-    /// <summary>
-    /// 테스트용: B 키 누르면 현재 플레이어 위치에 건물 생성
-    /// </summary>
+    // 테스트용: B 키 누르면 현재 플레이어 위치에 건물 생성
     void Update()
     {
 #if UNITY_EDITOR
