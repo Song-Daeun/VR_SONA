@@ -34,11 +34,11 @@ public class SceneLoader : MonoBehaviour
     {
         if (isMissionSceneLoaded)
         {
-            Debug.LogWarning("⚠️ 이미 미션 씬이 로드되어 있습니다. 기존 씬을 먼저 언로드합니다.");
+            Debug.LogWarning("이미 미션 씬이 로드되어 있습니다. 기존 씬을 먼저 언로드합니다.");
             UnloadMissionScene();
         }
 
-        Debug.Log($"🎬 미션 씬 로딩 시작: {sceneName}");
+        Debug.Log($"미션 씬 로딩 시작: {sceneName}");
         
         currentMissionScene = sceneName;
         StartCoroutine(LoadSceneAdditive(sceneName));
@@ -51,26 +51,26 @@ public class SceneLoader : MonoBehaviour
         
         if (asyncLoad == null)
         {
-            Debug.LogError($"❌ 씬을 찾을 수 없습니다: {sceneName}");
+            Debug.LogError($"씬을 찾을 수 없습니다: {sceneName}");
             yield break;
         }
 
         // 로딩 완료까지 대기
         while (!asyncLoad.isDone)
         {
-            Debug.Log($"🔄 로딩 진행률: {asyncLoad.progress * 100:F1}%");
+            Debug.Log($"로딩 진행률: {asyncLoad.progress * 100:F1}%");
             yield return null;
         }
 
         isMissionSceneLoaded = true;
-        Debug.Log($"✅ 미션 씬 로딩 완료: {sceneName}");
+        Debug.Log($"미션 씬 로딩 완료: {sceneName}");
 
         // 로드된 씬을 활성 씬으로 설정 (선택사항)
         Scene loadedScene = SceneManager.GetSceneByName(sceneName);
         if (loadedScene.IsValid())
         {
             SceneManager.SetActiveScene(loadedScene);
-            Debug.Log($"🎯 활성 씬 변경: {sceneName}");
+            Debug.Log($"활성 씬 변경: {sceneName}");
         }
 
         // 미션 씬 로드 완료 후 카메라 전환 수행
@@ -85,11 +85,11 @@ public class SceneLoader : MonoBehaviour
     {
         if (!isMissionSceneLoaded || string.IsNullOrEmpty(currentMissionScene))
         {
-            Debug.LogWarning("⚠️ 언로드할 미션 씬이 없습니다.");
+            Debug.LogWarning("언로드할 미션 씬이 없습니다.");
             return;
         }
 
-        Debug.Log($"🗑️ 미션 씬 언로딩 시작: {currentMissionScene}");
+        Debug.Log($"미션 씬 언로딩 시작: {currentMissionScene}");
         StartCoroutine(UnloadSceneAsync(currentMissionScene));
     }
 
@@ -99,7 +99,7 @@ public class SceneLoader : MonoBehaviour
         
         if (asyncUnload == null)
         {
-            Debug.LogError($"❌ 씬 언로드 실패: {sceneName}");
+            Debug.LogError($"씬 언로드 실패: {sceneName}");
             yield break;
         }
 
@@ -116,14 +116,14 @@ public class SceneLoader : MonoBehaviour
         isMissionSceneLoaded = false;
         currentMissionScene = "";
         
-        Debug.Log($"✅ 미션 씬 언로딩 완료: {sceneName}");
+        Debug.Log($"미션 씬 언로딩 완료: {sceneName}");
 
         // 메인 씬을 다시 활성 씬으로 설정
         Scene mainScene = SceneManager.GetSceneByBuildIndex(0); // 또는 이름으로 찾기
         if (mainScene.IsValid())
         {
             SceneManager.SetActiveScene(mainScene);
-            Debug.Log($"🏠 메인 씬으로 복귀");
+            Debug.Log($"메인 씬으로 복귀");
         }
     }
 

@@ -1993,7 +1993,7 @@ MonoBehaviour:
   settleTime: 1
   uiDisplayDelay: 1
   moveCompleteDelay: 2
-  showDebugLogs: 1
+  showDebugLogs: 0
   drawDebugVisuals: 1
   grabInteractable: {fileID: 2333461220734580938}
   playerManager: {fileID: 0}
