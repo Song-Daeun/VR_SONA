@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BasketballThrower : MonoBehaviour
 {
@@ -17,9 +18,32 @@ public class BasketballThrower : MonoBehaviour
     [Range(0f, 2f)] public float upwardMultiplier = 0.9f;
     public float throwAngle = 35f;
 
-    void Update()
+    private InputAction throwAction;
+
+    void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.N) && Time.time - lastThrowTime > throwCooldown)
+        var inputAsset = GetComponent<PlayerInput>()?.actions;
+        throwAction = inputAsset?.FindAction("BasketBall"); 
+
+        if (throwAction != null)
+        {
+            throwAction.Enable();
+            throwAction.performed += OnThrowPressed;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (throwAction != null)
+        {
+            throwAction.performed -= OnThrowPressed;
+            throwAction.Disable();
+        }
+    }
+
+    void OnThrowPressed(InputAction.CallbackContext ctx)
+    {
+        if (Time.time - lastThrowTime > throwCooldown)
         {
             ThrowNewBall();
             lastThrowTime = Time.time;
@@ -31,11 +55,8 @@ public class BasketballThrower : MonoBehaviour
         GameObject newBall = Instantiate(basketballPrefab, throwOrigin.position, Quaternion.identity);
         Rigidbody rb = newBall.GetComponent<Rigidbody>();
 
-        // 시선 방향 기준
         Vector3 throwDirection = throwOrigin.forward.normalized;
-
-        // 포물선 형태 되도록 살짝 위쪽 보정
-        throwDirection.y += 0.7f; // 이 값을 조절해서 곡률 조절
+        throwDirection.y += 0.7f;
         throwDirection = throwDirection.normalized;
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);

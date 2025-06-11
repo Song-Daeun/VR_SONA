@@ -156,7 +156,7 @@ public class MissionManager : MonoBehaviour
     // ================================ //
     public void OnMissionCompleted(bool success)
     {
-        Debug.Log($"🏁 미션 완료: {(success ? "성공" : "실패")}");
+        Debug.Log($"미션 완료: {(success ? "성공" : "실패")}");
 
         // 미션 결과를 BingoBoard에 저장 (타일 좌표 변환)
         if (currentMissionTileIndex >= 0 && success)
