@@ -39,16 +39,11 @@ public class DiceSceneManager : MonoBehaviour
     public PlayerManager playerManager;
     private bool isDetectionActivated = false;
 
-    // ========================================
-    // 새로 추가: 외부 콜백 시스템
-    // ========================================
+    // 외부 콜백 시스템
     private System.Action<int> onDiceResultCallback;
     private System.Action onDiceSceneCompleteCallback;
 
-    /// <summary>
-    /// DiceManager에서 호출하여 콜백을 설정합니다.
-    /// 이를 통해 씬 간의 결합도를 낮출 수 있습니다.
-    /// </summary>
+    // DiceManager 호출 및 콜백 설정 
     public void SetCallbacks(System.Action<int> resultCallback, System.Action completeCallback)
     {
         onDiceResultCallback = resultCallback;
@@ -56,14 +51,11 @@ public class DiceSceneManager : MonoBehaviour
         
         if (showDebugLogs)
         {
-            Debug.Log("📞 DiceSceneManager 콜백 설정 완료");
+            Debug.Log("DiceSceneManager 콜백 설정 완료");
         }
     }
 
-    /// <summary>
-    /// PlayerManager를 받아서 씬을 초기화합니다.
-    /// DiceManager에서 씬 로드 후 이 메소드를 호출해야 합니다.
-    /// </summary>
+    // PlayerManager 받아와서 씬 초기화화
     public void InitializeScene(PlayerManager player)
     {
         playerManager = player;
@@ -75,28 +67,52 @@ public class DiceSceneManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 플레이어 위치에 맞춰 주사위 씬을 정렬합니다.
+    // 플레이어 위치에 맞춰 주사위 씬을 정렬
+    // public void AlignSceneToPlayer()
+    // {
+    //     if (planeBottomTransform == null || rootGroupToMove == null || playerManager == null)
+    //     {
+    //         Debug.LogWarning("AlignSceneToPlayer(): 필요한 참조가 없음");
+    //         return;
+    //     }
+    //     Vector3 playerFeet = playerManager.transform.position;
+    //     Vector3 planeBottomPos = planeBottomTransform.position;
+    //     Vector3 offset = playerFeet - planeBottomPos;
+    //     Rigidbody[] rigidbodies = rootGroupToMove.GetComponentsInChildren<Rigidbody>();
+    //     foreach (var rb in rigidbodies)
+    //         rb.isKinematic = true;
+    //     rootGroupToMove.position += offset;
+    //     StartCoroutine(ReenableRigidbodies(rigidbodies));
+    //     Vector3 planeTop = planeBottomTransform.position + Vector3.up * 0.05f;
+    //     Vector3 current = playerManager.transform.position;
+    //     Vector3 adjusted = new Vector3(current.x, planeTop.y, current.z);
+    //     playerManager.transform.position = adjusted;
+    //     Debug.Log($"Plane 정렬 + 플레이어 위치 완료: {adjusted}");
+    // }
     public void AlignSceneToPlayer()
     {
-        if (planeBottomTransform == null || rootGroupToMove == null || playerManager == null)
+        // XR Origin 찾기
+        GameObject xrOrigin = GameObject.Find("XR Origin (XR Rig)");
+        if (xrOrigin == null || planeBottomTransform == null || rootGroupToMove == null)
         {
-            Debug.LogWarning("AlignSceneToPlayer(): 필요한 참조가 없음");
+            Debug.LogWarning("필요한 참조가 없음");
             return;
         }
-        Vector3 playerFeet = playerManager.transform.position;
+        
+        Vector3 playerFeet = xrOrigin.transform.position;
         Vector3 planeBottomPos = planeBottomTransform.position;
         Vector3 offset = playerFeet - planeBottomPos;
+        
+        // 리지드바디 처리
         Rigidbody[] rigidbodies = rootGroupToMove.GetComponentsInChildren<Rigidbody>();
         foreach (var rb in rigidbodies)
             rb.isKinematic = true;
+        
         rootGroupToMove.position += offset;
         StartCoroutine(ReenableRigidbodies(rigidbodies));
-        Vector3 planeTop = planeBottomTransform.position + Vector3.up * 0.05f;
-        Vector3 current = playerManager.transform.position;
-        Vector3 adjusted = new Vector3(current.x, planeTop.y, current.z);
-        playerManager.transform.position = adjusted;
-        Debug.Log($"Plane 정렬 + 플레이어 위치 완료: {adjusted}");
+        
+        // 플레이어 위치는 변경하지 않음
+        Debug.Log($"주사위 씬을 XR Origin 위치로 정렬 완료: {playerFeet}");
     }
 
     private IEnumerator ReenableRigidbodies(Rigidbody[] rigidbodies)
@@ -111,12 +127,10 @@ public class DiceSceneManager : MonoBehaviour
         InitializeDiceScene();
     }
 
-    /// <summary>
-    /// 주사위 씬의 초기 설정을 수행합니다.
-    /// </summary>
+    // DiceScene 초기 설정 
     private void InitializeDiceScene()
     {
-        // 주사위 초기 위치 저장 (리셋용)
+        // 주사위 초기 위치 저장 
         if (diceRigidbody != null)
         {
             diceInitialPosition = diceRigidbody.transform.position;
@@ -139,7 +153,7 @@ public class DiceSceneManager : MonoBehaviour
 
         if (showDebugLogs)
         {
-            Debug.Log("🎲 DiceScene 컴포넌트 초기화 완료");
+            Debug.Log(" DiceScene 컴포넌트 초기화 완료");
         }
     }
 
@@ -318,15 +332,15 @@ public class DiceSceneManager : MonoBehaviour
         }
 
         // 5단계: 미션 메시지 표시 (PlayerManager를 통해)
-        if (playerManager != null)
-        {
-            playerManager.ShowMissionMessage();
+        // if (playerManager != null)
+        // {
+        //     playerManager.ShowMissionMessage();
             
-            if (showDebugLogs)
-            {
-                Debug.Log("📋 미션 메시지 표시됨");
-            }
-        }
+        //     if (showDebugLogs)
+        //     {
+        //         Debug.Log("📋 미션 메시지 표시됨");
+        //     }
+        // }
 
         isProcessingResult = false;
         

@@ -78,12 +78,13 @@ public class MissionCameraManager : MonoBehaviour
     private GameObject FindUIPlayer()
     {
         // UIScene에서 XR Origin (XR Rig) 직접 찾기
-        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UIScene");
+        // UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UIScene");
+        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("InteractionScene");
         
         if (uiScene.isLoaded)
         {
             GameObject[] rootObjects = uiScene.GetRootGameObjects();
-            
+
             // 모든 오브젝트를 순회하면서 XR Origin 찾기
             foreach (GameObject root in rootObjects)
             {

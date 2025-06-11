@@ -853,7 +853,7 @@ GameObject:
   m_Component:
   - component: {fileID: 56230966}
   m_Layer: 0
-  m_Name: NetherlandBuilding
+  m_Name: NetherlandsBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7672,9 +7672,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   basketballSceneName: MissionBasketballScene
   waterRushSceneName: MissionWaterRushScene
-  playBoard: {fileID: 0}
-  diceCanvas: {fileID: 0}
-  missionCanvas: {fileID: 0}
+  playBoard: {fileID: 1323465244}
+  diceCanvas: {fileID: 1790701907}
+  missionCanvas: {fileID: 1608773025}
 --- !u!1 &455228416
 GameObject:
   m_ObjectHideFlags: 0
@@ -11957,7 +11957,6 @@ GameObject:
   - component: {fileID: 658061115}
   - component: {fileID: 658061114}
   - component: {fileID: 658061113}
-  - component: {fileID: 658061112}
   - component: {fileID: 658061111}
   - component: {fileID: 658061110}
   m_Layer: 0
@@ -12002,7 +12001,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 1.2
@@ -12020,31 +12019,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ccb74df158e194aa6bc1b782f728bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &658061112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 658061108}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d47c434fe9f0df4589b69c87bf4102f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Move Input
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: ef64bd45-d8b0-490e-8ced-eee6933018fd
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  moveSpeed: 2
 --- !u!143 &658061113
 CharacterController:
   m_ObjectHideFlags: 0
@@ -13187,11 +13161,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -7526063641003294574, guid: 10038fdbf93c4dd43af9ce774d03a956, type: 3}
   m_PrefabInstance: {fileID: 3101518886176250933}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &702769920 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8562094982488297833, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
-  m_PrefabInstance: {fileID: 1044735825}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &703393182
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14203,6 +14172,68 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6670216338011043389, guid: 24dab0e592c6b1f46b268c276c185f59, type: 3}
+--- !u!1 &748084450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 748084451}
+  - component: {fileID: 748084452}
+  m_Layer: 0
+  m_Name: PlayerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &748084451
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748084450}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 844397773}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &748084452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748084450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea0b328ab51719a418ef4d742e934a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 844397773}
+  tileList:
+  - {fileID: 590907665}
+  - {fileID: 1859426506}
+  - {fileID: 1313113838}
+  - {fileID: 258498997}
+  - {fileID: 264789295}
+  - {fileID: 1942646620}
+  - {fileID: 1718936368}
+  - {fileID: 2135948783}
+  startTile: {fileID: 1323682407}
+  moveDuration: 0.5
+  teleportDuration: 0.1
+  heightOffset: 45
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  raycastDistance: 10
 --- !u!1001 &754799814
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15420,7 +15451,6 @@ GameObject:
   - component: {fileID: 840880823}
   - component: {fileID: 840880822}
   - component: {fileID: 840880821}
-  - component: {fileID: 840880820}
   m_Layer: 5
   m_Name: LoadButton
   m_TagString: Untagged
@@ -15448,18 +15478,6 @@ RectTransform:
   m_AnchoredPosition: {x: -15, y: -3}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &840880820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840880818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8e2672654014cc498a91aa274ace880, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &840880821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15504,10 +15522,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MissionSceneLoader, Assembly-CSharp
-        m_MethodName: LoadMissionScene
-        m_Mode: 1
+      - m_Target: {fileID: 853526843}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnMissionDecisionMade
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -15713,39 +15731,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6675851914203498514, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
   m_PrefabInstance: {fileID: 1044735825}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &844397774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 702769920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea0b328ab51719a418ef4d742e934a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTransform: {fileID: 844397773}
-  tileList:
-  - {fileID: 590907665}
-  - {fileID: 1859426506}
-  - {fileID: 1313113838}
-  - {fileID: 258498997}
-  - {fileID: 264789295}
-  - {fileID: 1942646620}
-  - {fileID: 1718936368}
-  - {fileID: 2135948783}
-  startTile: {fileID: 1323682407}
-  moveDuration: 0.5
-  teleportDuration: 0.1
-  heightOffset: 45
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  raycastDistance: 10
-  missionPanel: {fileID: 1481171960}
-  messageDistance: 15
-  messageHeight: 1.5
 --- !u!1001 &845289834
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16088,10 +16073,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9bf09f31a884f7e84616b07cfdbde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerManager: {fileID: 0}
+  playerManager: {fileID: 748084452}
   uiManager: {fileID: 1604452239}
   diceManager: {fileID: 876982434}
-  player: {fileID: 702769920}
+  player: {fileID: 658061108}
   startTileName: Start
   tileNames:
   - Netherlands
@@ -20174,13 +20159,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6675851914203498514, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
       insertIndex: 0
       addedObject: {fileID: 658061109}
+    - targetCorrespondingSourceObject: {fileID: 6675851914203498514, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 748084451}
     - targetCorrespondingSourceObject: {fileID: 2737545227528292900, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1371790773}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8562094982488297833, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 844397774}
     - targetCorrespondingSourceObject: {fileID: 7728234208102384689, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 861326299}
@@ -26213,10 +26198,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MissionSceneLoader, Assembly-CSharp
-        m_MethodName: UnloadMissionScene
-        m_Mode: 1
+      - m_Target: {fileID: 853526843}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnMissionDecisionMade
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -32196,7 +32181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4215511e9ee0144bdaab2c370b1eba69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 191550062}
+  cameraTransform: {fileID: 1542407376}
   diceButton: {fileID: 483761636}
   diceUIDistance: 10
   diceUIHeightOffset: 1
@@ -44964,9 +44949,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6657599623229883252}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1777328887738263315}
   m_SourcePrefab: {fileID: 100100000, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
 --- !u!114 &1043073098955766390
 MonoBehaviour:
@@ -45016,18 +44998,6 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 626353171}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0d59f8186e539448bbf47179dbb47ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1777328887738263315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 716054773}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0d59f8186e539448bbf47179dbb47ae, type: 3}
@@ -45133,7 +45103,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: a44d3cec97d015340944a26efb1f7971, type: 2}
     - target: {fileID: 919132149155446097, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
       propertyPath: m_Name
-      value: NetherlandTile
+      value: NetherlandsTile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -45145,9 +45115,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8695433509102234193}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2665897114451202859}
   m_SourcePrefab: {fileID: 100100000, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
 --- !u!1 &2350652682165162117
 GameObject:
@@ -45196,9 +45163,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   raycastDistance: 10
-  missionPanel: {fileID: 1481171960}
-  messageDistance: 15
-  messageHeight: 1.5
 --- !u!1001 &2618119044307481679
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45303,18 +45267,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4395357835740278302, guid: 2a850dda364e442b0acad4927e9e0dae, type: 3}
---- !u!114 &2665897114451202859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142628797}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0d59f8186e539448bbf47179dbb47ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3101518886176250933
 PrefabInstance:
   m_ObjectHideFlags: 0

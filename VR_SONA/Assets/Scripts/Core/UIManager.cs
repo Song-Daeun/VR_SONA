@@ -142,11 +142,11 @@ public class UIManager : MonoBehaviour
         {
             diceButton.gameObject.SetActive(show);
             
-            // VR 환경을 위한 위치 조정
-            if (show && cameraTransform != null)
-            {
-                PositionUIInFrontOfCamera(diceButton.transform.parent, diceUIDistance, diceUIHeightOffset);
-            }
+            // // VR 환경을 위한 위치 조정
+            // if (show && cameraTransform != null)
+            // {
+            //     PositionUIInFrontOfCamera(diceButton.transform.parent, diceUIDistance, diceUIHeightOffset);
+            // }
             
             Debug.Log("주사위 UI " + (show ? "활성화" : "비활성화"));
         }

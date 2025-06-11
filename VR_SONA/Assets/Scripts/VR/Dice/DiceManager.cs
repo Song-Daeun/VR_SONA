@@ -39,6 +39,9 @@ public class DiceManager : MonoBehaviour
     // DiceScene 로드 
     public void LoadDiceScene()
     {
+        // DiceButton 비활성화
+        SetDiceButtonVisible(false);
+
         if (isDiceSceneLoaded)
         {
             if (showDebugLogs)
@@ -71,9 +74,6 @@ public class DiceManager : MonoBehaviour
 
         // DiceSceneManager가 없다면 새로 씬 로드
         StartCoroutine(LoadDiceSceneCoroutine());
-
-        // DiceButton 비활성화
-        SetDiceButtonVisible(false);
     }
     
     private IEnumerator LoadDiceSceneCoroutine()
@@ -174,7 +174,7 @@ public class DiceManager : MonoBehaviour
             }
         }
     }
-    // DiceScene 언로드 및 MainGameScene 복귀귀
+    // DiceScene 언로드 및 MainGameScene 복귀
     private void OnDiceSceneComplete()
     {
         if (showDebugLogs)
@@ -182,9 +182,9 @@ public class DiceManager : MonoBehaviour
             Debug.Log("주사위 씬 완료 - 언로드 시작");
         }
 
-        SetDiceButtonVisible(false);
-
         UnloadDiceScene();
+
+        SetDiceButtonVisible(true);
     }
 
     // ================================ //
