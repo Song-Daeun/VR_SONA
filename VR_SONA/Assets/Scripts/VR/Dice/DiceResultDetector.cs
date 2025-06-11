@@ -59,7 +59,7 @@ public class DiceResultDetector : MonoBehaviour
         isGrabbed = true;
 
         if (showDebugLogs)
-            Debug.Log("🎯 주사위 Grab 감지됨");
+            Debug.Log("주사위 Grab 감지됨");
     }
 
     private void Update()
@@ -73,7 +73,7 @@ public class DiceResultDetector : MonoBehaviour
             isWatching = true;
 
             if (showDebugLogs)
-                Debug.Log("🎲 주사위가 실제로 던져짐 → 감지 시작");
+                Debug.Log("주사위가 실제로 던져짐 → 감지 시작");
 
             StartCoroutine(WatchDiceUntilStop());
         }

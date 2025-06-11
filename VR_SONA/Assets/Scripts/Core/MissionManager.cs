@@ -36,9 +36,7 @@ public class MissionManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // ================================ //
     // 미션 씬 로드 요청
-    // ================================ //
     public void LoadMissionScene(int tileIndex)
     {
         // 디버깅 로그

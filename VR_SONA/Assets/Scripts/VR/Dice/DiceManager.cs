@@ -184,7 +184,7 @@ public class DiceManager : MonoBehaviour
 
         UnloadDiceScene();
 
-        SetDiceButtonVisible(true);
+        // SetDiceButtonVisible(true);
     }
 
     // ================================ //
