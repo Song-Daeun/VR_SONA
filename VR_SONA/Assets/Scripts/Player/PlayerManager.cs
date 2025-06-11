@@ -1,10 +1,13 @@
-// PlayerManager.cs - 수정된 버전
+// PlayerManager.cs - 싱글톤 패턴 적용 버전
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    // 🔥 싱글톤 패턴 구현
+    public static PlayerManager Instance;
+
     [Header("Player Settings")]
     public Transform playerTransform;
     public List<Transform> tileList;
@@ -13,7 +16,7 @@ public class PlayerManager : MonoBehaviour
     public float teleportDuration = 0.1f; // 텔레포트용 빠른 이동
 
     [Header("Landing Settings")]
-    public float heightOffset = 13.0f;
+    public float heightOffset = 9.0f;
     public LayerMask groundLayerMask = -1;
     public float raycastDistance = 10.0f;
 
@@ -28,9 +31,126 @@ public class PlayerManager : MonoBehaviour
     // 현재 이동 중인 주사위 결과를 저장 (GameManager에게 전달하기 위함)
     private int currentDiceResult = -1;
 
+    // 🔥 싱글톤 초기화 - 다른 Manager들과 동일한 패턴
+    private void Awake()
+    {
+        // 싱글톤 인스턴스 설정
+        if (Instance == null)
+        {
+            Instance = this;
+            Debug.Log("PlayerManager 싱글톤 인스턴스가 생성되었습니다.");
+        }
+        else
+        {
+            Debug.LogWarning("PlayerManager 인스턴스가 이미 존재합니다. 중복 인스턴스를 파괴합니다.");
+            Destroy(gameObject);
+            return;
+        }
+
+        // 필수 컴포넌트 검증
+        ValidateComponents();
+    }
+
+    // Start 메서드에서 게임 시작 시 플레이어 위치 초기화
+    private void Start()
+    {
+        Debug.Log("PlayerManager Start() 호출 - 초기 위치 설정 시작");
+        
+        // 게임 시작 시 플레이어를 시작 위치로 이동
+        // 이는 다른 시스템들이 초기화되기 전에 플레이어 위치를 확정하기 위함
+        StartCoroutine(InitializePlayerPosition());
+    }
+
+    // 🔥 게임 시작 시 플레이어 위치 초기화 코루틴
+    private IEnumerator InitializePlayerPosition()
+    {
+        Debug.Log("=== 플레이어 초기 위치 설정 시작 ===");
+        
+        // 한 프레임 대기 (다른 컴포넌트들의 Awake가 완료되도록)
+        yield return null;
+        
+        // 시작 타일이 설정되어 있다면 해당 위치로 이동
+        if (startTile != null)
+        {
+            Debug.Log("시작 타일이 설정되어 있음. 시작 위치로 이동 시작");
+            MoveToStart();
+        }
+        else
+        {
+            // 시작 타일이 없다면 현재 위치를 그대로 사용하되, 안전한 높이로 조정
+            Debug.LogWarning("시작 타일이 설정되지 않음. 현재 위치에서 높이만 조정");
+            
+            Vector3 currentPos = playerTransform.position;
+            Vector3 safePosition = new Vector3(currentPos.x, currentPos.y + heightOffset, currentPos.z);
+            
+            // 즉시 이동 (애니메이션 없이)
+            playerTransform.position = safePosition;
+            
+            // 초기 상태 설정
+            currentTileIndex = -1; // 시작 상태
+            currentDiceResult = -1;
+            
+            Debug.Log($"플레이어 초기 위치 설정 완료: {safePosition}");
+        }
+        
+        Debug.Log("=== 플레이어 초기 위치 설정 완료 ===");
+    }
+
+    // 컴포넌트 유효성 검사
+    private void ValidateComponents()
+    {
+        if (playerTransform == null)
+        {
+            // playerTransform이 설정되지 않았다면 자동으로 현재 GameObject의 Transform을 사용
+            playerTransform = this.transform;
+            Debug.Log("playerTransform이 자동으로 설정되었습니다: " + playerTransform.name);
+        }
+
+        if (tileList == null || tileList.Count == 0)
+        {
+            Debug.LogWarning("tileList가 설정되지 않았습니다. Inspector에서 타일들을 할당해주세요.");
+        }
+
+        if (startTile == null)
+        {
+            Debug.LogWarning("startTile이 설정되지 않았습니다. Inspector에서 시작 타일을 할당해주세요.");
+        }
+    }
+
+    // OnDestroy에서 싱글톤 정리
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+            Debug.Log("PlayerManager 싱글톤 인스턴스가 정리되었습니다.");
+        }
+    }
+
+    // 🔥 공개 메서드들 - 외부에서 접근 가능한 플레이어 상태 정보
     public bool IsMoving()
     {
         return isMoving;
+    }
+
+    public Vector3 GetPlayerPosition()
+    {
+        return playerTransform != null ? playerTransform.position : Vector3.zero;
+    }
+
+    public Transform GetPlayerTransform()
+    {
+        return playerTransform;
+    }
+
+    public int GetCurrentTileIndex()
+    {
+        return currentTileIndex;
+    }
+
+    public int GetCurrentDiceResult()
+    {
+        return currentDiceResult;
     }
 
     // 기존 일반 이동 (주사위용) - 수정됨
@@ -70,6 +190,7 @@ public class PlayerManager : MonoBehaviour
 
         // 현재 주사위 결과 저장 (이동 완료 후 GameManager에게 전달하기 위함)
         currentDiceResult = diceResult;
+        currentTileIndex = targetIndex; // 타일 인덱스도 업데이트
 
         Debug.Log($"목표 타일: {targetTile.name}");
         Vector3 targetPosition = CalculateSafeLandingPosition(targetTile);
@@ -114,6 +235,7 @@ public class PlayerManager : MonoBehaviour
 
         // 텔레포트의 경우 주사위 결과는 타일 인덱스 + 1로 설정
         currentDiceResult = tileIndex + 1;
+        currentTileIndex = tileIndex; // 타일 인덱스 업데이트
 
         Vector3 targetPosition = CalculateSafeLandingPosition(targetTile);
         Debug.Log($"텔레포트 목표 위치: {targetPosition}");
@@ -141,6 +263,7 @@ public class PlayerManager : MonoBehaviour
 
         // Start 타일로 이동할 때는 주사위 결과를 -1로 설정 (Start 타일 의미)
         currentDiceResult = -1;
+        currentTileIndex = -1; // Start 타일은 -1 인덱스
 
         Vector3 targetPosition = CalculateSafeLandingPosition(startTile);
         Debug.Log($"Start 타일 목표 위치: {targetPosition}");
@@ -243,57 +366,6 @@ public class PlayerManager : MonoBehaviour
         return safePosition;
     }
 
-    // public void ShowMissionMessage()
-    // {
-    //     Debug.Log("=== PlayerManager.ShowMissionMessage 호출됨 ===");
-        
-    //     // GameManager에서 현재 위치 확인 (안전성 체크)
-    //     if (GameManager.Instance != null)
-    //     {
-    //         int currentIndex = GameManager.Instance.GetCurrentTileIndex();
-    //         string currentTile = GameManager.Instance.GetCurrentTileName();
-    //         Debug.Log($"현재 위치: {currentTile} (인덱스: {currentIndex})");
-            
-    //         // Start 타일이면 미션 메시지를 표시하지 않음
-    //         if (currentIndex == -1)
-    //         {
-    //             Debug.LogWarning("🚨 Start 타일에서 미션 메시지 표시 요청이 들어왔습니다!");
-    //             Debug.LogWarning("이는 비정상적인 동작입니다. 미션 메시지를 표시하지 않습니다.");
-    //             return;
-    //         }
-    //     }
-        
-    //     // DiceManager 버튼 숨기기
-    //     if (DiceManager.Instance != null)
-    //     {
-    //         DiceManager.Instance.SetDiceButtonVisible(false);
-    //         Debug.Log("DiceManager 버튼 숨김 처리됨");
-    //     }
-        
-    //     if (missionPanel == null)
-    //     {
-    //         Debug.LogError("missionPanel이 설정되지 않았습니다!");
-    //         return;
-    //     }
-
-    //     // VR 환경을 고려한 미션 패널 위치 설정
-    //     Transform cameraTransform = Camera.main.transform;
-    //     if (cameraTransform == null)
-    //     {
-    //         Debug.LogError("Main Camera를 찾을 수 없습니다!");
-    //         return;
-    //     }
-        
-    //     Vector3 forward = cameraTransform.forward;
-    //     Vector3 position = cameraTransform.position + forward * messageDistance;
-    //     position.y = cameraTransform.position.y - 0.2f;
-
-    //     missionPanel.transform.position = position;
-    //     missionPanel.SetActive(true);
-        
-    //     Debug.Log($"미션 패널 활성화됨. 위치: {position}");
-    // }
-
     // 현재 타일 인덱스 설정 (GameManager에서 호출용)
     public void SetCurrentTileIndex(int index)
     {
@@ -301,18 +373,175 @@ public class PlayerManager : MonoBehaviour
         Debug.Log($"PlayerManager 타일 인덱스 설정: {index}");
     }
 
-    public int GetCurrentTileIndex()
+    // 🔥 디버그용 현재 상태 출력 - 싱글톤 버전에서는 활성화
+    public void DebugCurrentState()
     {
-        return currentTileIndex;
+        Debug.Log($"=== PlayerManager 현재 상태 ===");
+        Debug.Log($"싱글톤 인스턴스: {(Instance != null ? "활성" : "비활성")}");
+        Debug.Log($"isMoving: {isMoving}");
+        Debug.Log($"currentTileIndex: {currentTileIndex}");
+        Debug.Log($"currentDiceResult: {currentDiceResult}");
+        Debug.Log($"플레이어 위치: {GetPlayerPosition()}");
+        Debug.Log($"플레이어 Transform: {(playerTransform != null ? playerTransform.name : "null")}");
+        
+        if (tileList != null)
+        {
+            Debug.Log($"사용 가능한 타일 수: {tileList.Count}");
+        }
+        
+        Debug.Log($"Start 타일: {(startTile != null ? startTile.name : "설정되지 않음")}");
     }
 
-    // 디버그용 현재 상태 출력
-//     public void DebugCurrentState()
-//     {
-//         Debug.Log($"=== PlayerManager 현재 상태 ===");
-//         Debug.Log($"isMoving: {isMoving}");
-//         Debug.Log($"currentTileIndex: {currentTileIndex}");
-//         Debug.Log($"currentDiceResult: {currentDiceResult}");
-//         Debug.Log($"플레이어 위치: {(playerTransform != null ? playerTransform.position : Vector3.zero)}");
-//     }
+    // 🔥 추가 유틸리티 메서드들
+    public bool IsValidTileIndex(int index)
+    {
+        return tileList != null && index >= 0 && index < tileList.Count;
+    }
+
+    public Transform GetTileByIndex(int index)
+    {
+        if (IsValidTileIndex(index))
+        {
+            return tileList[index];
+        }
+        return null;
+    }
+
+    public string GetCurrentTileName()
+    {
+        if (currentTileIndex == -1)
+        {
+            return startTile != null ? startTile.name : "Start (설정되지 않음)";
+        }
+        
+        if (IsValidTileIndex(currentTileIndex))
+        {
+            return tileList[currentTileIndex].name;
+        }
+        
+        return "알 수 없는 타일";
+    }
+
+    // 🔥 플레이어 이동 제어를 위한 고급 인터페이스 메서드들
+    
+    /// <summary>
+    /// 다른 시스템에서 플레이어 이동을 요청할 때 사용하는 안전한 인터페이스
+    /// 이동 가능 여부를 체크하고 적절한 메서드를 호출함
+    /// </summary>
+    /// <param name="targetType">이동 목표 타입 (Dice, Teleport, Start)</param>
+    /// <param name="targetValue">목표 값 (주사위 결과 또는 타일 인덱스)</param>
+    /// <returns>이동 요청이 성공적으로 처리되었는지 여부</returns>
+    public bool RequestPlayerMovement(PlayerMovementType targetType, int targetValue = -1)
+    {
+        Debug.Log($"=== 플레이어 이동 요청 받음 ===");
+        Debug.Log($"이동 타입: {targetType}, 목표 값: {targetValue}");
+        
+        // 이동 중이면 요청 거부
+        if (isMoving)
+        {
+            Debug.LogWarning("플레이어가 이미 이동 중입니다. 이동 요청이 거부되었습니다.");
+            return false;
+        }
+        
+        // 이동 타입에 따라 적절한 메서드 호출
+        switch (targetType)
+        {
+            case PlayerMovementType.DiceResult:
+                if (targetValue > 0)
+                {
+                    MovePlayer(targetValue);
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError("주사위 결과 이동에는 1 이상의 값이 필요합니다.");
+                    return false;
+                }
+                
+            case PlayerMovementType.TeleportToTile:
+                if (IsValidTileIndex(targetValue))
+                {
+                    TeleportToTile(targetValue);
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError($"유효하지 않은 타일 인덱스입니다: {targetValue}");
+                    return false;
+                }
+                
+            case PlayerMovementType.ReturnToStart:
+                MoveToStart();
+                return true;
+                
+            default:
+                Debug.LogError($"알 수 없는 이동 타입입니다: {targetType}");
+                return false;
+        }
+    }
+    
+    /// <summary>
+    /// 즉시 위치 변경 (애니메이션 없이) - 게임 초기화나 특수 상황에서 사용
+    /// </summary>
+    /// <param name="targetPosition">목표 위치</param>
+    /// <param name="updateGameState">게임 상태도 함께 업데이트할지 여부</param>
+    public void SetPlayerPositionImmediate(Vector3 targetPosition, bool updateGameState = false)
+    {
+        Debug.Log($"즉시 위치 변경: {playerTransform.position} → {targetPosition}");
+        
+        // 즉시 위치 변경
+        playerTransform.position = targetPosition;
+        
+        if (updateGameState)
+        {
+            // 게임 상태도 업데이트 (필요한 경우)
+            Debug.Log("게임 상태 업데이트와 함께 위치 변경 완료");
+        }
+        
+        Debug.Log($"플레이어 위치 즉시 변경 완료: {targetPosition}");
+    }
+    
+    /// <summary>
+    /// 현재 플레이어가 특정 타일에 있는지 확인
+    /// </summary>
+    /// <param name="tileIndex">확인할 타일 인덱스</param>
+    /// <returns>해당 타일에 있는지 여부</returns>
+    public bool IsPlayerOnTile(int tileIndex)
+    {
+        return currentTileIndex == tileIndex;
+    }
+    
+    /// <summary>
+    /// 플레이어가 시작 위치에 있는지 확인
+    /// </summary>
+    /// <returns>시작 위치에 있는지 여부</returns>
+    public bool IsPlayerAtStart()
+    {
+        return currentTileIndex == -1;
+    }
+    
+    /// <summary>
+    /// 현재 플레이어 상태를 문자열로 반환 (디버깅 및 UI 표시용)
+    /// </summary>
+    /// <returns>플레이어 상태 문자열</returns>
+    public string GetPlayerStatusString()
+    {
+        if (isMoving)
+        {
+            return "이동 중...";
+        }
+        
+        string locationInfo = GetCurrentTileName();
+        string positionInfo = $"위치: {GetPlayerPosition():F1}";
+        
+        return $"{locationInfo} ({positionInfo})";
+    }
+
+// 🔥 플레이어 이동 타입을 정의하는 열거형
+public enum PlayerMovementType
+{
+    DiceResult,        // 주사위 결과에 따른 일반 이동
+    TeleportToTile,    // 특정 타일로 텔레포트
+    ReturnToStart      // 시작 위치로 복귀
+}
 }

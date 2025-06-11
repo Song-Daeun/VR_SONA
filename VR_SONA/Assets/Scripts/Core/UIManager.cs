@@ -1,16 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-
-    [Header("Dice State Monitoring")]
-    public float diceStateCheckInterval = 0.2f; // 주사위 상태 체크 주기
-    
-    private bool lastKnownDiceSceneState = false; // 마지막으로 알고 있던 주사위 씬 상태
-    private Coroutine diceStateWatcher;
 
     [Header("Camera Reference")]
     public Transform cameraTransform;
@@ -43,11 +38,15 @@ public class UIManager : MonoBehaviour
     public float spellBookUIDistance = 2f;
     public float spellBookUIHeightOffset = 0f;
 
+    [Header("Game State Tracking")] 
+    private bool isInMission = false;
+    private bool diceUIWasActiveBeforeMission = false; 
+
     private void Awake()
     {
-        if (Instance == null) 
+        if (Instance == null)
             Instance = this;
-        else 
+        else
             Destroy(gameObject);
     }
 
@@ -56,19 +55,17 @@ public class UIManager : MonoBehaviour
         InitializeUISystem();
     }
 
- 
     private void InitializeUISystem()
     {
         Debug.Log("UIManager 초기화: 주사위 버튼 이벤트 연결");
         
-        // 주사위 버튼을 DiceManager에 직접 연결
+        // 버튼 이벤트 연결
         ConnectDiceButtonToDiceManager();
-        
-        // 미션 버튼들은 GameManager에 연결
         ConnectMissionButtons();
         
-        // 초기 UI 상태 설정
-        SetInitialUIStates();
+        // 🔥 핵심 개선: 플레이어 이동 완료 후 UI 활성화
+        // 즉시 UI를 활성화하지 않고, 플레이어가 준비될 때까지 기다림
+        StartCoroutine(WaitForPlayerAndInitializeUI());
         
         // 카메라 자동 찾기
         FindCameraTransform();
@@ -76,12 +73,59 @@ public class UIManager : MonoBehaviour
         Debug.Log("UIManager 초기화 완료");
     }
 
+    // 🔥 가장 중요한 메서드: 플레이어가 준비된 후 UI 초기화
+    private IEnumerator WaitForPlayerAndInitializeUI()
+    {
+        Debug.Log("플레이어 준비 상태 확인 시작...");
+        
+        // PlayerManager가 존재할 때까지 대기
+        while (PlayerManager.Instance == null)
+        {
+            Debug.Log("PlayerManager 인스턴스 대기 중...");
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        Debug.Log("PlayerManager 인스턴스 발견됨");
+        
+        // 플레이어가 이동 중이 아닐 때까지 대기
+        while (PlayerManager.Instance.IsMoving())
+        {
+            Debug.Log("플레이어 이동 완료 대기 중...");
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        Debug.Log("플레이어 이동 완료 확인됨");
+        
+        // 추가 안전 대기 시간 (이동 애니메이션 완전 종료 보장)
+        yield return new WaitForSeconds(0.2f);
+        
+        // 이제 안전하게 UI 초기화
+        Debug.Log("UI 초기화 시작 - 플레이어가 완전히 준비됨");
+        SetupUIAfterPlayerReady();
+    }
+
+    // 플레이어 준비 완료 후 UI 설정
+    private void SetupUIAfterPlayerReady()
+    {
+        Debug.Log("플레이어 준비 완료 후 UI 설정 시작");
+        
+        // 카메라 참조 최종 확인
+        if (cameraTransform == null)
+        {
+            FindCameraTransform();
+        }
+        
+        // 플레이어 위치가 안정된 상태에서 UI 활성화
+        SetInitialUIStates();
+        
+        Debug.Log("UI 설정 완료 - 플레이어 위치 기준으로 정확히 배치됨");
+    }
+
     // 주사위 버튼을 DiceManager에 직접 연결
     private void ConnectDiceButtonToDiceManager()
     {
         if (diceButton != null)
         {
-            // 주사위 버튼 클릭 시 DiceManager로 직접 이동
             diceButton.onClick.AddListener(OnDiceButtonClicked);
             Debug.Log("주사위 버튼이 DiceManager에 연결됨");
         }
@@ -91,14 +135,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 주사위 버튼 연결 
     private void OnDiceButtonClicked()
     {
         Debug.Log("주사위 버튼 클릭 감지");
         
         if (DiceManager.Instance != null)
         {
-            // DiceManager가 모든 주사위 처리를 담당하도록 위임
             DiceManager.Instance.LoadDiceScene();
         }
         else
@@ -106,17 +148,7 @@ public class UIManager : MonoBehaviour
             Debug.LogError("DiceManager.Instance를 찾을 수 없습니다!");
         }
     }
-    
-    private void OnDestroy()
-    {
-        if (diceStateWatcher != null)
-        {
-            StopCoroutine(diceStateWatcher);
-            diceStateWatcher = null;
-        }
-    }
 
-    // 미션 버튼 연결 
     private void ConnectMissionButtons()
     {
         if (yesButton != null)
@@ -132,95 +164,94 @@ public class UIManager : MonoBehaviour
 
     private void OnYesClicked()
     {
+        diceUIWasActiveBeforeMission = (diceGroup != null && diceGroup.activeSelf);
+        isInMission = true;
+        
+        Debug.Log($"미션 시작: 이전 주사위 UI 상태 = {diceUIWasActiveBeforeMission}");
+        
         ShowMissionPrompt(false);
         GameManager.Instance?.OnMissionDecisionMade(true);
     }
 
     private void OnNoClicked()
     {
+        Debug.Log("미션 No 버튼 클릭 - 미션 거부");
+        
         ShowMissionPrompt(false);
+        ShowDiceUI(true);
+        
+        Debug.Log("미션 거부 후 주사위 UI 복구 완료");
+        
         GameManager.Instance?.OnMissionDecisionMade(false);
     }
 
-    // 초기 UI 상태 설정
+    // 초기 UI 상태 설정 - 이제 플레이어가 준비된 후에만 호출됨
     private void SetInitialUIStates()
     {
+        Debug.Log("UI 초기 상태 설정 시작");
+        
         ShowDiceUI(true);                    // 주사위 버튼 활성화
         ShowMissionPrompt(false);            // 미션 프롬프트 숨김
         ShowInsufficientCoinsMessage(false); // 코인 부족 메시지 숨김
         ShowSpellBookUI(false);              // 스펠북 UI 숨김
+        
+        Debug.Log("UI 초기 상태 설정 완료");
     }
 
-    // 주사위 UI 관리 - 활성화/비활성화만 담당
-    // public void ShowDiceUI(bool show)
-    // {
-    //     if (diceButton != null)
-    //     {
-    //         diceButton.gameObject.SetActive(show);
-    //         Debug.Log("주사위 UI " + (show ? "활성화" : "비활성화"));
-    //     }
-    // }
+    // 🔥 간소화된 주사위 UI 표시 - 복잡한 동적 위치 조정 시스템 제거
     public void ShowDiceUI(bool show)
     {
-        Debug.Log($"=== ShowDiceUI 호출됨 (그룹 기반): show = {show} ===");
+        Debug.Log($"ShowDiceUI 호출: show = {show}");
         
         if (diceGroup != null)
         {
-            Debug.Log($"주사위 그룹 발견: {diceGroup.name}");
-            
-            // 그룹 전체의 활성화/비활성화
-            diceGroup.SetActive(show);
-            Debug.Log($"주사위 그룹 활성화 상태: {diceGroup.activeSelf}");
-            
             if (show)
             {
-                Debug.Log("주사위 그룹 활성화 로직 시작");
+                Debug.Log("주사위 UI 활성화 시작");
                 
                 // 카메라 참조 확보
                 if (cameraTransform == null)
                 {
-                    Debug.Log("카메라가 null이므로 찾기 시도");
                     FindCameraTransform();
                 }
                 
                 if (cameraTransform != null)
                 {
-                    Debug.Log($"카메라 발견: {cameraTransform.name}");
+                    Debug.Log($"카메라 위치: {cameraTransform.position}");
                     
-                    // 그룹의 캔버스 설정 최적화 (만약 캔버스가 있다면)
-                    // Canvas groupCanvas = diceGroup.GetComponentInParent<Canvas>();
-                    // if (groupCanvas != null)
-                    // {
-                    //     SetupCanvasForVR(groupCanvas);
-                    // }
+                    // PlayerManager가 이미 준비되어 있으므로 안전하게 위치 계산 가능
+                    if (PlayerManager.Instance != null)
+                    {
+                        Vector3 playerPos = PlayerManager.Instance.GetPlayerPosition();
+                        Debug.Log($"플레이어 위치: {playerPos}");
+                    }
                     
-                    // 그룹 전체를 카메라 앞으로 배치
+                    // UI 위치 설정 - 이제 정확한 플레이어 위치 기준으로 계산됨
                     PositionUIInFrontOfCamera(diceGroup.transform, diceUIDistance, diceUIHeightOffset);
                     
-                    Debug.Log($"주사위 그룹 최종 위치: {diceGroup.transform.position}");
-                    Debug.Log($"주사위 그룹 최종 회전: {diceGroup.transform.rotation.eulerAngles}");
+                    // UI 활성화
+                    diceGroup.SetActive(true);
                     
-                    // 그룹 내 개별 요소들의 상태 확인
-                    // LogGroupElementsState();
-                    
-                    Debug.Log("주사위 UI 그룹 활성화 및 VR 설정 완료");
+                    Debug.Log($"주사위 UI 최종 위치: {diceGroup.transform.position}");
+                    Debug.Log("주사위 UI 활성화 완료");
                 }
                 else
                 {
                     Debug.LogError("카메라를 찾을 수 없어서 UI 배치 불가능!");
+                    // 그래도 UI는 활성화 (기본 위치에서라도)
+                    diceGroup.SetActive(true);
                 }
             }
             else
             {
-                Debug.Log("주사위 UI 그룹 비활성화");
+                diceGroup.SetActive(false);
+                Debug.Log("주사위 UI 비활성화");
             }
         }
         else
         {
-            Debug.LogError("diceGroup이 null입니다! Inspector에서 DiceGroup을 연결해주세요.");
+            Debug.LogError("diceGroup이 null입니다!");
         }
-        
-        Debug.Log("=== ShowDiceUI 완료 ===");
     }
 
     // 미션 UI 처리
@@ -408,7 +439,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 카메라 위치 찾기  
+    // 카메라 위치 찾기
     private void FindCameraTransform()
     {
         if (cameraTransform == null)

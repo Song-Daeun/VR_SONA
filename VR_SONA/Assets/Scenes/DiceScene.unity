@@ -2766,9 +2766,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!1 &2122578814
 GameObject:
@@ -3133,7 +3133,7 @@ Transform:
   m_GameObject: {fileID: 1753742468368113495}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -51.5}
+  m_LocalPosition: {x: 0, y: 3.41, z: -29.67}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3194,7 +3194,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 90
   m_CollisionDetection: 2
 --- !u!114 &8088517647123409282
 MonoBehaviour:
@@ -3255,7 +3255,7 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   showDebugLogs: 1
   drawDebugGizmos: 1
-  grabInteractable: {fileID: 0}
+  grabInteractable: {fileID: 2333461220734580938}
 --- !u!114 &8088517647123409283
 MonoBehaviour:
   m_ObjectHideFlags: 0
