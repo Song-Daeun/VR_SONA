@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
             // PlayerState에 현재 위치 정보 저장 (빙고 시스템용)
             UpdatePlayerStateWithCurrentLocation(arrivedTileName);
 
-            // 🔥 핵심: 타일 도착 후 처리 강제 호출
+            // 핵심: 타일 도착 후 처리 강제 호출
             Debug.Log("HandleTileArrival 호출 예정");
             HandleTileArrival();
             Debug.Log("HandleTileArrival 호출 완료");

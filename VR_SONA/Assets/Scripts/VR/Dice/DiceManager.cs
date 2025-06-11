@@ -168,10 +168,10 @@ public class DiceManager : MonoBehaviour
             Debug.LogError("DiceResultUI를 찾을 수 없습니다!");
             
             // UI가 없어도 게임은 계속 진행되도록 GameManager 호출
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.OnDiceRolled(result);
-            }
+            // if (GameManager.Instance != null)
+            // {
+            //     GameManager.Instance.OnDiceRolled(result);
+            // }
         }
     }
     // DiceScene 언로드 및 MainGameScene 복귀

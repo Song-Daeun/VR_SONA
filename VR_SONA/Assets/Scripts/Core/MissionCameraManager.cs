@@ -294,7 +294,7 @@ public class MissionCameraManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ MissionCameraManager.Instance가 null입니다!");
+            Debug.LogError("MissionCameraManager.Instance가 null입니다!");
         }
     }
 
@@ -305,7 +305,7 @@ public class MissionCameraManager : MonoBehaviour
     {
         if (enableDebugLogs)
         {
-            Debug.Log($"🎥 [MissionCameraManager] {message}");
+            Debug.Log($"[MissionCameraManager] {message}");
         }
     }
 
@@ -313,12 +313,12 @@ public class MissionCameraManager : MonoBehaviour
     {
         if (enableDebugLogs)
         {
-            Debug.LogWarning($"⚠️ [MissionCameraManager] {message}");
+            Debug.LogWarning($"[MissionCameraManager] {message}");
         }
     }
 
     private void LogError(string message)
     {
-        Debug.LogError($"❌ [MissionCameraManager] {message}");
+        Debug.LogError($"[MissionCameraManager] {message}");
     }
 }

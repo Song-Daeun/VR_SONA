@@ -5,6 +5,11 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
+    [Header("Dice State Monitoring")]
+    public float diceStateCheckInterval = 0.2f; // 주사위 상태 체크 주기
+    
+    private bool lastKnownDiceSceneState = false; // 마지막으로 알고 있던 주사위 씬 상태
+    private Coroutine diceStateWatcher;
 
     [Header("Camera Reference")]
     public Transform cameraTransform;
@@ -99,6 +104,15 @@ public class UIManager : MonoBehaviour
             Debug.LogError("DiceManager.Instance를 찾을 수 없습니다!");
         }
     }
+    
+    private void OnDestroy()
+    {
+        if (diceStateWatcher != null)
+        {
+            StopCoroutine(diceStateWatcher);
+            diceStateWatcher = null;
+        }
+    }
 
     // 미션 버튼 연결 
     private void ConnectMissionButtons()
@@ -107,7 +121,7 @@ public class UIManager : MonoBehaviour
         {
             yesButton.onClick.AddListener(OnYesClicked);
         }
-        
+
         if (noButton != null)
         {
             noButton.onClick.AddListener(OnNoClicked);
@@ -141,13 +155,6 @@ public class UIManager : MonoBehaviour
         if (diceButton != null)
         {
             diceButton.gameObject.SetActive(show);
-            
-            // // VR 환경을 위한 위치 조정
-            // if (show && cameraTransform != null)
-            // {
-            //     PositionUIInFrontOfCamera(diceButton.transform.parent, diceUIDistance, diceUIHeightOffset);
-            // }
-            
             Debug.Log("주사위 UI " + (show ? "활성화" : "비활성화"));
         }
     }
