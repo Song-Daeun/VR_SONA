@@ -27,10 +27,10 @@ public class DiceResultUI : MonoBehaviour
             resultPanel.SetActive(false);
         }
         
-        if (backButton != null)
-        {
-            backButton.onClick.AddListener(OnBackClicked);
-        }
+        // if (backButton != null)
+        // {
+        //     backButton.onClick.AddListener(OnBackClicked);
+        // }
     }
 
     // 굴리기 전 UI
@@ -128,11 +128,11 @@ public class DiceResultUI : MonoBehaviour
     //     resultPanel.SetActive(false);
     // }
     
-    private void OnBackClicked()
-    {
-        // 뒤로가기 버튼 클릭시 DiceManager의 뒤로가기 함수 호출
-        FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
-    }
+    // private void OnBackClicked()
+    // {
+    //     // 뒤로가기 버튼 클릭시 DiceManager의 뒤로가기 함수 호출
+    //     FindObjectOfType<DiceManager>()?.OnBackButtonClicked();
+    // }
     
     // // 수동으로 패널을 숨기는 함수
     // public void HideResult()

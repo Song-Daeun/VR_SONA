@@ -78,12 +78,13 @@ public class MissionCameraManager : MonoBehaviour
     private GameObject FindUIPlayer()
     {
         // UIScene에서 XR Origin (XR Rig) 직접 찾기
-        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UIScene");
+        // UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UIScene");
+        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("InteractionScene");
         
         if (uiScene.isLoaded)
         {
             GameObject[] rootObjects = uiScene.GetRootGameObjects();
-            
+
             // 모든 오브젝트를 순회하면서 XR Origin 찾기
             foreach (GameObject root in rootObjects)
             {
@@ -293,7 +294,7 @@ public class MissionCameraManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ MissionCameraManager.Instance가 null입니다!");
+            Debug.LogError("MissionCameraManager.Instance가 null입니다!");
         }
     }
 
@@ -304,7 +305,7 @@ public class MissionCameraManager : MonoBehaviour
     {
         if (enableDebugLogs)
         {
-            Debug.Log($"🎥 [MissionCameraManager] {message}");
+            Debug.Log($"[MissionCameraManager] {message}");
         }
     }
 
@@ -312,12 +313,12 @@ public class MissionCameraManager : MonoBehaviour
     {
         if (enableDebugLogs)
         {
-            Debug.LogWarning($"⚠️ [MissionCameraManager] {message}");
+            Debug.LogWarning($"[MissionCameraManager] {message}");
         }
     }
 
     private void LogError(string message)
     {
-        Debug.LogError($"❌ [MissionCameraManager] {message}");
+        Debug.LogError($"[MissionCameraManager] {message}");
     }
 }

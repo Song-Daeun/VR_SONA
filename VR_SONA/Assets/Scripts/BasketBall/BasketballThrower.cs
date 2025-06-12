@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BasketballThrower : MonoBehaviour
 {
@@ -17,9 +18,42 @@ public class BasketballThrower : MonoBehaviour
     [Range(0f, 2f)] public float upwardMultiplier = 0.9f;
     public float throwAngle = 35f;
 
+    private InputAction throwAction;
+
+    void OnEnable()
+    {
+        var inputAsset = GetComponent<PlayerInput>()?.actions;
+        throwAction = inputAsset?.FindAction("BasketBall"); 
+
+        if (throwAction != null)
+        {
+            throwAction.Enable();
+            throwAction.performed += OnThrowPressed;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (throwAction != null)
+        {
+            throwAction.performed -= OnThrowPressed;
+            throwAction.Disable();
+        }
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && Time.time - lastThrowTime > throwCooldown)
+        // XR Device Simulator용 키보드 입력 추가 (T키 = 왼손 X버튼)
+        if (Input.GetKeyDown(KeyCode.B) && Time.time - lastThrowTime > throwCooldown)
+        {
+            ThrowNewBall();
+            lastThrowTime = Time.time;
+        }
+    }
+
+    void OnThrowPressed(InputAction.CallbackContext ctx)
+    {
+        if (Time.time - lastThrowTime > throwCooldown)
         {
             ThrowNewBall();
             lastThrowTime = Time.time;

@@ -1,223 +1,385 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
-    // ================================ //
-    // Singleton & References
-    // ================================ //
     public static UIManager Instance;
 
-    [Header("References")]
+    [Header("Camera Reference")]
     public Transform cameraTransform;
 
     [Header("Dice UI")]
+    public GameObject diceGroup;
     public Button diceButton;
-    public TextMeshProUGUI diceResultText;
-    public float diceUIDistance = 2f;        // 카메라 앞 거리
-    public float diceUIHeightOffset = -0.5f; // 카메라 높이 오프셋
-    public float diceResultDisplayTime = 2f; // 주사위 결과 표시 시간
+    public float diceUIDistance = 2f;
+    public float diceUIHeightOffset = 0.5f;
 
     [Header("Mission UI")]
-    public GameObject missionPromptGroup; // Text + Buttons 같이 묶은 Panel
+    public GameObject missionPromptGroup;
     public TextMeshProUGUI missionPromptText;
     public Button yesButton;
     public Button noButton;
-    public float missionUIDistance = 2f;         // 카메라 앞 거리
-    public float missionUIHeightOffset = 0.5f;   // 카메라 높이 오프셋
+    public float missionUIDistance = 2f;
+    public float missionUIHeightOffset = 0.5f;
 
     [Header("Coin UI")]
     public TextMeshProUGUI coinText;
-    public GameObject coinBackground; // 타원형 배경 이미지
-    public GameObject insufficientCoinsMessage; // 코인 부족 메시지 UI
+    public GameObject coinBackground;
+    public GameObject insufficientCoinsMessage;
 
     [Header("SpellBook UI")]
     public GameObject spellBookCanvas;
-    public GameObject spellBookResultPanel; // 다시 추가 - Inspector 연결용
-    public TextMeshProUGUI spellBookResultText; // "+30초" 또는 "비행기!" 텍스트
-    public GameObject spellBookAirplanePanel; // 비행기 모드 패널
-    public Button[] spellBookTileButtons = new Button[9]; // 3x3 타일 버튼들
-    // public TextMeshProUGUI[] spellBookTileButtonTexts = new TextMeshProUGUI[9]; // 제거 - 불필요
-    public float spellBookUIDistance = 2f;         // 카메라 앞 거리
-    public float spellBookUIHeightOffset = 0f;     // 카메라 높이 오프셋
+    public GameObject spellBookResultPanel;
+    public TextMeshProUGUI spellBookResultText;
+    public GameObject spellBookAirplanePanel;
+    public Button[] spellBookTileButtons = new Button[9];
+    public float spellBookUIDistance = 2f;
+    public float spellBookUIHeightOffset = 0f;
+
+    [Header("Game State Tracking")] 
+    private bool isInMission = false;
+    private bool diceUIWasActiveBeforeMission = false; 
+
+    private bool isDiceSceneActive = false;
+    private bool shouldShowDiceUI = true; // DiceUI 표시 여부
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
     void Start()
     {
-        // ================================ //
-        // UI 초기 설정
-        // ================================ //
-        diceButton.onClick.AddListener(OnDiceButtonClicked);
-        yesButton.onClick.AddListener(OnYesClicked);
-        noButton.onClick.AddListener(OnNoClicked);
+        InitializeUISystem();
+    }
+
+    private void InitializeUISystem()
+    {
+        Debug.Log("UIManager 초기화: 주사위 버튼 이벤트 연결");
         
-        ShowDiceUI(true);
-        ShowMissionPrompt(false);
-        ShowInsufficientCoinsMessage(false); // 코인 부족 메시지 초기 숨김
-        ShowSpellBookUI(false); // 스펠북 UI 초기 숨김
+        ConnectDiceButtonToDiceManager();
+        ConnectMissionButtons();
+        
+        // 플레이어 이동 완료 후 UI 활성화
+        StartCoroutine(WaitForPlayerAndInitializeUI());
         
         // 카메라 자동 찾기
         FindCameraTransform();
+        
+        Debug.Log("UIManager 초기화 완료");
     }
 
-    // ================================ //
-    // 카메라 자동 찾기
-    // ================================ //
-    private void FindCameraTransform()
+    // 플레이어가 준비된 후 UI 초기화
+    private IEnumerator WaitForPlayerAndInitializeUI()
     {
+        Debug.Log("플레이어 준비 상태 확인 시작...");
+        
+        // PlayerManager가 존재할 때까지 대기
+        while (PlayerManager.Instance == null)
+        {
+            Debug.Log("PlayerManager 인스턴스 대기 중...");
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        Debug.Log("PlayerManager 인스턴스 발견됨");
+        
+        // 플레이어가 이동 중이 아닐 때까지 대기
+        while (PlayerManager.Instance.IsMoving())
+        {
+            Debug.Log("플레이어 이동 완료 대기 중...");
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+        Debug.Log("플레이어 이동 완료 확인됨");
+        
+        // 추가 안전 대기 시간
+        yield return new WaitForSeconds(0.2f);
+        
+        Debug.Log("UI 초기화 시작 - 플레이어가 완전히 준비됨");
+        SetupUIAfterPlayerReady();
+    }
+
+    // 플레이어 준비 완료 후 UI 설정
+    private void SetupUIAfterPlayerReady()
+    {
+        Debug.Log("플레이어 준비 완료 후 UI 설정 시작");
+        
         if (cameraTransform == null)
         {
-            // 1. Player 내부에서 카메라 찾기
-            GameObject player = GameObject.Find("Player");
-            if (player != null)
-            {
-                Camera playerCamera = player.GetComponentInChildren<Camera>();
-                if (playerCamera != null)
-                {
-                    cameraTransform = playerCamera.transform;
-                    Debug.Log("✅ Player 카메라 자동 연결됨");
-                    return;
-                }
-            }
-            
-            // 2. 메인 카메라 찾기
-            Camera mainCamera = Camera.main;
-            if (mainCamera != null)
-            {
-                cameraTransform = mainCamera.transform;
-                Debug.Log("✅ 메인 카메라 자동 연결됨");
-                return;
-            }
-            
-            // 3. 첫 번째 카메라 찾기
-            Camera[] cameras = FindObjectsOfType<Camera>();
-            if (cameras.Length > 0)
-            {
-                cameraTransform = cameras[0].transform;
-                Debug.Log("✅ 첫 번째 카메라 자동 연결됨");
-                return;
-            }
-            
-            Debug.LogError("❌ 카메라를 찾을 수 없습니다!");
+            FindCameraTransform();
         }
-    }
-
-    // ================================ //
-    // 주사위 UI 처리
-    // ================================ //
-    public void ShowDiceUI(bool show)
-    {
-        diceButton.gameObject.SetActive(show);
         
-        // DiceResult 텍스트는 초기에는 숨김 (결과가 나올 때만 표시)
-        if (show)
-        {
-            diceResultText.gameObject.SetActive(false); // 초기에는 숨김
-        }
-
-        // 위치 및 회전 재배치
-        if (show && cameraTransform != null)
-        {
-            Transform uiRoot = diceButton.transform.parent; // DiceCanvas 루트
-            Vector3 targetPos = cameraTransform.position
-                + cameraTransform.forward * diceUIDistance
-                + Vector3.up * diceUIHeightOffset;
-            uiRoot.position = targetPos;
-            uiRoot.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
-        }
-    }
-
-    public void ShowDiceResult(int number)
-    {
-        // 버튼만 숨기고 결과 텍스트는 유지
-        diceButton.gameObject.SetActive(false);
-        diceResultText.gameObject.SetActive(true);
-        diceResultText.text = $"주사위 결과: {number}";
+        // 플레이어 위치가 안정된 상태에서 UI 활성화
+        SetInitialUIStates();
         
-        Debug.Log($"🎲 주사위 결과 표시: {number}");
+        Debug.Log("UI 설정 완료 - 플레이어 위치 기준으로 정확히 배치됨");
     }
 
-    public void HideDiceResult()
+    // 주사위 버튼을 DiceManager에 직접 연결
+    private void ConnectDiceButtonToDiceManager()
     {
-        diceResultText.gameObject.SetActive(false);
-        Debug.Log("🎲 주사위 결과 숨김");
+        if (diceButton != null)
+        {
+            diceButton.onClick.AddListener(OnDiceButtonClicked);
+            Debug.Log("주사위 버튼이 DiceManager에 연결됨");
+        }
+        else
+        {
+            Debug.LogError("주사위 버튼을 찾을 수 없습니다!");
+        }
     }
 
     private void OnDiceButtonClicked()
     {
-        // ============================================================================ //
-        // [TEMP] TODO: 주사위 결과 랜덤으로 정해놨는데 이부분 변경해야함. (요청하지 않으면 그냥 무시)
-        // ============================================================================ //
-        int result = Random.Range(1, 7);
-        // ============================================================================ //
+        Debug.Log("주사위 버튼 클릭 감지");
         
-        // ============================================================================ //
-        // [TEMP] TODO: 주사위 던지는 씬 로드 -> SceneLoader 에 메소드 정의하고 불러와서 써야함. (요청하지 않으면 그냥 무시)
-        // ============================================================================ //
-
-        // ============================================================================ //
-
-        // 1단계: 주사위 결과 표시
-        ShowDiceResult(result);
-        
-        // 2단계: 지정된 시간 후 플레이어 이동 시작
-        StartCoroutine(DelayedPlayerMove(result));
+        if (DiceManager.Instance != null)
+        {
+            DiceManager.Instance.LoadDiceScene();
+        }
+        else
+        {
+            Debug.LogError("DiceManager.Instance를 찾을 수 없습니다!");
+        }
     }
 
-    private System.Collections.IEnumerator DelayedPlayerMove(int diceResult)
+    private void ConnectMissionButtons()
     {
-        // 주사위 결과를 지정된 시간만큼 표시
-        yield return new WaitForSeconds(diceResultDisplayTime);
-        
-        // 주사위 결과 숨기기
-        HideDiceResult();
-        
-        // 플레이어 이동 시작
-        GameManager.Instance.OnDiceRolled(diceResult);
+        if (yesButton != null)
+        {
+            yesButton.onClick.AddListener(OnYesClicked);
+        }
+
+        if (noButton != null)
+        {
+            noButton.onClick.AddListener(OnNoClicked);
+        }
     }
 
-    // ================================ //
-    // 미션 수락 여부 UI 처리
-    // ================================ //
+    private void OnYesClicked()
+    {
+        diceUIWasActiveBeforeMission = (diceGroup != null && diceGroup.activeSelf);
+        isInMission = true;
+        
+        Debug.Log($"미션 시작: 이전 주사위 UI 상태 = {diceUIWasActiveBeforeMission}");
+        
+        ShowMissionPrompt(false);
+        GameManager.Instance?.OnMissionDecisionMade(true);
+    }
+
+    private void OnNoClicked()
+    {
+        Debug.Log("미션 No 버튼 클릭 - 미션 거부");
+        
+        ShowMissionPrompt(false);
+        ShowDiceUI(true);
+        
+        Debug.Log("미션 거부 후 주사위 UI 복구 완료");
+        
+        GameManager.Instance?.OnMissionDecisionMade(false);
+    }
+
+    // 초기 UI 상태 설정
+    private void SetInitialUIStates()
+    {
+        Debug.Log("UI 초기 상태 설정 시작");
+        
+        ShowDiceUI(true);                    // 주사위 버튼 활성화
+        ShowMissionPrompt(false);            // 미션 프롬프트 숨김
+        ShowInsufficientCoinsMessage(false); // 코인 부족 메시지 숨김
+        ShowSpellBookUI(false);              // 스펠북 UI 숨김
+        
+        Debug.Log("UI 초기 상태 설정 완료");
+    }
+
+    // 간소화된 주사위 UI 표시
+    // public void ShowDiceUI(bool show)
+    // {
+    //     Debug.Log($"ShowDiceUI 호출: show = {show}");
+
+    //     if (diceGroup != null)
+    //     {
+    //         if (show)
+    //         {
+    //             Debug.Log("주사위 UI 활성화 시작");
+
+    //             // 카메라 참조 확보
+    //             if (cameraTransform == null)
+    //             {
+    //                 FindCameraTransform();
+    //             }
+
+    //             if (cameraTransform != null)
+    //             {
+    //                 Debug.Log($"카메라 위치: {cameraTransform.position}");
+
+    //                 // PlayerManager가 이미 준비되어 있으므로 안전하게 위치 계산 가능
+    //                 if (PlayerManager.Instance != null)
+    //                 {
+    //                     Vector3 playerPos = PlayerManager.Instance.GetPlayerPosition();
+    //                     Debug.Log($"플레이어 위치: {playerPos}");
+    //                 }
+
+    //                 // UI 위치 설정 - 이제 정확한 플레이어 위치 기준으로 계산됨
+    //                 PositionUIInFrontOfCamera(diceGroup.transform, diceUIDistance, diceUIHeightOffset);
+
+    //                 // UI 활성화
+    //                 diceGroup.SetActive(true);
+
+    //                 Debug.Log($"주사위 UI 최종 위치: {diceGroup.transform.position}");
+    //                 Debug.Log("주사위 UI 활성화 완료");
+    //             }
+    //             else
+    //             {
+    //                 Debug.LogError("카메라를 찾을 수 없어서 UI 배치 불가능!");
+    //                 // 그래도 UI는 활성화 (기본 위치에서라도)
+    //                 diceGroup.SetActive(true);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             diceGroup.SetActive(false);
+    //             Debug.Log("주사위 UI 비활성화");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("diceGroup이 null입니다!");
+    //     }
+    // }
+    // public void ShowDiceUI(bool show)
+    // {
+    //     Debug.Log($"ShowDiceUI 호출: show = {show}");
+
+    //     // DiceScene이 로드되어 있으면 UI 표시를 차단
+    //     if (show && DiceManager.Instance != null && DiceManager.Instance.IsDiceSceneLoaded())
+    //     {
+    //         Debug.Log("DiceScene이 로드되어 있어서 DiceUI 표시를 차단합니다.");
+    //         return; // 여기서 바로 리턴하여 UI 활성화 차단
+    //     }
+
+    //     if (diceGroup != null)
+    //     {
+    //         if (show)
+    //         {
+    //             Debug.Log("주사위 UI 활성화 시작");
+
+    //             // 카메라 참조 확보
+    //             if (cameraTransform == null)
+    //             {
+    //                 FindCameraTransform();
+    //             }
+
+    //             if (cameraTransform != null)
+    //             {
+    //                 Debug.Log($"카메라 위치: {cameraTransform.position}");
+
+    //                 if (PlayerManager.Instance != null)
+    //                 {
+    //                     Vector3 playerPos = PlayerManager.Instance.GetPlayerPosition();
+    //                     Debug.Log($"플레이어 위치: {playerPos}");
+    //                 }
+
+    //                 PositionUIInFrontOfCamera(diceGroup.transform, diceUIDistance, diceUIHeightOffset);
+    //                 diceGroup.SetActive(true);
+
+    //                 Debug.Log($"주사위 UI 최종 위치: {diceGroup.transform.position}");
+    //                 Debug.Log("주사위 UI 활성화 완료");
+    //             }
+    //             else
+    //             {
+    //                 Debug.LogError("카메라를 찾을 수 없어서 UI 배치 불가능!");
+    //                 diceGroup.SetActive(true);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             diceGroup.SetActive(false);
+    //             Debug.Log("주사위 UI 비활성화");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("diceGroup이 null입니다!");
+    //     }
+    // }
+
+    // // 미션 UI 처리
+    // public void ShowMissionPrompt(bool show)
+    // {
+    //     if (missionPromptGroup != null)
+    //     {
+    //         missionPromptGroup.SetActive(show);
+
+    //         if (show && cameraTransform != null)
+    //         {
+    //             PositionUIInFrontOfCamera(missionPromptGroup.transform, missionUIDistance, missionUIHeightOffset);
+    //         }
+    //     }
+    // }
+    public void ShowDiceUI(bool show)
+    {
+        if (!show)
+        {
+            diceGroup.SetActive(false);
+            return;
+        }
+
+        // 간단한 차단 로직
+        if (DiceManager.Instance?.IsDiceSceneLoaded() == true) return;
+        if (isInMission) return;
+
+        // 카메라 찾기 (한 번만)
+        if (cameraTransform == null)
+            cameraTransform = Camera.main?.transform ?? FindObjectOfType<Camera>()?.transform;
+
+        if (cameraTransform == null)
+        {
+            Debug.LogError("카메라를 찾을 수 없습니다!");
+            return;
+        }
+
+        // 플레이어 앞 2미터, 위로 0.5미터 위치에 배치
+        Vector3 targetPos = cameraTransform.position 
+                        + cameraTransform.forward * 7f 
+                        + Vector3.up * 0.5f;
+        
+        diceGroup.transform.position = targetPos;
+        Vector3 lookDirection = targetPos - cameraTransform.position;
+        diceGroup.transform.rotation = Quaternion.LookRotation(lookDirection);
+        diceGroup.SetActive(true);
+    }
+
+    // ShowMissionPrompt 메소드도 수정해서 확실하게 차단
     public void ShowMissionPrompt(bool show)
     {
         if (missionPromptGroup != null)
         {
             missionPromptGroup.SetActive(show);
 
-            if (show && cameraTransform != null)
+            if (show)
             {
-                Transform uiRoot = missionPromptGroup.transform;
-                Vector3 targetPos = cameraTransform.position
-                    + cameraTransform.forward * missionUIDistance
-                    + Vector3.up * missionUIHeightOffset;
-                uiRoot.position = targetPos;
-                uiRoot.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                // 미션 프롬프트를 표시할 때 주사위 UI 강제로 숨김
+                if (diceGroup != null)
+                {
+                    diceGroup.SetActive(false);
+                    Debug.Log("미션 프롬프트 표시로 인해 주사위 UI 숨김");
+                }
+                
+                if (cameraTransform != null)
+                {
+                    PositionUIInFrontOfCamera(missionPromptGroup.transform, missionUIDistance, missionUIHeightOffset);
+                }
             }
         }
     }
 
-    private void OnYesClicked()
-    {
-        ShowMissionPrompt(false);
-        GameManager.Instance.OnMissionConfirmed(true);
-    }
-
-    private void OnNoClicked()
-    {
-        ShowMissionPrompt(false);
-        GameManager.Instance.OnMissionConfirmed(false);
-    }
-
-    // ================================ //
     // 코인 UI 처리
-    // ================================ //
     public void UpdateCoinDisplay(int coinCount)
     {
         if (coinText != null)
@@ -229,8 +391,6 @@ public class UIManager : MonoBehaviour
     public void ShowInsufficientCoinsMessage()
     {
         ShowInsufficientCoinsMessage(true);
-        
-        // 3초 후 자동으로 숨김
         StartCoroutine(HideInsufficientCoinsMessageAfterDelay(3f));
     }
 
@@ -242,13 +402,12 @@ public class UIManager : MonoBehaviour
             
             if (show && cameraTransform != null)
             {
-                // 코인 부족 메시지를 카메라 앞에 표시
-                Transform messageRoot = insufficientCoinsMessage.transform;
                 Vector3 targetPos = cameraTransform.position
                     + cameraTransform.forward * missionUIDistance
-                    + Vector3.up * (missionUIHeightOffset + 0.3f); // 미션 UI보다 약간 위에
-                messageRoot.position = targetPos;
-                messageRoot.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                    + Vector3.up * (missionUIHeightOffset + 0.3f);
+                    
+                insufficientCoinsMessage.transform.position = targetPos;
+                insufficientCoinsMessage.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
             }
         }
     }
@@ -259,16 +418,13 @@ public class UIManager : MonoBehaviour
         ShowInsufficientCoinsMessage(false);
     }
 
-    // ================================ //
-    // SpellBook UI 처리 (수정됨)
-    // ================================ //
+    // SpellBook UI 처리
     public void ShowSpellBookUI(bool show)
     {
         if (spellBookCanvas != null)
         {
             spellBookCanvas.SetActive(show);
             
-            // Canvas 설정 확인 및 수정
             if (show)
             {
                 Canvas canvas = spellBookCanvas.GetComponent<Canvas>();
@@ -276,59 +432,39 @@ public class UIManager : MonoBehaviour
                 {
                     canvas.renderMode = RenderMode.WorldSpace;
                     canvas.worldCamera = FindCameraComponent();
-                    canvas.sortingOrder = 10; // 다른 UI보다 앞에 표시
+                    canvas.sortingOrder = 10;
                     
-                    // Canvas 크기 및 위치 설정
                     RectTransform canvasRect = spellBookCanvas.GetComponent<RectTransform>();
                     if (canvasRect != null)
                     {
-                        canvasRect.localScale = Vector3.one * 0.01f; // 적절한 크기로 조정
+                        canvasRect.localScale = Vector3.one * 0.01f;
                     }
                 }
                 
-                // Canvas를 카메라 앞에 배치
                 PositionUIInFrontOfCamera(spellBookCanvas.transform, spellBookUIDistance, spellBookUIHeightOffset);
             }
-            
-            Debug.Log($"📖 SpellBook Canvas 활성화: {show}");
-        }
-        else
-        {
-            Debug.LogError("❌ spellBookCanvas가 null입니다!");
         }
     }
 
     public void ShowSpellBookResult(string resultText)
     {
-        Debug.Log($"📖 UIManager.ShowSpellBookResult() 호출됨");
-        
-        // 1. ResultPanel 먼저 활성화 (구조 유지)
         if (spellBookResultPanel != null)
         {
             spellBookResultPanel.SetActive(true);
-            Debug.Log($"📖 SpellBook ResultPanel 활성화됨");
         }
         
-        // 2. ResultText는 ScreenSpaceOverlay로 설정
         if (spellBookResultText != null)
         {
-            // ResultText 활성화
             spellBookResultText.gameObject.SetActive(true);
             spellBookResultText.text = resultText;
             
-            Debug.Log($"📖 SpellBook ResultText 설정: '{resultText}'");
-            
-            // ResultText의 Canvas를 ScreenSpaceOverlay로 설정
             Canvas textCanvas = spellBookResultText.GetComponentInParent<Canvas>();
             if (textCanvas != null)
             {
                 textCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                textCanvas.sortingOrder = 2000; // 매우 높은 우선순위
-                
-                Debug.Log($"📖 ResultText Canvas를 ScreenSpaceOverlay로 설정");
+                textCanvas.sortingOrder = 2000;
             }
             
-            // ResultText를 화면 중앙에 배치
             RectTransform textRect = spellBookResultText.rectTransform;
             textRect.sizeDelta = new Vector2(400, 100);
             textRect.localScale = Vector3.one;
@@ -336,144 +472,127 @@ public class UIManager : MonoBehaviour
             textRect.anchorMax = new Vector2(0.5f, 0.5f);
             textRect.anchoredPosition = Vector2.zero;
             
-            // 텍스트 스타일
             spellBookResultText.fontSize = 48;
             spellBookResultText.color = Color.yellow;
             spellBookResultText.fontStyle = FontStyles.Bold;
-            
-            Debug.Log($"📖 ResultText 화면 중앙 배치 완료");
-        }
-        else
-        {
-            Debug.LogError("❌ spellBookResultText가 null입니다!");
-            return;
         }
         
-        // AirplanePanel 숨기기
         if (spellBookAirplanePanel != null)
         {
             spellBookAirplanePanel.SetActive(false);
         }
-        
-        Debug.Log($"📖 UIManager.ShowSpellBookResult() 완료");
     }
 
     public void ShowSpellBookAirplanePanel()
     {
-        Debug.Log("🔍 ShowSpellBookAirplanePanel() 시작");
-        
         if (spellBookAirplanePanel != null)
         {
-            Debug.Log($"🔍 spellBookAirplanePanel 발견: {spellBookAirplanePanel.name}");
-            Debug.Log($"🔍 spellBookAirplanePanel 활성화 전 상태: {spellBookAirplanePanel.activeInHierarchy}");
-            
-            // ResultText 숨기기
             if (spellBookResultText != null)
             {
                 spellBookResultText.gameObject.SetActive(false);
-                Debug.Log("🔍 ResultText 숨김 완료");
             }
                 
             spellBookAirplanePanel.SetActive(true);
-            Debug.Log($"🔍 spellBookAirplanePanel 활성화 후 상태: {spellBookAirplanePanel.activeInHierarchy}");
             
-            // Canvas 찾기 및 확인
             Canvas canvas = spellBookAirplanePanel.GetComponentInParent<Canvas>();
             if (canvas != null)
             {
-                Debug.Log($"🔍 Canvas 발견: {canvas.name}");
-                Debug.Log($"🔍 Canvas 활성화 상태: {canvas.gameObject.activeInHierarchy}");
-                Debug.Log($"🔍 Canvas 현재 RenderMode: {canvas.renderMode}");
-                Debug.Log($"🔍 Canvas 현재 SortingOrder: {canvas.sortingOrder}");
-                
                 canvas.renderMode = RenderMode.WorldSpace;
                 canvas.worldCamera = Camera.main ?? FindObjectOfType<Camera>();
                 canvas.sortingOrder = 1000;
                 
-                Debug.Log($"🔍 Canvas 설정 후 - RenderMode: {canvas.renderMode}, WorldCamera: {(canvas.worldCamera != null ? canvas.worldCamera.name : "null")}");
-                
-                // Canvas를 카메라 앞에 배치
                 if (cameraTransform != null)
                 {
-                    Debug.Log($"🔍 cameraTransform 발견: {cameraTransform.name}");
-                    Debug.Log($"🔍 카메라 위치: {cameraTransform.position}");
-                    Debug.Log($"🔍 카메라 방향: {cameraTransform.forward}");
-                    
                     Vector3 targetPos = cameraTransform.position
                         + cameraTransform.forward * spellBookUIDistance
                         + Vector3.up * spellBookUIHeightOffset;
                     
-                    Debug.Log($"🔍 계산된 목표 위치: {targetPos}");
-                    Debug.Log($"🔍 Canvas 이동 전 위치: {canvas.transform.position}");
-                    
                     canvas.transform.position = targetPos;
                     canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
-                    
-                    Debug.Log($"🔍 Canvas 이동 후 위치: {canvas.transform.position}");
-                    Debug.Log($"🔍 Canvas 회전: {canvas.transform.rotation.eulerAngles}");
-                }
-                else
-                {
-                    Debug.LogError("🔍 cameraTransform이 null입니다!");
                 }
                 
-                // Canvas 크기 조정
                 RectTransform canvasRect = canvas.GetComponent<RectTransform>();
                 if (canvasRect != null)
                 {
-                    Debug.Log($"🔍 Canvas 스케일 조정 전: {canvasRect.localScale}");
                     canvasRect.localScale = Vector3.one * 0.01f;
-                    Debug.Log($"🔍 Canvas 스케일 조정 후: {canvasRect.localScale}");
                 }
             }
-            else
-            {
-                Debug.LogError("🔍 Canvas를 찾을 수 없습니다!");
-            }
-            
-            // AirplanePanel 자체 상태 확인
-            RectTransform panelRect = spellBookAirplanePanel.GetComponent<RectTransform>();
-            if (panelRect != null)
-            {
-                Debug.Log($"🔍 AirplanePanel 크기: {panelRect.sizeDelta}");
-                Debug.Log($"🔍 AirplanePanel 스케일: {panelRect.localScale}");
-                Debug.Log($"🔍 AirplanePanel 로컬 위치: {panelRect.localPosition}");
-            }
-            
-            // 버튼들 상태 확인
-            Debug.Log($"🔍 spellBookTileButtons 배열 길이: {spellBookTileButtons.Length}");
-            int activeButtonCount = 0;
-            for (int i = 0; i < spellBookTileButtons.Length; i++)
-            {
-                if (spellBookTileButtons[i] != null)
-                {
-                    activeButtonCount++;
-                    Debug.Log($"🔍 버튼 {i}: {spellBookTileButtons[i].name}, 활성화: {spellBookTileButtons[i].gameObject.activeInHierarchy}");
-                }
-            }
-            Debug.Log($"🔍 총 연결된 버튼 수: {activeButtonCount}");
-            
-            Debug.Log($"✅ ShowSpellBookAirplanePanel 완료");
-        }
-        else
-        {
-            Debug.LogError("❌ spellBookAirplanePanel이 null입니다!");
         }
     }
 
-    // ================================ //
-    // UI 위치 조정 헬퍼 메소드
-    // ================================ //
+    public void UpdateSpellBookTileButtons(bool[] tileStates, System.Action<int> onTileClicked)
+    {
+        for (int i = 0; i < spellBookTileButtons.Length && i < tileStates.Length; i++)
+        {
+            if (spellBookTileButtons[i] != null)
+            {
+                bool isOccupied = tileStates[i];
+                spellBookTileButtons[i].interactable = !isOccupied;
+                
+                Image buttonImage = spellBookTileButtons[i].GetComponent<Image>();
+                if (buttonImage != null)
+                {
+                    buttonImage.color = isOccupied ? Color.gray : Color.white;
+                }
+                
+                int x = i / 3;
+                int y = i % 3;
+                TextMeshProUGUI buttonText = spellBookTileButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
+                {
+                    buttonText.text = BingoBoard.GetTileNameByCoords(x, y);
+                }
+                
+                spellBookTileButtons[i].onClick.RemoveAllListeners();
+                int buttonIndex = i;
+                spellBookTileButtons[i].onClick.AddListener(() => onTileClicked(buttonIndex));
+            }
+        }
+    }
+
+    // 카메라 위치 찾기
+    private void FindCameraTransform()
+    {
+        if (cameraTransform == null)
+        {
+            GameObject player = GameObject.Find("Player");
+            if (player != null)
+            {
+                Camera playerCamera = player.GetComponentInChildren<Camera>();
+                if (playerCamera != null)
+                {
+                    cameraTransform = playerCamera.transform;
+                    Debug.Log("Player 카메라 자동 연결됨");
+                    return;
+                }
+            }
+            
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                cameraTransform = mainCamera.transform;
+                Debug.Log("메인 카메라 자동 연결됨");
+                return;
+            }
+            
+            Camera[] cameras = FindObjectsOfType<Camera>();
+            if (cameras.Length > 0)
+            {
+                cameraTransform = cameras[0].transform;
+                Debug.Log("첫 번째 카메라 자동 연결됨");
+                return;
+            }
+            
+            Debug.LogError("카메라를 찾을 수 없습니다!");
+        }
+    }
+    
     private void PositionUIInFrontOfCamera(Transform uiTransform, float distance, float heightOffset)
     {
         if (cameraTransform == null)
         {
-            FindCameraTransform(); // 카메라 다시 찾기 시도
-            if (cameraTransform == null)
-            {
-                Debug.LogError("❌ 카메라를 찾을 수 없어 UI 위치 설정 실패!");
-                return;
-            }
+            FindCameraTransform();
+            if (cameraTransform == null) return;
         }
         
         Vector3 targetPos = cameraTransform.position
@@ -482,9 +601,6 @@ public class UIManager : MonoBehaviour
         
         uiTransform.position = targetPos;
         uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
-        
-        Debug.Log($"📍 UI 위치 설정: {targetPos}");
-        Debug.Log($"📍 카메라 위치: {cameraTransform.position}, 카메라 방향: {cameraTransform.forward}");
     }
     
     private Camera FindCameraComponent()
@@ -495,68 +611,25 @@ public class UIManager : MonoBehaviour
             if (cam != null) return cam;
         }
         
-        // fallback
         return Camera.main ?? FindObjectOfType<Camera>();
     }
 
-    public void UpdateSpellBookTileButtons(bool[] tileStates, System.Action<int> onTileClicked)
-    {
-        for (int i = 0; i < spellBookTileButtons.Length && i < tileStates.Length; i++)
-        {
-            if (spellBookTileButtons[i] != null)
-            {
-                // 버튼 활성화/비활성화
-                bool isOccupied = tileStates[i];
-                spellBookTileButtons[i].interactable = !isOccupied;
-                
-                // 버튼 색상 변경
-                Image buttonImage = spellBookTileButtons[i].GetComponent<Image>();
-                if (buttonImage != null)
-                {
-                    buttonImage.color = isOccupied ? Color.gray : Color.white;
-                }
-                
-                // 버튼 텍스트 설정 (GetComponentInChildren으로 찾기)
-                int x = i / 3;
-                int y = i % 3;
-                TextMeshProUGUI buttonText = spellBookTileButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-                if (buttonText != null)
-                {
-                    buttonText.text = BingoBoard.GetTileNameByCoords(x, y);
-                }
-                
-                // 클릭 이벤트 설정 (기존 리스너 제거 후 새로 추가)
-                spellBookTileButtons[i].onClick.RemoveAllListeners();
-                int buttonIndex = i; // 클로저 문제 해결
-                spellBookTileButtons[i].onClick.AddListener(() => onTileClicked(buttonIndex));
-            }
-        }
-    }
-
-    // ================================ //
-    // 미션 돌아가기 처리 (미션씬에서 호출)
-    // ================================ //
+    // 미션 돌아가기 처리
     public static void ReturnFromMission()
     {
-        Debug.Log("🔙 미션에서 돌아가기 요청됨");
-        
-        // Time.timeScale 정상화 (Basketball 미션에서 0으로 설정되었을 수 있음)
+        Debug.Log("미션에서 돌아가기 요청됨");
         Time.timeScale = 1f;
         
-        // MissionManager를 통해 결과 수집 및 메인씬 복귀
         if (MissionManager.Instance != null)
         {
             MissionManager.Instance.ReturnFromMission();
         }
         else
         {
-            Debug.LogError("❌ MissionManager.Instance를 찾을 수 없습니다!");
+            Debug.LogError("MissionManager.Instance를 찾을 수 없습니다!");
         }
     }
 
-    // ================================ //
-    // 미션씬 돌아가기 버튼용 헬퍼 (Inspector 연결용)
-    // ================================ //
     public void OnMissionReturnButtonClicked()
     {
         ReturnFromMission();

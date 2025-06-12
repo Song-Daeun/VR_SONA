@@ -151,8 +151,8 @@ Transform:
   m_GameObject: {fileID: 12834008}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: -0.5, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: -0.5, y: 25, z: -25}
+  m_LocalScale: {x: 5, y: 0.5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1357032262}
@@ -490,8 +490,8 @@ Transform:
   m_GameObject: {fileID: 166519592}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 54.6, y: 0, z: -50.9}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: 25, y: 25, z: -50}
+  m_LocalScale: {x: 5, y: 0.5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2074371667}
@@ -752,8 +752,8 @@ Transform:
   m_GameObject: {fileID: 286486740}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -48.8, y: 0, z: -51.3}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: -25, y: 25, z: -50}
+  m_LocalScale: {x: 5, y: 0.5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2074371667}
@@ -935,8 +935,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 1
-  m_fontSizeBase: 1
+  m_fontSize: 8
+  m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1631,7 +1631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.5000001, y: 0.50000006}
+  m_AnchoredPosition: {x: 0.09, y: 0.50000006}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1357032263
@@ -1993,7 +1993,7 @@ MonoBehaviour:
   settleTime: 1
   uiDisplayDelay: 1
   moveCompleteDelay: 2
-  showDebugLogs: 1
+  showDebugLogs: 0
   drawDebugVisuals: 1
   grabInteractable: {fileID: 2333461220734580938}
   playerManager: {fileID: 0}
@@ -2249,8 +2249,8 @@ Transform:
   m_GameObject: {fileID: 1876964248}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 5.6, y: 0, z: -102.9}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: -0.5, y: 25, z: -75}
+  m_LocalScale: {x: 5, y: 0.5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2074371667}
@@ -2577,7 +2577,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1983134481
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2587,7 +2587,7 @@ RectTransform:
   m_GameObject: {fileID: 1983134480}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 414934386}
@@ -2596,7 +2596,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -3, y: 0.18}
-  m_SizeDelta: {x: 10, y: 4}
+  m_SizeDelta: {x: 100, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1983134482
 MonoBehaviour:
@@ -2704,7 +2704,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89d2959425d3e6e4786edb17dae7d190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diceManager: {fileID: 0}
 --- !u!1 &2074371666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2766,9 +2765,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!1 &2122578814
 GameObject:
@@ -2871,8 +2870,8 @@ Transform:
   m_GameObject: {fileID: 2122578814}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -48.5, z: -50.9}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalPosition: {x: -0.5, y: 0, z: -50}
+  m_LocalScale: {x: 5, y: 0.5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2074371667}
@@ -3133,8 +3132,8 @@ Transform:
   m_GameObject: {fileID: 1753742468368113495}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -17.9}
-  m_LocalScale: {x: 7, y: 7, z: 7}
+  m_LocalPosition: {x: 0, y: 3.41, z: -29.67}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1195568237}
@@ -3255,7 +3254,7 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   showDebugLogs: 1
   drawDebugGizmos: 1
-  grabInteractable: {fileID: 0}
+  grabInteractable: {fileID: 2333461220734580938}
 --- !u!114 &8088517647123409283
 MonoBehaviour:
   m_ObjectHideFlags: 0

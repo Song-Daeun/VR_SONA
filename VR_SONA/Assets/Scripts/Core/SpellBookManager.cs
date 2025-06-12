@@ -27,15 +27,15 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     public void ActivateSpellBook()
     {
-        // 🔥 이미 스펠북이 활성화되어 있으면 무시
+        // 이미 스펠북이 활성화되어 있으면 무시
         if (isSpellBookActive)
         {
-            Debug.Log("📖 스펠북이 이미 활성화되어 있습니다. 호출 무시.");
+            Debug.Log("스펠북이 이미 활성화되어 있습니다. 호출 무시.");
             return;
         }
         
         isSpellBookActive = true; // 활성화 플래그 설정
-        Debug.Log("📖 스펠북 활성화!");
+        Debug.Log("스펠북 활성화!");
         
         // UIManager를 통해 스펠북 UI 표시
         if (UIManager.Instance != null)
@@ -61,17 +61,17 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     private void ShowTimeBonus()
     {
-        Debug.Log("⏰ 시간 보너스 효과 발동!");
+        Debug.Log("시간 보너스 효과 발동!");
         
         // UIManager를 통해 결과 표시
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowSpellBookResult("+30초");
-            Debug.Log("📖 UIManager.ShowSpellBookResult() 호출됨");
+            Debug.Log("UIManager.ShowSpellBookResult() 호출됨");
         }
         else
         {
-            Debug.LogError("❌ UIManager.Instance가 null입니다!");
+            Debug.LogError("UIManager.Instance가 null입니다!");
         }
         
         // 실제 게임 타이머에 30초 추가
@@ -86,17 +86,17 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     private void ShowAirplaneEffect()
     {
-        Debug.Log("✈️ 비행기 효과 발동!");
+        Debug.Log("비행기 효과 발동!");
         
         // UIManager를 통해 결과 표시
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowSpellBookResult("비행기!");
-            Debug.Log("📖 UIManager.ShowSpellBookResult() 호출됨 (비행기)");
+            Debug.Log("UIManager.ShowSpellBookResult() 호출됨 (비행기)");
         }
         else
         {
-            Debug.LogError("❌ UIManager.Instance가 null입니다!");
+            Debug.LogError("UIManager.Instance가 null입니다!");
         }
         
         // 2초 후 타일 선택 UI 표시
@@ -192,7 +192,7 @@ public class SpellBookManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"❌ 타일 '{tileName}'을 찾을 수 없습니다!");
+            Debug.LogError($"타일 '{tileName}'을 찾을 수 없습니다!");
             // 텔레포트 실패 시 다음 턴으로
             GameManager.Instance.StartTurn();
         }
@@ -210,10 +210,10 @@ public class SpellBookManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ SliderTimer.Instance를 찾을 수 없습니다!");
+            Debug.LogError("SliderTimer.Instance를 찾을 수 없습니다!");
         }
         
-        Debug.Log($"⏰ 스펠북으로 게임 시간 {seconds}초 추가 요청!");
+        Debug.Log($"스펠북으로 게임 시간 {seconds}초 추가 요청!");
     }
 
     // ================================ //
@@ -235,10 +235,10 @@ public class SpellBookManager : MonoBehaviour
             UIManager.Instance.ShowSpellBookUI(false);
         }
         
-        // 🔥 스펠북 비활성화 플래그 해제
+        // 스펠북 비활성화 플래그 해제
         isSpellBookActive = false;
         
-        Debug.Log("📖 스펠북 UI 닫힘");
+        Debug.Log("스펠북 UI 닫힘");
     }
 
     // ================================ //

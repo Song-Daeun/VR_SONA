@@ -26,7 +26,7 @@ public class BingoBoard : MonoBehaviour
     {
         { "Netherlands", "Germany", "USA" },
         { "SpellBook", "Japan", "Seoul" },
-        { "Suncheon", "Taiwan", "Start" }
+        { "Suncheon", "Egypt", "Start" }
     };
     
     // ================================ //

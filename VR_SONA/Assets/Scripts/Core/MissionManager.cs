@@ -20,7 +20,7 @@ public class MissionManager : MonoBehaviour
     private readonly int[] tileMissionTypes = {
         1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
         2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-        2, 1      // Suncheon(미션2), Taiwan(미션1)
+        2, 1      // Suncheon(미션2), Egypt(미션1)
     };
 
     // ================================ //
@@ -36,14 +36,24 @@ public class MissionManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // ================================ //
     // 미션 씬 로드 요청
-    // ================================ //
     public void LoadMissionScene(int tileIndex)
     {
+        // 디버깅 로그
+        Debug.Log($"=== 미션 로드 디버그 정보 ===");
+        Debug.Log($"요청된 타일 인덱스: {tileIndex}");
+        Debug.Log($"tileMissionTypes 배열 길이: {tileMissionTypes.Length}");
+        Debug.Log($"GameManager 타일 배열 길이: {GameManager.Instance.GetAllTileNames().Length}");
+        
+        if (tileIndex >= 0 && tileIndex < GameManager.Instance.GetAllTileNames().Length)
+        {
+            string tileName = GameManager.Instance.GetAllTileNames()[tileIndex];
+            Debug.Log($"GameManager에서의 타일 이름: {tileName}");
+        }
+    
         if (tileIndex < 0 || tileIndex >= tileMissionTypes.Length)
         {
-            Debug.LogError($"❌ 잘못된 타일 인덱스: {tileIndex}");
+            Debug.LogError($"잘못된 타일 인덱스: {tileIndex}");
             return;
         }
 
@@ -53,7 +63,7 @@ public class MissionManager : MonoBehaviour
         int missionType = tileMissionTypes[tileIndex];
         string sceneName = GetMissionSceneName(missionType);
         
-        Debug.Log($"🎮 타일 {tileIndex}에서 미션{missionType} 시작 → {sceneName}");
+        Debug.Log($"타일 {tileIndex}에서 미션{missionType} 시작 → {sceneName}");
 
         // 게임 오브젝트들 비활성화
         DeactivateGameObjects();
@@ -146,7 +156,7 @@ public class MissionManager : MonoBehaviour
     // ================================ //
     public void OnMissionCompleted(bool success)
     {
-        Debug.Log($"🏁 미션 완료: {(success ? "성공" : "실패")}");
+        Debug.Log($"미션 완료: {(success ? "성공" : "실패")}");
 
         // 미션 결과를 BingoBoard에 저장 (타일 좌표 변환)
         if (currentMissionTileIndex >= 0 && success)
@@ -224,23 +234,49 @@ public class MissionManager : MonoBehaviour
     // ================================ //
     // 유틸리티 메소드: 타일 인덱스 → 빙고 좌표 변환
     // ================================ //
+    // private Vector2Int GetTileCoordsFromIndex(int tileIndex)
+    // {
+    //     // GameManager의 tileNames 배열과 빙고 보드 좌표 매핑
+    //     switch (tileIndex)
+    //     {
+    //         case 0: return new Vector2Int(0, 0); // Netherlands
+    //         case 1: return new Vector2Int(0, 1); // Germany
+    //         case 2: return new Vector2Int(0, 2); // USA
+    //         case 3: return new Vector2Int(1, 0); // SpellBook
+    //         case 4: return new Vector2Int(1, 1); // Japan
+    //         case 5: return new Vector2Int(1, 2); // Seoul
+    //         case 6: return new Vector2Int(2, 0); // Suncheon
+    //         case 7: return new Vector2Int(2, 1); // Egypt
+    //         default:
+    //             Debug.LogError($"❌ 잘못된 타일 인덱스: {tileIndex}");
+    //             return new Vector2Int(-1, -1);
+    //     }
+    // }
     private Vector2Int GetTileCoordsFromIndex(int tileIndex)
     {
-        // GameManager의 tileNames 배열과 빙고 보드 좌표 매핑
-        switch (tileIndex)
+        // GameManager의 실제 타일 이름을 기반으로 좌표 매핑
+        if (GameManager.Instance == null) 
         {
-            case 0: return new Vector2Int(0, 0); // Netherlands
-            case 1: return new Vector2Int(0, 1); // Germany
-            case 2: return new Vector2Int(0, 2); // USA
-            case 3: return new Vector2Int(1, 0); // SpellBook
-            case 4: return new Vector2Int(1, 1); // Japan
-            case 5: return new Vector2Int(1, 2); // Seoul
-            case 6: return new Vector2Int(2, 0); // Suncheon
-            case 7: return new Vector2Int(2, 1); // Taiwan
-            default:
-                Debug.LogError($"❌ 잘못된 타일 인덱스: {tileIndex}");
-                return new Vector2Int(-1, -1);
+            Debug.LogError("GameManager.Instance가 null입니다");
+            return new Vector2Int(-1, -1);
         }
+        
+        string[] tileNames = GameManager.Instance.GetAllTileNames();
+        if (tileIndex < 0 || tileIndex >= tileNames.Length)
+        {
+            Debug.LogError($"잘못된 타일 인덱스: {tileIndex}");
+            return new Vector2Int(-1, -1);
+        }
+        
+        string tileName = tileNames[tileIndex];
+        Vector2Int coords = GameManager.Instance.GetBingoCoordinatesForTile(tileName);
+        
+        if (coords.x == -1)
+        {
+            Debug.LogWarning($"타일 '{tileName}'에 대한 빙고 좌표를 찾을 수 없습니다");
+        }
+        
+        return coords;
     }
 
     // ================================ //
