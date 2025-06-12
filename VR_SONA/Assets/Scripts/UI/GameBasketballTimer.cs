@@ -9,6 +9,7 @@ public class GameBasketballTimer : MonoBehaviour
     public Slider timerSlider;
     private bool isRunning = true;
     public static System.Action OnTimerExpired; // 시간 종료 이벤트
+    public bool IsRunning => isRunning;
 
     void Start()
     {
@@ -34,8 +35,7 @@ public class GameBasketballTimer : MonoBehaviour
         if (currentTime <= 0f)
         {
             isRunning = false;
-            // BasGameManager.Instance.EndGame(false); // 실패로 끝남
-            Debug.Log("시간 종료 - 게임 종료 처리 필요");
+            HandleTimeExpiration();
         }
     }
 

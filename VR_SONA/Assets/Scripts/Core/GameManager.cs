@@ -180,10 +180,28 @@ public class GameManager : MonoBehaviour
         ResetTurnState();
     }
 
-    // SpellBookTile 이벤트 처리리
+    // SpellBookTile 이벤트 처리
     private void OnSpellBookArrivedEvent()
     {
         Debug.Log("이벤트: SpellBook 타일 도착 알림 ===");
+        
+        // 현재 씬이 메인 게임 씬인지 확인
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (currentScene != "MainGameScene") // 여기서 "MainGameScene"을 실제 메인 씬 이름으로 변경
+        {
+            Debug.Log($"메인 씬이 아닌 곳에서 SpellBook 이벤트 차단: {currentScene}");
+            ResetTurnState();
+            return;
+        }
+        
+        // 🆕 현재 타일이 정말 SpellBook인지 재확인
+        if (GetCurrentTileName() != "SpellBook")
+        {
+            Debug.Log($"현재 타일이 SpellBook이 아님: {GetCurrentTileName()} - 이벤트 차단");
+            ResetTurnState();
+            return;
+        }
+        
         if (SpellBookManager.Instance != null)
         {
             SpellBookManager.Instance.ActivateSpellBook();
@@ -193,7 +211,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("SpellBookManager.Instance를 찾을 수 없습니다");
         }
 
-        // 턴 상태 리셋
         ResetTurnState();
     }
 
