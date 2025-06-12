@@ -4,9 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class DiceManager : MonoBehaviour
 {
-    // ================================ //
-    // Singleton Pattern
-    // ================================ //
     public static DiceManager Instance { get; private set; }
     public GameManager gameManager;
 
@@ -137,7 +134,6 @@ public class DiceManager : MonoBehaviour
         }
     }
 
-    // 콜백 메소드들 - DiceSceneManager에서 호출
     // 주사위 결과를 받았을 때 호출
     private void OnDiceResultReceived(int result)
     {
@@ -166,12 +162,6 @@ public class DiceManager : MonoBehaviour
         else
         {
             Debug.LogError("DiceResultUI를 찾을 수 없습니다!");
-            
-            // UI가 없어도 게임은 계속 진행되도록 GameManager 호출
-            // if (GameManager.Instance != null)
-            // {
-            //     GameManager.Instance.OnDiceRolled(result);
-            // }
         }
     }
     // DiceScene 언로드 및 MainGameScene 복귀
@@ -187,16 +177,14 @@ public class DiceManager : MonoBehaviour
         // SetDiceButtonVisible(true);
     }
 
-    // ================================ //
     // 주사위 씬 언로드
-    // ================================ //
     public void UnloadDiceScene()
     {
         if (!isDiceSceneLoaded)
         {
             if (showDebugLogs)
             {
-                Debug.LogWarning("⚠️ 주사위 씬이 로드되어 있지 않습니다.");
+                Debug.LogWarning("주사위 씬이 로드되어 있지 않습니다.");
             }
             return;
         }
@@ -208,7 +196,7 @@ public class DiceManager : MonoBehaviour
     {
         if (showDebugLogs)
         {
-            Debug.Log("🎲 주사위 씬 언로드 시작");
+            Debug.Log(" 주사위 씬 언로드 시작");
         }
         
         Scene diceScene = SceneManager.GetSceneByName(diceSceneName);
@@ -230,23 +218,16 @@ public class DiceManager : MonoBehaviour
         
         if (showDebugLogs)
         {
-            Debug.Log("✅ 주사위 씬 언로드 완료");
+            Debug.Log("주사위 씬 언로드 완료");
         }
     }
 
-    // ================================ //
-    // UI 제어 - UIManager에게 위임
-    // ================================ //
-    
-    /// <summary>
-    /// 주사위 버튼의 표시/숨김을 제어합니다.
-    /// 실제 UI 조작은 UIManager에게 위임하여 책임을 분리합니다.
-    /// </summary>
+    // UI 제어 
     public void SetDiceButtonVisible(bool visible)
     {
         if (showDebugLogs)
         {
-            Debug.Log($"🎲 주사위 UI {(visible ? "활성화" : "비활성화")} 요청 - UIManager에게 위임");
+            Debug.Log($"주사위 UI {(visible ? "활성화" : "비활성화")} 요청 - UIManager에게 위임");
         }
         
         // UIManager를 통한 표준 방식으로 UI 제어
@@ -256,7 +237,7 @@ public class DiceManager : MonoBehaviour
             
             if (showDebugLogs)
             {
-                Debug.Log("✅ UIManager를 통한 주사위 UI 제어 성공");
+                Debug.Log("UIManager를 통한 주사위 UI 제어 성공");
             }
         }
         else
@@ -269,12 +250,12 @@ public class DiceManager : MonoBehaviour
                 
                 if (showDebugLogs)
                 {
-                    Debug.Log("✅ FindObjectOfType으로 UIManager를 찾아서 제어 성공");
+                    Debug.Log("FindObjectOfType으로 UIManager를 찾아서 제어 성공");
                 }
             }
             else
             {
-                Debug.LogError("❌ UIManager를 찾을 수 없습니다! 주사위 UI 제어 실패");
+                Debug.LogError("UIManager를 찾을 수 없습니다! 주사위 UI 제어 실패");
             }
         }
     }
@@ -287,35 +268,35 @@ public class DiceManager : MonoBehaviour
     /// 기존 코드와의 호환성을 위한 메소드입니다.
     /// 뒤로가기 버튼이 눌렸을 때 호출됩니다.
     /// </summary>
-    public void OnBackButtonClicked(bool showButtonAfter = true)
-    {
-        if (showDebugLogs)
-        {
-            Debug.Log($"🔙 뒤로가기 버튼 클릭됨 - showButtonAfter: {showButtonAfter}");
-        }
+    // public void OnBackButtonClicked(bool showButtonAfter = true)
+    // {
+    //     if (showDebugLogs)
+    //     {
+    //         Debug.Log($"🔙 뒤로가기 버튼 클릭됨 - showButtonAfter: {showButtonAfter}");
+    //     }
 
-        // 현재 DiceSceneManager가 있다면 뒤로가기 처리 요청
-        if (currentDiceSceneManager != null)
-        {
-            currentDiceSceneManager.OnBackButtonPressed();
-        }
-        else
-        {
-            // DiceSceneManager가 없다면 직접 언로드
-            if (showDebugLogs)
-            {
-                Debug.LogWarning("⚠️ DiceSceneManager가 없어서 직접 언로드 처리");
-            }
+    //     // 현재 DiceSceneManager가 있다면 뒤로가기 처리 요청
+    //     if (currentDiceSceneManager != null)
+    //     {
+    //         currentDiceSceneManager.OnBackButtonPressed();
+    //     }
+    //     else
+    //     {
+    //         // DiceSceneManager가 없다면 직접 언로드
+    //         if (showDebugLogs)
+    //         {
+    //             Debug.LogWarning("⚠️ DiceSceneManager가 없어서 직접 언로드 처리");
+    //         }
             
-            UnloadDiceScene();
+    //         UnloadDiceScene();
             
-            // 버튼 표시 옵션에 따라 UI 제어
-            if (showButtonAfter)
-            {
-                SetDiceButtonVisible(true);
-            }
-        }
-    }
+    //         // 버튼 표시 옵션에 따라 UI 제어
+    //         if (showButtonAfter)
+    //         {
+    //             SetDiceButtonVisible(true);
+    //         }
+    //     }
+    // }
 
     /// <summary>
     /// 기존 코드와의 호환성을 위한 메소드입니다.
@@ -325,27 +306,20 @@ public class DiceManager : MonoBehaviour
     {
         if (showDebugLogs)
         {
-            Debug.Log("🎲 주사위 버튼 클릭 이벤트 수신");
+            Debug.Log("주사위 버튼 클릭 이벤트 수신");
         }
         
         LoadDiceScene();
     }
 
-    // ================================ //
     // 상태 확인 메소드들
-    // ================================ //
-    
-    /// <summary>
-    /// 현재 주사위 씬이 로드되어 있는지 확인합니다.
-    /// </summary>
+    // 현재 주사위 씬이 로드되어 있는지 확인
     public bool IsDiceSceneLoaded()
     {
         return isDiceSceneLoaded;
     }
 
-    /// <summary>
-    /// 현재 주사위 결과를 처리 중인지 확인합니다.
-    /// </summary>
+    // 현재 주사위 결과를 처리 중인지 확인
     public bool IsProcessingDiceResult()
     {
         if (currentDiceSceneManager != null)
@@ -355,19 +329,13 @@ public class DiceManager : MonoBehaviour
         return false;
     }
 
-    // ================================ //
-    // 에러 처리 및 정리 메소드들
-    // ================================ //
-    
-    /// <summary>
-    /// 강제로 주사위 시스템을 정리합니다. (긴급 상황용)
-    /// 예상치 못한 오류가 발생했을 때 시스템을 안전한 상태로 복구하는 데 사용됩니다.
-    /// </summary>
+    // 에러 처리 및 정리 메소드들   
+    // 강제로 주사위 시스템을 정리
     public void ForceCleanup()
     {
         if (showDebugLogs)
         {
-            Debug.Log("⛔ 주사위 시스템 강제 정리 시작");
+            Debug.Log("주사위 시스템 강제 정리 시작");
         }
 
         // 진행 중인 모든 코루틴 중단
@@ -393,14 +361,11 @@ public class DiceManager : MonoBehaviour
 
         if (showDebugLogs)
         {
-            Debug.Log("✅ 주사위 시스템 강제 정리 완료");
+            Debug.Log("주사위 시스템 강제 정리 완료");
         }
     }
 
-    /// <summary>
-    /// 강제 언로드를 위한 별도 코루틴입니다.
-    /// 일반적인 언로드 과정에서 오류가 발생했을 때 사용됩니다.
-    /// </summary>
+    // 강제 언로드를 위한 별도 코루틴입니다.
     private IEnumerator ForceUnloadDiceScene()
     {
         Scene diceScene = SceneManager.GetSceneByName(diceSceneName);
@@ -421,16 +386,14 @@ public class DiceManager : MonoBehaviour
             
             if (!asyncUnload.isDone)
             {
-                Debug.LogError("❌ 주사위 씬 강제 언로드 타임아웃!");
+                Debug.LogError("주사위 씬 강제 언로드 타임아웃!");
             }
         }
         
         ResetManagerState();
     }
 
-    /// <summary>
-    /// 매니저의 내부 상태를 초기 상태로 리셋합니다.
-    /// </summary>
+    // 매니저의 내부 상태를 초기 상태로 리셋
     private void ResetManagerState()
     {
         isDiceSceneLoaded = false;
@@ -438,23 +401,16 @@ public class DiceManager : MonoBehaviour
         
         if (showDebugLogs)
         {
-            Debug.Log("🔄 DiceManager 상태 리셋 완료");
+            Debug.Log("DiceManager 상태 리셋 완료");
         }
     }
 
-    // ================================ //
-    // Unity 생명주기 메소드들
-    // ================================ //
-    
-    /// <summary>
-    /// 매니저가 파괴될 때 정리 작업을 수행합니다.
-    /// 메모리 누수를 방지하고 안전한 종료를 보장합니다.
-    /// </summary>
+    // Unity 생명주기 메소드
     private void OnDestroy()
     {
         if (showDebugLogs)
         {
-            Debug.Log("🗑️ DiceManager 파괴 - 정리 작업 수행");
+            Debug.Log("DiceManager 파괴 - 정리 작업 수행");
         }
 
         // 진행 중인 작업들 정리
@@ -478,19 +434,19 @@ public class DiceManager : MonoBehaviour
     /// 애플리케이션이 포커스를 잃었을 때의 처리입니다.
     /// VR 환경에서는 헤드셋을 벗었을 때 등의 상황에서 호출될 수 있습니다.
     /// </summary>
-    private void OnApplicationFocus(bool hasFocus)
-    {
-        if (!hasFocus && IsProcessingDiceResult())
-        {
-            if (showDebugLogs)
-            {
-                Debug.Log("📱 애플리케이션 포커스 잃음 - 주사위 처리 일시 정지");
-            }
+    // private void OnApplicationFocus(bool hasFocus)
+    // {
+    //     if (!hasFocus && IsProcessingDiceResult())
+    //     {
+    //         if (showDebugLogs)
+    //         {
+    //             Debug.Log("📱 애플리케이션 포커스 잃음 - 주사위 처리 일시 정지");
+    //         }
             
-            // 필요하다면 여기서 게임을 일시 정지하거나 상태를 저장할 수 있습니다
-            // 예: Time.timeScale = 0f;
-        }
-    }
+    //         // 필요하다면 여기서 게임을 일시 정지하거나 상태를 저장할 수 있습니다
+    //         // 예: Time.timeScale = 0f;
+    //     }
+    // }
 
     // ================================ //
     // 디버그 및 개발 도구 메소드들
@@ -500,32 +456,32 @@ public class DiceManager : MonoBehaviour
     /// 개발 중 테스트를 위한 메소드입니다.
     /// Inspector에서 호출하거나 디버그 콘솔에서 사용할 수 있습니다.
     /// </summary>
-    [ContextMenu("Debug: Force Load Dice Scene")]
-    public void DebugLoadDiceScene()
-    {
-        if (Application.isPlaying)
-        {
-            Debug.Log("🛠️ 디버그: 주사위 씬 강제 로드");
-            LoadDiceScene();
-        }
-    }
+    // [ContextMenu("Debug: Force Load Dice Scene")]
+    // public void DebugLoadDiceScene()
+    // {
+    //     if (Application.isPlaying)
+    //     {
+    //         Debug.Log("🛠️ 디버그: 주사위 씬 강제 로드");
+    //         LoadDiceScene();
+    //     }
+    // }
 
-    [ContextMenu("Debug: Force Unload Dice Scene")]
-    public void DebugUnloadDiceScene()
-    {
-        if (Application.isPlaying)
-        {
-            Debug.Log("🛠️ 디버그: 주사위 씬 강제 언로드");
-            UnloadDiceScene();
-        }
-    }
+    // [ContextMenu("Debug: Force Unload Dice Scene")]
+    // public void DebugUnloadDiceScene()
+    // {
+    //     if (Application.isPlaying)
+    //     {
+    //         Debug.Log("🛠️ 디버그: 주사위 씬 강제 언로드");
+    //         UnloadDiceScene();
+    //     }
+    // }
 
-    [ContextMenu("Debug: Show Current State")]
-    public void DebugShowCurrentState()
-    {
-        Debug.Log($"🛠️ DiceManager 현재 상태:");
-        Debug.Log($"   - 씬 로드됨: {isDiceSceneLoaded}");
-        Debug.Log($"   - DiceSceneManager 연결됨: {(currentDiceSceneManager != null)}");
-        Debug.Log($"   - 결과 처리 중: {IsProcessingDiceResult()}");
-    }
+    // [ContextMenu("Debug: Show Current State")]
+    // public void DebugShowCurrentState()
+    // {
+    //     Debug.Log($"🛠️ DiceManager 현재 상태:");
+    //     Debug.Log($"   - 씬 로드됨: {isDiceSceneLoaded}");
+    //     Debug.Log($"   - DiceSceneManager 연결됨: {(currentDiceSceneManager != null)}");
+    //     Debug.Log($"   - 결과 처리 중: {IsProcessingDiceResult()}");
+    // }
 }

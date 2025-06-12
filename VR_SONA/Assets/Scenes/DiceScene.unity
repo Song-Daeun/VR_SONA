@@ -2577,7 +2577,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1983134481
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2704,7 +2704,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89d2959425d3e6e4786edb17dae7d190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diceManager: {fileID: 0}
 --- !u!1 &2074371666
 GameObject:
   m_ObjectHideFlags: 0
@@ -3194,7 +3193,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 90
+  m_Constraints: 0
   m_CollisionDetection: 2
 --- !u!114 &8088517647123409282
 MonoBehaviour:

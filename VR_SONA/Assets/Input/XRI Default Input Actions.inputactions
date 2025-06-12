@@ -700,7 +700,7 @@
                 {
                     "name": "",
                     "id": "ff6dc933-780c-4740-9b31-8287497228c6",
-                    "path": "<XRController>{LeftHand}/primary2DAxisClick",
+                    "path": "<XRController>{LeftHand}/{PrimaryButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

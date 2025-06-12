@@ -41,6 +41,16 @@ public class BasketballThrower : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // XR Device Simulator용 키보드 입력 추가 (T키 = 왼손 X버튼)
+        if (Input.GetKeyDown(KeyCode.B) && Time.time - lastThrowTime > throwCooldown)
+        {
+            ThrowNewBall();
+            lastThrowTime = Time.time;
+        }
+    }
+
     void OnThrowPressed(InputAction.CallbackContext ctx)
     {
         if (Time.time - lastThrowTime > throwCooldown)
@@ -55,8 +65,11 @@ public class BasketballThrower : MonoBehaviour
         GameObject newBall = Instantiate(basketballPrefab, throwOrigin.position, Quaternion.identity);
         Rigidbody rb = newBall.GetComponent<Rigidbody>();
 
+        // 시선 방향 기준
         Vector3 throwDirection = throwOrigin.forward.normalized;
-        throwDirection.y += 0.7f;
+
+        // 포물선 형태 되도록 살짝 위쪽 보정
+        throwDirection.y += 0.7f; // 이 값을 조절해서 곡률 조절
         throwDirection = throwDirection.normalized;
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);

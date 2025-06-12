@@ -1,11 +1,9 @@
-// PlayerManager.cs - 싱글톤 패턴 적용 버전
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    // 🔥 싱글톤 패턴 구현
     public static PlayerManager Instance;
 
     [Header("Player Settings")]
@@ -20,18 +18,17 @@ public class PlayerManager : MonoBehaviour
     public LayerMask groundLayerMask = -1;
     public float raycastDistance = 10.0f;
 
-    // [Header("Mission UI")]
-    // [SerializeField] private GameObject missionPanel;
-    // [SerializeField] private float messageDistance = 2.0f;
-    // [SerializeField] private float messageHeight = 1.5f;
-
     private bool isMoving = false;
     private int currentTileIndex = 0;
     
-    // 현재 이동 중인 주사위 결과를 저장 (GameManager에게 전달하기 위함)
+    // 현재 이동 중인 주사위 결과를 저장
     private int currentDiceResult = -1;
 
-    // 🔥 싱글톤 초기화 - 다른 Manager들과 동일한 패턴
+    // 타일 도착 이벤트 
+    public static System.Action<string, int> OnTileArrived;
+    public static System.Action OnSpellBookTileArrived;
+
+    // 싱글톤 초기화
     private void Awake()
     {
         // 싱글톤 인스턴스 설정
@@ -55,13 +52,10 @@ public class PlayerManager : MonoBehaviour
     private void Start()
     {
         Debug.Log("PlayerManager Start() 호출 - 초기 위치 설정 시작");
-        
-        // 게임 시작 시 플레이어를 시작 위치로 이동
-        // 이는 다른 시스템들이 초기화되기 전에 플레이어 위치를 확정하기 위함
         StartCoroutine(InitializePlayerPosition());
     }
 
-    // 🔥 게임 시작 시 플레이어 위치 초기화 코루틴
+    // 게임 시작 시 플레이어 위치 초기화 코루틴
     private IEnumerator InitializePlayerPosition()
     {
         Debug.Log("=== 플레이어 초기 위치 설정 시작 ===");
@@ -82,8 +76,6 @@ public class PlayerManager : MonoBehaviour
             
             Vector3 currentPos = playerTransform.position;
             Vector3 safePosition = new Vector3(currentPos.x, currentPos.y + heightOffset, currentPos.z);
-            
-            // 즉시 이동 (애니메이션 없이)
             playerTransform.position = safePosition;
             
             // 초기 상태 설정
@@ -127,7 +119,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // 🔥 공개 메서드들 - 외부에서 접근 가능한 플레이어 상태 정보
+    // 외부에서 접근 가능한 플레이어 상태 정보
     public bool IsMoving()
     {
         return isMoving;
@@ -202,7 +194,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("MoveToPosition 코루틴 시작됨 (GameManager 알림 포함)");
     }
 
-    // 텔레포트 (즉시 이동) - 수정됨
+    // 텔레포트 (즉시 이동) 
     public void TeleportToTile(int tileIndex)
     {
         Debug.Log($"=== PlayerManager.TeleportToTile 호출됨 ===");
@@ -244,7 +236,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("텔레포트 코루틴 시작됨 (GameManager 알림 포함)");
     }
 
-    // Start 타일로 이동 - 수정됨
+    // Start 타일로 이동 
     public void MoveToStart()
     {
         Debug.Log("=== PlayerManager.MoveToStart 호출됨 ===");
@@ -273,15 +265,8 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("Start 타일 이동 코루틴 시작됨 (GameManager 알림 없음)");
     }
 
-    // 수정된 이동 코루틴 - 핵심 변경사항
     private IEnumerator MoveToPosition(Vector3 targetPosition, float duration = -1, bool showMission = false, bool notifyGameManager = false)
-    {
-        Debug.Log($"=== MoveToPosition 코루틴 시작 ===");
-        Debug.Log($"목표 위치: {targetPosition}");
-        Debug.Log($"이동 시간: {duration}");
-        Debug.Log($"미션 메시지 표시: {showMission}");
-        Debug.Log($"GameManager 알림: {notifyGameManager}");
-        
+    {        
         if (duration < 0) duration = moveDuration;
 
         // CharacterController 비활성화 (물리 충돌 방지)
@@ -322,34 +307,41 @@ public class PlayerManager : MonoBehaviour
         isMoving = false;
         Debug.Log("isMoving = false로 설정됨");
 
-        // 이동 완료 후 후속 처리
-        // if (showMission)
+        // if (notifyGameManager && GameManager.Instance != null)
         // {
-        //     Debug.Log("미션 메시지 표시 요청됨");
-        //     ShowMissionMessage();
+        //     Debug.Log($"GameManager에게 이동 완료 알림 - 주사위 결과: {currentDiceResult}");
+        //     yield return null;
+            
+        //     GameManager.Instance.OnPlayerMovementCompleted(currentDiceResult);
+            
+        //     Debug.Log("GameManager 알림 완료");
+        // }
+        // else if (notifyGameManager && GameManager.Instance == null)
+        // {
+        //     Debug.LogError("GameManager.Instance가 null입니다! 이동 완료 알림 실패");
         // }
 
-        // 🔥 핵심 개선사항: GameManager에게 이동 완료 직접 알림
-        if (notifyGameManager && GameManager.Instance != null)
+        // 🔥 새로운 이벤트 기반 알림 시스템
+        if (notifyGameManager)
         {
-            Debug.Log($"🚀 GameManager에게 이동 완료 알림 - 주사위 결과: {currentDiceResult}");
+            // 현재 타일 이름 확인
+            string currentTileName = GetCurrentTileName();
+            Debug.Log($"도착한 타일: {currentTileName} (인덱스: {currentTileIndex})");
             
-            // 한 프레임 대기 후 알림 (안전성을 위해)
-            yield return null;
+            // 일반 타일 도착 이벤트 발생
+            OnTileArrived?.Invoke(currentTileName, currentTileIndex);
             
-            // GameManager의 이동 완료 처리 메서드 호출
-            GameManager.Instance.OnPlayerMovementCompleted(currentDiceResult);
-            
-            Debug.Log("✅ GameManager 알림 완료");
-        }
-        else if (notifyGameManager && GameManager.Instance == null)
-        {
-            Debug.LogError("❌ GameManager.Instance가 null입니다! 이동 완료 알림 실패");
+            // SpellBook 타일인 경우 특별 이벤트도 발생
+            if (currentTileName == "SpellBook")
+            {
+                Debug.Log("🔮 SpellBook 타일 감지! 전용 이벤트 발생");
+                OnSpellBookTileArrived?.Invoke();
+            }
         }
 
         Debug.Log("=== MoveToPosition 코루틴 완료 ===");
     }
-
+    
     private Vector3 CalculateSafeLandingPosition(Transform tile)
     {
         Collider tileCollider = tile.GetComponent<Collider>();
@@ -361,19 +353,19 @@ public class PlayerManager : MonoBehaviour
 
         Bounds bounds = tileCollider.bounds;
         Vector3 safePosition = new Vector3(bounds.center.x, bounds.max.y + heightOffset, bounds.center.z);
-        
+
         Debug.Log($"타일 {tile.name}의 안전한 착지 위치 계산: {safePosition}");
         return safePosition;
     }
 
-    // 현재 타일 인덱스 설정 (GameManager에서 호출용)
+    // 현재 타일 인덱스 설정 (GameManager에서 호출)
     public void SetCurrentTileIndex(int index)
     {
         currentTileIndex = index;
         Debug.Log($"PlayerManager 타일 인덱스 설정: {index}");
     }
 
-    // 🔥 디버그용 현재 상태 출력 - 싱글톤 버전에서는 활성화
+    // 디버그용 현재 상태 출력 - 싱글톤 버전에서는 활성화
     public void DebugCurrentState()
     {
         Debug.Log($"=== PlayerManager 현재 상태 ===");
@@ -392,7 +384,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log($"Start 타일: {(startTile != null ? startTile.name : "설정되지 않음")}");
     }
 
-    // 🔥 추가 유틸리티 메서드들
+    // 추가 유틸리티 메서드들
     public bool IsValidTileIndex(int index)
     {
         return tileList != null && index >= 0 && index < tileList.Count;
@@ -407,42 +399,194 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
+    // public string GetCurrentTileName()
+    // {
+    //     if (currentTileIndex == -1)
+    //     {
+    //         return startTile != null ? startTile.name : "Start (설정되지 않음)";
+    //     }
+
+    //     if (IsValidTileIndex(currentTileIndex))
+    //     {
+    //         return tileList[currentTileIndex].name;
+    //     }
+
+    //     return "알 수 없는 타일";
+    // }
     public string GetCurrentTileName()
     {
+        // Start 타일 처리 - 특별한 경우이므로 별도 처리
         if (currentTileIndex == -1)
         {
-            return startTile != null ? startTile.name : "Start (설정되지 않음)";
+            return startTile != null ? NormalizeTileName(startTile.name) : "Start";
         }
         
+        // 일반 타일 처리 - 유효한 인덱스인지 확인 후 정규화된 이름 반환
         if (IsValidTileIndex(currentTileIndex))
         {
-            return tileList[currentTileIndex].name;
+            string rawTileName = tileList[currentTileIndex].name;
+            string normalizedName = NormalizeTileName(rawTileName);
+            
+            // 디버깅을 위한 로그 출력 (개발 중에만 활성화)
+            Debug.Log($"타일 이름 변환: '{rawTileName}' → '{normalizedName}'");
+            
+            return normalizedName;
         }
         
-        return "알 수 없는 타일";
+        // 예외 상황 처리
+        Debug.LogWarning($"유효하지 않은 타일 인덱스: {currentTileIndex}");
+        return "Unknown";
     }
 
-    // 🔥 플레이어 이동 제어를 위한 고급 인터페이스 메서드들
-    
     /// <summary>
-    /// 다른 시스템에서 플레이어 이동을 요청할 때 사용하는 안전한 인터페이스
-    /// 이동 가능 여부를 체크하고 적절한 메서드를 호출함
+    /// GameObject의 실제 이름을 게임 로직에서 사용하는 표준 이름으로 변환합니다.
+    /// 예: "SpellBookTile" → "SpellBook", "GermanyTile" → "Germany"
     /// </summary>
-    /// <param name="targetType">이동 목표 타입 (Dice, Teleport, Start)</param>
-    /// <param name="targetValue">목표 값 (주사위 결과 또는 타일 인덱스)</param>
-    /// <returns>이동 요청이 성공적으로 처리되었는지 여부</returns>
+    /// <param name="rawName">GameObject의 원시 이름</param>
+    /// <returns>정규화된 타일 이름</returns>
+    private string NormalizeTileName(string rawName)
+    {
+        // 입력 검증 - null이나 빈 문자열 처리
+        if (string.IsNullOrEmpty(rawName))
+        {
+            Debug.LogWarning("타일 이름이 비어있습니다!");
+            return "Unknown";
+        }
+        
+        // 이름 정규화 과정 시작
+        string normalizedName = rawName.Trim(); // 앞뒤 공백 제거
+        
+        // "Tile" 접미사 제거 - 대소문자 구분 없이 처리
+        if (normalizedName.EndsWith("Tile", System.StringComparison.OrdinalIgnoreCase))
+        {
+            // "Tile" 부분을 제거하여 순수한 타일 이름만 추출
+            normalizedName = normalizedName.Substring(0, normalizedName.Length - 4);
+            Debug.Log($"'Tile' 접미사 제거됨: {rawName} → {normalizedName}");
+        }
+        
+        // 추가적인 정리 작업들
+        normalizedName = normalizedName.Trim(); // 다시 한번 공백 제거
+        
+        // 특별한 경우들에 대한 추가 처리
+        normalizedName = HandleSpecialCases(normalizedName);
+        
+        // 최종 검증 - 빈 문자열이 되었다면 원본 이름 사용
+        if (string.IsNullOrEmpty(normalizedName))
+        {
+            Debug.LogWarning($"정규화 과정에서 이름이 사라졌습니다. 원본 사용: {rawName}");
+            return rawName;
+        }
+        
+        return normalizedName;
+    }
+
+    /// <summary>
+    /// 특별한 타일 이름들에 대한 추가 처리를 수행합니다.
+    /// 예: 대소문자 통일, 특수 문자 처리 등
+    /// </summary>
+    /// <param name="tileName">기본 정규화가 완료된 타일 이름</param>
+    /// <returns>특별 처리가 완료된 타일 이름</returns>
+    private string HandleSpecialCases(string tileName)
+    {
+        // 특별한 경우들을 위한 매핑 테이블
+        // 이 방법을 사용하면 나중에 새로운 특별 케이스를 쉽게 추가할 수 있습니다
+        var specialCases = new System.Collections.Generic.Dictionary<string, string>
+        {
+            // 대소문자 변형들 처리
+            {"spellbook", "SpellBook"},
+            {"SPELLBOOK", "SpellBook"},
+            {"netherlands", "Netherlands"},
+            {"NETHERLANDS", "Netherlands"},
+            {"germany", "Germany"},
+            {"GERMANY", "Germany"},
+            
+            // 공백이나 언더스코어가 포함된 경우들
+            {"Spell_Book", "SpellBook"},
+            {"Spell Book", "SpellBook"},
+            
+            // Start 타일의 다양한 변형들
+            {"StartTile", "Start"},
+            {"start", "Start"},
+            {"START", "Start"}
+        };
+        
+        // 특별 케이스 매핑 확인
+        if (specialCases.ContainsKey(tileName))
+        {
+            string mappedName = specialCases[tileName];
+            Debug.Log($"특별 케이스 적용: {tileName} → {mappedName}");
+            return mappedName;
+        }
+        
+        // 특별 케이스가 아니라면 원본 그대로 반환
+        return tileName;
+    }
+
+    /// <summary>
+    /// 개발자를 위한 디버깅 메서드 - 현재 타일 이름 변환 과정을 상세히 출력합니다.
+    /// </summary>
+    public void DebugTileNameConversion()
+    {
+        Debug.Log("=== 타일 이름 변환 디버깅 시작 ===");
+        
+        if (currentTileIndex == -1)
+        {
+            string startName = startTile != null ? startTile.name : "null";
+            Debug.Log($"현재 위치: Start 타일 (원본: {startName})");
+            Debug.Log($"변환된 이름: {GetCurrentTileName()}");
+        }
+        else if (IsValidTileIndex(currentTileIndex))
+        {
+            string rawName = tileList[currentTileIndex].name;
+            string normalizedName = GetCurrentTileName();
+            Debug.Log($"현재 위치: 인덱스 {currentTileIndex}");
+            Debug.Log($"GameObject 원본 이름: '{rawName}'");
+            Debug.Log($"정규화된 이름: '{normalizedName}'");
+            
+            // GameManager의 매핑 테이블과 비교
+            Debug.Log($"GameManager 매핑 존재 여부: {CheckIfMappingExists(normalizedName)}");
+        }
+        else
+        {
+            Debug.LogError($"유효하지 않은 인덱스: {currentTileIndex}");
+        }
+        
+        Debug.Log("=== 타일 이름 변환 디버깅 완료 ===");
+    }
+
+    /// <summary>
+    /// GameManager의 tileToCoords 딕셔너리에 해당 이름이 존재하는지 확인합니다.
+    /// 이 메서드는 디버깅 목적으로만 사용됩니다.
+    /// </summary>
+    /// <param name="tileName">확인할 타일 이름</param>
+    /// <returns>매핑이 존재하면 true, 그렇지 않으면 false</returns>
+    private bool CheckIfMappingExists(string tileName)
+    {
+        // GameManager의 인스턴스가 있다면 매핑 확인
+        if (GameManager.Instance != null)
+        {
+            Vector2Int coords = GameManager.Instance.GetBingoCoordinatesForTile(tileName);
+            return coords.x != -1 && coords.y != -1;
+        }
+        
+        // GameManager가 없다면 확인할 수 없음
+        Debug.LogWarning("GameManager.Instance가 null이어서 매핑을 확인할 수 없습니다.");
+        return false;
+    }
+    
+    // 다른 시스템에서 플레이어 이동을 요청할 때 사용
     public bool RequestPlayerMovement(PlayerMovementType targetType, int targetValue = -1)
     {
         Debug.Log($"=== 플레이어 이동 요청 받음 ===");
         Debug.Log($"이동 타입: {targetType}, 목표 값: {targetValue}");
-        
+
         // 이동 중이면 요청 거부
         if (isMoving)
         {
             Debug.LogWarning("플레이어가 이미 이동 중입니다. 이동 요청이 거부되었습니다.");
             return false;
         }
-        
+
         // 이동 타입에 따라 적절한 메서드 호출
         switch (targetType)
         {
@@ -457,7 +601,7 @@ public class PlayerManager : MonoBehaviour
                     Debug.LogError("주사위 결과 이동에는 1 이상의 값이 필요합니다.");
                     return false;
                 }
-                
+
             case PlayerMovementType.TeleportToTile:
                 if (IsValidTileIndex(targetValue))
                 {
@@ -469,22 +613,18 @@ public class PlayerManager : MonoBehaviour
                     Debug.LogError($"유효하지 않은 타일 인덱스입니다: {targetValue}");
                     return false;
                 }
-                
+
             case PlayerMovementType.ReturnToStart:
                 MoveToStart();
                 return true;
-                
+
             default:
                 Debug.LogError($"알 수 없는 이동 타입입니다: {targetType}");
                 return false;
         }
     }
     
-    /// <summary>
-    /// 즉시 위치 변경 (애니메이션 없이) - 게임 초기화나 특수 상황에서 사용
-    /// </summary>
-    /// <param name="targetPosition">목표 위치</param>
-    /// <param name="updateGameState">게임 상태도 함께 업데이트할지 여부</param>
+    // 즉시 위치 변경 (애니메이션 없이)
     public void SetPlayerPositionImmediate(Vector3 targetPosition, bool updateGameState = false)
     {
         Debug.Log($"즉시 위치 변경: {playerTransform.position} → {targetPosition}");
@@ -494,36 +634,26 @@ public class PlayerManager : MonoBehaviour
         
         if (updateGameState)
         {
-            // 게임 상태도 업데이트 (필요한 경우)
+            // 게임 상태 업데이트 
             Debug.Log("게임 상태 업데이트와 함께 위치 변경 완료");
         }
         
         Debug.Log($"플레이어 위치 즉시 변경 완료: {targetPosition}");
     }
-    
-    /// <summary>
-    /// 현재 플레이어가 특정 타일에 있는지 확인
-    /// </summary>
-    /// <param name="tileIndex">확인할 타일 인덱스</param>
-    /// <returns>해당 타일에 있는지 여부</returns>
+
+    // 현재 플레이어가 특정 타일에 있는지 확인
     public bool IsPlayerOnTile(int tileIndex)
     {
         return currentTileIndex == tileIndex;
     }
-    
-    /// <summary>
-    /// 플레이어가 시작 위치에 있는지 확인
-    /// </summary>
-    /// <returns>시작 위치에 있는지 여부</returns>
+
+    // 플레이어가 시작 위치에 있는지 확인
     public bool IsPlayerAtStart()
     {
         return currentTileIndex == -1;
     }
     
-    /// <summary>
-    /// 현재 플레이어 상태를 문자열로 반환 (디버깅 및 UI 표시용)
-    /// </summary>
-    /// <returns>플레이어 상태 문자열</returns>
+    // 현재 플레이어 상태를 문자열로 반환
     public string GetPlayerStatusString()
     {
         if (isMoving)
@@ -537,7 +667,7 @@ public class PlayerManager : MonoBehaviour
         return $"{locationInfo} ({positionInfo})";
     }
 
-// 🔥 플레이어 이동 타입을 정의하는 열거형
+// 플레이어 이동 타입을 정의하는 열거형
 public enum PlayerMovementType
 {
     DiceResult,        // 주사위 결과에 따른 일반 이동
