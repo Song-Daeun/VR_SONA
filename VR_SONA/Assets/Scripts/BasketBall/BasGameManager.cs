@@ -35,8 +35,27 @@ public class BasGameManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        CheckOvertime();
+    }
+
+    public void CheckOvertime()
+    {
+        if (isGameEnded) return;
+
+        var timer = FindObjectOfType<GameBasketballTimer>();
+        if (timer != null && !timer.IsRunning)
+        {
+            Debug.Log("[BasketBall] 타이머가 멈췄음 → 시간 초과 처리");
+            EndGame(false);
+        }
+    }
+
     public void EndGame(bool success)
     {
+        Debug.Log("[BasketBall] EndGame 호출됨");
+
         if (isGameEnded)
         {
             if (success) return;
@@ -57,6 +76,14 @@ public class BasGameManager : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        if (returnButton != null) returnButton.SetActive(true);
+        if (returnButton != null) 
+        {
+            returnButton.SetActive(true);
+            Debug.Log("[BasketBall] returnButton.SetActive(true) 실행됨");
+        }
+        else
+        {
+            Debug.LogError("[BasketBall] returnButton가 null입니다");
+        }   
     }
 }

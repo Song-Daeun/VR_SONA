@@ -2158,7 +2158,7 @@ GameObject:
   - component: {fileID: 878880130}
   - component: {fileID: 878880129}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: BasGameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2176,7 +2176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1441594e5c61d41c2a8d56860feefb1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameStateText: {fileID: 0}
+  gameStateText: {fileID: 587387016}
   goalCount: 0
   requiredGoals: 1
   returnButton: {fileID: 1147262717}
