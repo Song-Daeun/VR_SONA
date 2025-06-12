@@ -3,16 +3,15 @@ using System.Collections;
 
 public class SpellBookManager : MonoBehaviour
 {
-    // ================================ //
-    // Singleton & References
-    // ================================ //
     public static SpellBookManager Instance;
 
     [Header("Settings")]
-    public float resultDisplayTime = 5f; // 결과 표시 시간 (3초 → 5초로 증가)
+    public float resultDisplayTime = 5f;
     
-    // 🔥 중복 호출 방지용 변수
+    // 중복 호출 방지용 변수들 강화
     private bool isSpellBookActive = false;
+    private bool isInMissionScene = false; // 미션 씬 상태 추적
+    private string lastActivatedScene = ""; // 마지막 활성화된 씬 추적
 
     private void Awake()
     {
@@ -22,20 +21,105 @@ public class SpellBookManager : MonoBehaviour
             Destroy(gameObject);
     }
 
+    private void Start()
+    {
+        // 씬 변경 감지를 위한 이벤트 구독
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // 씬이 로드될 때마다 호출되는 메서드
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        string sceneName = scene.name;
+        
+        // 미션 씬 진입 감지
+        if (sceneName == "MissionBasketballScene" || sceneName == "MissionWaterRushScene")
+        {
+            isInMissionScene = true;
+            Debug.Log($"미션 씬 진입 감지: {sceneName} - SpellBook 비활성화");
+            
+            // 미션 씬에서는 SpellBook 강제 비활성화
+            ForceDeactivateSpellBook();
+        }
+        // 메인 씬 복귀 감지
+        else if (sceneName == "MainGameScene" && isInMissionScene)
+        {
+            isInMissionScene = false;
+            Debug.Log($"메인 씬 복귀 감지: {sceneName} - SpellBook 상태 리셋");
+            
+            // 메인 씬 복귀 시 상태 완전 리셋
+            ResetSpellBookState();
+        }
+    }
+
+    // 🆕 SpellBook 강제 비활성화 메서드
+    private void ForceDeactivateSpellBook()
+    {
+        isSpellBookActive = false;
+        
+        // UI 강제 닫기
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowSpellBookUI(false);
+        }
+        
+        // 진행 중인 코루틴 모두 중단
+        StopAllCoroutines();
+        
+        Debug.Log("SpellBook 강제 비활성화 완료");
+    }
+
+    // SpellBook 상태 완전 리셋
+    private void ResetSpellBookState()
+    {
+        isSpellBookActive = false;
+        lastActivatedScene = "";
+        
+        Debug.Log("SpellBook 상태 완전 리셋 완료");
+    }
+
     // ================================ //
-    // 스펠북 활성화 (중복 호출 방지)
+    // 스펠북 활성화 (수정된 중복 호출 방지)
     // ================================ //
     public void ActivateSpellBook()
     {
-        // 이미 스펠북이 활성화되어 있으면 무시
-        if (isSpellBookActive)
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        
+        // 미션 씬에서는 절대 활성화하지 않음
+        if (isInMissionScene || currentScene == "MissionBasketballScene" || currentScene == "MissionWaterRushScene")
         {
-            Debug.Log("스펠북이 이미 활성화되어 있습니다. 호출 무시.");
+            Debug.Log($"미션 씬에서 SpellBook 활성화 시도 차단: {currentScene}");
             return;
         }
         
-        isSpellBookActive = true; // 활성화 플래그 설정
-        Debug.Log("스펠북 활성화!");
+        // 같은 씬에서 이미 활성화되었다면 무시
+        if (isSpellBookActive && lastActivatedScene == currentScene)
+        {
+            Debug.Log($"같은 씬에서 SpellBook 중복 활성화 차단: {currentScene}");
+            return;
+        }
+        
+        // GameManager 상태 확인 추가
+        if (GameManager.Instance != null)
+        {
+            string currentTileName = GameManager.Instance.GetCurrentTileName();
+            if (currentTileName != "SpellBook")
+            {
+                Debug.Log($"현재 타일이 SpellBook이 아님: {currentTileName} - 활성화 차단");
+                return;
+            }
+        }
+        
+        isSpellBookActive = true;
+        lastActivatedScene = currentScene;
+        
+        Debug.Log($"스펠북 활성화! (씬: {currentScene})");
         
         // UIManager를 통해 스펠북 UI 표시
         if (UIManager.Instance != null)
@@ -63,7 +147,6 @@ public class SpellBookManager : MonoBehaviour
     {
         Debug.Log("시간 보너스 효과 발동!");
         
-        // UIManager를 통해 결과 표시
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowSpellBookResult("+30초");
@@ -74,10 +157,7 @@ public class SpellBookManager : MonoBehaviour
             Debug.LogError("UIManager.Instance가 null입니다!");
         }
         
-        // 실제 게임 타이머에 30초 추가
         AddGameTime(30f);
-        
-        // 일정 시간 후 스펠북 UI 닫기
         StartCoroutine(CloseSpellBookAfterDelay());
     }
 
@@ -88,7 +168,6 @@ public class SpellBookManager : MonoBehaviour
     {
         Debug.Log("비행기 효과 발동!");
         
-        // UIManager를 통해 결과 표시
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowSpellBookResult("비행기!");
@@ -99,7 +178,6 @@ public class SpellBookManager : MonoBehaviour
             Debug.LogError("UIManager.Instance가 null입니다!");
         }
         
-        // 2초 후 타일 선택 UI 표시
         StartCoroutine(ShowAirplanePanelAfterDelay());
     }
 
@@ -109,7 +187,6 @@ public class SpellBookManager : MonoBehaviour
         
         if (UIManager.Instance != null)
         {
-            // 타일 상태 확인 후 UI 업데이트
             bool[] tileStates = GetTileStates();
             UIManager.Instance.ShowSpellBookAirplanePanel();
             UIManager.Instance.UpdateSpellBookTileButtons(tileStates, OnTileButtonClicked);
@@ -128,7 +205,6 @@ public class SpellBookManager : MonoBehaviour
             int x = i / 3;
             int y = i % 3;
             
-            // BingoBoard에서 해당 타일의 점령 상태 확인
             bool isOccupied = false;
             
             if (BingoBoard.Instance != null)
@@ -136,7 +212,6 @@ public class SpellBookManager : MonoBehaviour
                 isOccupied = BingoBoard.Instance.IsTileMissionCleared(x, y);
             }
             
-            // SpellBook 타일은 선택 불가 (자기 자신)
             if (BingoBoard.GetTileNameByCoords(x, y) == "SpellBook")
             {
                 isOccupied = true;
@@ -157,10 +232,7 @@ public class SpellBookManager : MonoBehaviour
         
         Debug.Log($"✈️ {targetTileName} 타일로 텔레포트!");
         
-        // 스펠북 UI 닫기
         CloseSpellBook();
-        
-        // 플레이어를 해당 타일로 텔레포트
         TeleportPlayerToTile(targetTileName);
     }
 
@@ -169,7 +241,6 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     private void TeleportPlayerToTile(string tileName)
     {
-        // GameManager에서 해당 타일의 인덱스 찾기
         int tileIndex = -1;
         for (int i = 0; i < GameManager.Instance.tileNames.Length; i++)
         {
@@ -182,18 +253,15 @@ public class SpellBookManager : MonoBehaviour
         
         if (tileIndex != -1)
         {
-            // GameManager의 텔레포트 메소드 호출
             GameManager.Instance.TeleportToTile(tileIndex);
         }
         else if (tileName == "Start")
         {
-            // Start 타일인 경우 특별 처리
             GameManager.Instance.TeleportToStart();
         }
         else
         {
             Debug.LogError($"타일 '{tileName}'을 찾을 수 없습니다!");
-            // 텔레포트 실패 시 다음 턴으로
             GameManager.Instance.StartTurn();
         }
     }
@@ -203,7 +271,6 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     private void AddGameTime(float seconds)
     {
-        // SliderTimer를 통해 시간 추가
         if (SliderTimer.Instance != null)
         {
             SliderTimer.Instance.AddTime(seconds);
@@ -224,8 +291,10 @@ public class SpellBookManager : MonoBehaviour
         yield return new WaitForSeconds(resultDisplayTime);
         CloseSpellBook();
         
-        // 다음 턴 시작
-        GameManager.Instance.StartTurn();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartTurn();
+        }
     }
 
     private void CloseSpellBook()
@@ -235,7 +304,7 @@ public class SpellBookManager : MonoBehaviour
             UIManager.Instance.ShowSpellBookUI(false);
         }
         
-        // 스펠북 비활성화 플래그 해제
+        // 🆕 상태 리셋 시 씬 정보도 함께 업데이트
         isSpellBookActive = false;
         
         Debug.Log("스펠북 UI 닫힘");
@@ -247,10 +316,17 @@ public class SpellBookManager : MonoBehaviour
     void Update()
     {
 #if UNITY_EDITOR
-        // 디버그용: S 키로 스펠북 테스트
-        if (Input.GetKeyDown(KeyCode.S))
+        // 디버그용: S 키로 스펠북 테스트 (메인 씬에서만)
+        if (Input.GetKeyDown(KeyCode.S) && !isInMissionScene)
         {
             ActivateSpellBook();
+        }
+        
+        // 디버그용: 현재 상태 출력
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            Debug.Log($"🔍 SpellBook 상태 - Active: {isSpellBookActive}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
         }
 #endif
     }
