@@ -175,13 +175,21 @@ public class UIManager : MonoBehaviour
     private void OnNoClicked()
     {
         Debug.Log("미션 No 버튼 클릭 - 미션 거부");
-        
+
+        isInMission = false; // ★ 이 줄 추가
+
         ShowMissionPrompt(false);
         ShowDiceUI(true);
-        
+
         Debug.Log("미션 거부 후 주사위 UI 복구 완료");
-        
+
         GameManager.Instance?.OnMissionDecisionMade(false);
+
+        if (diceButton != null)
+        {
+            diceButton.onClick.RemoveAllListeners();
+            diceButton.onClick.AddListener(OnDiceButtonClicked);
+        }
     }
 
     // 초기 UI 상태 설정
