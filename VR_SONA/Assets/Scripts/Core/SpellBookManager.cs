@@ -76,7 +76,7 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // SpellBook 상태 완전 리셋
-    private void ResetSpellBookState()
+    public void ResetSpellBookState()
     {
         isSpellBookActive = false;
         lastActivatedScene = "";
@@ -128,7 +128,7 @@ public class SpellBookManager : MonoBehaviour
         }
         
         // 랜덤으로 효과 선택 (50% 확률)
-        bool isAirplane = Random.Range(0, 2) == 0;
+        bool isAirplane = true; //Random.Range(0, 2) == 0;
         
         if (isAirplane)
         {
@@ -182,11 +182,12 @@ public class SpellBookManager : MonoBehaviour
     }
 
     private IEnumerator ShowAirplanePanelAfterDelay()
-    {
+    {           
         yield return new WaitForSeconds(2f);
         
         if (UIManager.Instance != null)
         {
+
             bool[] tileStates = GetTileStates();
             UIManager.Instance.ShowSpellBookAirplanePanel();
             UIManager.Instance.UpdateSpellBookTileButtons(tileStates, OnTileButtonClicked);
@@ -250,7 +251,8 @@ public class SpellBookManager : MonoBehaviour
                 break;
             }
         }
-        
+        Debug.Log($"[SpellBook] 텔레포트 시도: tileName={tileName}, tileIndex={tileIndex}");
+
         if (tileIndex != -1)
         {
             GameManager.Instance.TeleportToTile(tileIndex);

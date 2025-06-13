@@ -18133,7 +18133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &989670472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18208,7 +18208,7 @@ RectTransform:
   m_GameObject: {fileID: 989670470}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2015506160}
@@ -30191,15 +30191,15 @@ MonoBehaviour:
   spellBookResultText: {fileID: 1715374283}
   spellBookAirplanePanel: {fileID: 989670470}
   spellBookTileButtons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2015506161}
+  - {fileID: 455228418}
+  - {fileID: 115321186}
+  - {fileID: 399239252}
+  - {fileID: 643812885}
+  - {fileID: 429731342}
+  - {fileID: 1589781699}
+  - {fileID: 1624306096}
+  - {fileID: 569821327}
   spellBookUIDistance: 10
   spellBookUIHeightOffset: 0.5
 --- !u!1 &1604989338 stripped
