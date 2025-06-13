@@ -6,7 +6,7 @@ public class WaterCollisionHandler : MonoBehaviour
 {
     public GameObject successText;
     public GameObject failText;
-    // returnButton 제거 - ReturnToMain에서 관리
+    public GameObject returnButton; 
 
     private float startTime;
     public static bool missionCompleted = false;
@@ -18,7 +18,7 @@ public class WaterCollisionHandler : MonoBehaviour
         missionCompleted = false; 
         successText.SetActive(false);
         failText.SetActive(false);
-        // returnButton.SetActive(false); 제거
+        returnButton.SetActive(false);
 
         // 10초 후 실패 체크 코루틴 시작
         failCoroutine = StartCoroutine(FailCheckAfterTime(10f));
@@ -74,7 +74,7 @@ public class WaterCollisionHandler : MonoBehaviour
 
         successText.SetActive(true);
         failText.SetActive(false);
-        // returnButton.SetActive(true); 제거 - ReturnToMain에서 관리
+        returnButton.SetActive(true);
 
         Debug.Log("[WaterCollision] SUCCESS 텍스트 표시");
     }
@@ -85,7 +85,7 @@ public class WaterCollisionHandler : MonoBehaviour
 
         failText.SetActive(true);
         successText.SetActive(false);
-        // returnButton.SetActive(true); 제거 - ReturnToMain에서 관리
+        returnButton.SetActive(true);
 
         Debug.Log("[WaterCollision] FAIL 텍스트 표시");
     }
