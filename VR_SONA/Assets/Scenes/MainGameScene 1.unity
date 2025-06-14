@@ -3569,19 +3569,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d47c434fe9f0df4589b69c87bf4102f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Move Input
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: ef64bd45-d8b0-490e-8ced-eee6933018fd
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  moveSpeed: 2
 --- !u!143 &191550066
 CharacterController:
   m_ObjectHideFlags: 0

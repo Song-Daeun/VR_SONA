@@ -100,7 +100,7 @@ public class BasketballThrower : MonoBehaviour
         Vector3 throwDirection = throwOrigin.forward.normalized;
 
         // 포물선 형태 되도록 살짝 위쪽 보정
-        throwDirection.y += 0.7f; // 이 값을 조절해서 곡률 조절
+        throwDirection.y += 0.8f; // 이 값을 조절해서 곡률 조절
         throwDirection = throwDirection.normalized;
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
