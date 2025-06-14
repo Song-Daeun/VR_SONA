@@ -506,13 +506,13 @@ public class UIManager : MonoBehaviour
 
                 if (cameraTransform != null)
                 {
-                    float airplanePanelDistance = 1.2f; // 원하는 거리
+                    float airplanePanelDistance = 0.5f; // 원하는 거리
                     Vector3 targetPos = cameraTransform.position + cameraTransform.forward * airplanePanelDistance;
                     // y축을 카메라 높이와 동일하게 맞춤
                     targetPos.y = cameraTransform.position.y;
 
                     canvas.transform.position = targetPos;
-                    canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                    // canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
                 }
 
                 RectTransform canvasRect = canvas.GetComponent<RectTransform>();
@@ -620,7 +620,7 @@ public class UIManager : MonoBehaviour
             + Vector3.up * heightOffset;
         
         uiTransform.position = targetPos;
-        uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+        // uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
     }
     
     private Camera FindCameraComponent()
