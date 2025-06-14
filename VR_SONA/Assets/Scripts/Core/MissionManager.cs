@@ -188,7 +188,10 @@ public class MissionManager : MonoBehaviour
         GameManager.Instance.OnMissionResult(success);
 
         // Dice씬 로드
-        DiceManager.Instance.DiceButtonClicked();
+        if (PlayerState.CanShowUI()) 
+        { 
+            DiceManager.Instance.DiceButtonClicked();
+        }
 
         // 현재 미션 타일 인덱스 초기화
         currentMissionTileIndex = -1;

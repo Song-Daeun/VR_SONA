@@ -112,7 +112,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("새로운 턴 시작 - 주사위를 굴려주세요");
         
         isDiceRolling = false; 
-        ActivateDiceUI();      
+        if (PlayerState.CanShowUI())
+        {
+            ActivateDiceUI(); 
+        }     
     }
 
     private void ActivateDiceUI()
