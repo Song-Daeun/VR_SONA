@@ -138,6 +138,17 @@ public class SpellBookManager : MonoBehaviour
         }
     }
 
+    public void OnSpellBookSuccess()
+    {
+        Debug.Log("마법서 미션 성공 처리!");
+
+        // 미션 성공 결과를 GameManager(또는 MissionManager)에 전달
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMissionResult(true); // 성공
+        }
+    }
+
 
     // ================================ //
     // 시간 보너스 효과

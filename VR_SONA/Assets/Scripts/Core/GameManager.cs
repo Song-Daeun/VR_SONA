@@ -211,6 +211,8 @@ public class GameManager : MonoBehaviour
         {
             SpellBookManager.Instance.ResetSpellBookState();
             SpellBookManager.Instance.ActivateSpellBook();
+
+            SpellBookManager.Instance.OnSpellBookSuccess(); // SpellBook 성공 처리
         }
         else
         {
