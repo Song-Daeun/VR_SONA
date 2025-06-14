@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
         }
 
         isDiceRolling = true;
-        InitiatePlayerMovement(4);
+        InitiatePlayerMovement(diceResult);
     }
 
     private void InitiatePlayerMovement(int diceResult)
