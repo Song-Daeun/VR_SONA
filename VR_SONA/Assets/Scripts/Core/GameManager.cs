@@ -168,14 +168,19 @@ public class GameManager : MonoBehaviour
         // 게임 상태 업데이트
         currentTileIndex = tileIndex;
         UpdatePlayerStateWithCurrentLocation(tileName);
-        
-        // SpellBook은 전용 이벤트에서 처리
-        if (tileName != "SpellBook")
+
+        if (tileName == "SpellBook")
         {
+            // SpellBook 타일이면 전용 이벤트 호출
+            OnSpellBookArrivedEvent();
+        }
+        else
+        {
+            // 일반 타일 - 미션 선택 프롬프트 표시 예정
             Debug.Log("일반 타일 - 미션 선택 프롬프트 표시 예정");
             StartCoroutine(ShowMissionPromptAfterDelay(0.5f));
         }
-        
+
         // 턴 상태 리셋
         ResetTurnState();
     }
@@ -204,7 +209,10 @@ public class GameManager : MonoBehaviour
         
         if (SpellBookManager.Instance != null)
         {
+            SpellBookManager.Instance.ResetSpellBookState();
             SpellBookManager.Instance.ActivateSpellBook();
+
+            SpellBookManager.Instance.OnSpellBookSuccess(); // SpellBook 성공 처리
         }
         else
         {

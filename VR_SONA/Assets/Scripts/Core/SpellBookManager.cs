@@ -76,7 +76,7 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // SpellBook 상태 완전 리셋
-    private void ResetSpellBookState()
+    public void ResetSpellBookState()
     {
         isSpellBookActive = false;
         lastActivatedScene = "";
@@ -90,22 +90,19 @@ public class SpellBookManager : MonoBehaviour
     public void ActivateSpellBook()
     {
         string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        
-        // 미션 씬에서는 절대 활성화하지 않음
+
         if (isInMissionScene || currentScene == "MissionBasketballScene" || currentScene == "MissionWaterRushScene")
         {
             Debug.Log($"미션 씬에서 SpellBook 활성화 시도 차단: {currentScene}");
             return;
         }
-        
-        // 같은 씬에서 이미 활성화되었다면 무시
+
         if (isSpellBookActive && lastActivatedScene == currentScene)
         {
             Debug.Log($"같은 씬에서 SpellBook 중복 활성화 차단: {currentScene}");
             return;
         }
-        
-        // GameManager 상태 확인 추가
+
         if (GameManager.Instance != null)
         {
             string currentTileName = GameManager.Instance.GetCurrentTileName();
@@ -115,21 +112,22 @@ public class SpellBookManager : MonoBehaviour
                 return;
             }
         }
-        
+
+        // 기존 코루틴 정리
+        StopAllCoroutines();
+
         isSpellBookActive = true;
         lastActivatedScene = currentScene;
-        
+
         Debug.Log($"스펠북 활성화! (씬: {currentScene})");
-        
-        // UIManager를 통해 스펠북 UI 표시
+
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowSpellBookUI(true);
         }
-        
-        // 랜덤으로 효과 선택 (50% 확률)
+
         bool isAirplane = Random.Range(0, 2) == 0;
-        
+
         if (isAirplane)
         {
             ShowAirplaneEffect();
@@ -139,6 +137,18 @@ public class SpellBookManager : MonoBehaviour
             ShowTimeBonus();
         }
     }
+
+    public void OnSpellBookSuccess()
+    {
+        Debug.Log("마법서 미션 성공 처리!");
+
+        // 미션 성공 결과를 GameManager(또는 MissionManager)에 전달
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnMissionResult(true); // 성공
+        }
+    }
+
 
     // ================================ //
     // 시간 보너스 효과
@@ -182,11 +192,12 @@ public class SpellBookManager : MonoBehaviour
     }
 
     private IEnumerator ShowAirplanePanelAfterDelay()
-    {
+    {           
         yield return new WaitForSeconds(2f);
         
         if (UIManager.Instance != null)
         {
+
             bool[] tileStates = GetTileStates();
             UIManager.Instance.ShowSpellBookAirplanePanel();
             UIManager.Instance.UpdateSpellBookTileButtons(tileStates, OnTileButtonClicked);
@@ -250,7 +261,8 @@ public class SpellBookManager : MonoBehaviour
                 break;
             }
         }
-        
+        Debug.Log($"[SpellBook] 텔레포트 시도: tileName={tileName}, tileIndex={tileIndex}");
+
         if (tileIndex != -1)
         {
             GameManager.Instance.TeleportToTile(tileIndex);

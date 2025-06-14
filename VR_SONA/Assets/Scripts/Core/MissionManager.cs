@@ -181,6 +181,9 @@ public class MissionManager : MonoBehaviour
         // GameManager에 결과 전달 (여기서 Player 위치 복구 처리됨)
         GameManager.Instance.OnMissionResult(success);
 
+        // Dice씬 로드
+        DiceManager.Instance.DiceButtonClicked();
+
         // 현재 미션 타일 인덱스 초기화
         currentMissionTileIndex = -1;
     }

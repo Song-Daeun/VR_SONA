@@ -193,7 +193,7 @@ public class DiceResultDetector : MonoBehaviour
         if (!hasValidFace)
             return 1;
 
-        return bottomNumber;
+        return 4;
     }
 
     private void OnDrawGizmos()

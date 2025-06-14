@@ -175,13 +175,21 @@ public class UIManager : MonoBehaviour
     private void OnNoClicked()
     {
         Debug.Log("미션 No 버튼 클릭 - 미션 거부");
-        
+
+        isInMission = false; // ★ 이 줄 추가
+
         ShowMissionPrompt(false);
         ShowDiceUI(true);
-        
+
         Debug.Log("미션 거부 후 주사위 UI 복구 완료");
-        
+
         GameManager.Instance?.OnMissionDecisionMade(false);
+
+        if (diceButton != null)
+        {
+            diceButton.onClick.RemoveAllListeners();
+            diceButton.onClick.AddListener(OnDiceButtonClicked);
+        }
     }
 
     // 초기 UI 상태 설정
@@ -487,30 +495,26 @@ public class UIManager : MonoBehaviour
     {
         if (spellBookAirplanePanel != null)
         {
-            if (spellBookResultText != null)
-            {
-                spellBookResultText.gameObject.SetActive(false);
-            }
-                
             spellBookAirplanePanel.SetActive(true);
-            
+
             Canvas canvas = spellBookAirplanePanel.GetComponentInParent<Canvas>();
             if (canvas != null)
             {
                 canvas.renderMode = RenderMode.WorldSpace;
                 canvas.worldCamera = Camera.main ?? FindObjectOfType<Camera>();
                 canvas.sortingOrder = 1000;
-                
+
                 if (cameraTransform != null)
                 {
-                    Vector3 targetPos = cameraTransform.position
-                        + cameraTransform.forward * spellBookUIDistance
-                        + Vector3.up * spellBookUIHeightOffset;
-                    
+                    float airplanePanelDistance = 0.5f; // 원하는 거리
+                    Vector3 targetPos = cameraTransform.position + cameraTransform.forward * airplanePanelDistance;
+                    // y축을 카메라 높이와 동일하게 맞춤
+                    targetPos.y = cameraTransform.position.y;
+
                     canvas.transform.position = targetPos;
-                    canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+                    // canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
                 }
-                
+
                 RectTransform canvasRect = canvas.GetComponent<RectTransform>();
                 if (canvasRect != null)
                 {
@@ -540,13 +544,29 @@ public class UIManager : MonoBehaviour
                 TextMeshProUGUI buttonText = spellBookTileButtons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.text = BingoBoard.GetTileNameByCoords(x, y);
+                    buttonText.text = GetTileDisplayName(BingoBoard.GetTileNameByCoords(x, y));
                 }
                 
                 spellBookTileButtons[i].onClick.RemoveAllListeners();
                 int buttonIndex = i;
                 spellBookTileButtons[i].onClick.AddListener(() => onTileClicked(buttonIndex));
             }
+        }
+    }
+
+    private string GetTileDisplayName(string tileName)
+    {
+        switch(tileName)
+        {
+            case "Netherlands": return "네덜란드";
+            case "Germany": return "독일";
+            case "USA": return "미국";
+            case "SpellBook": return "마법서";
+            case "Japan": return "일본";
+            case "Seoul": return "서울";
+            case "Suncheon": return "순천";
+            case "Egypt": return "이집트";
+            default: return tileName;
         }
     }
 
@@ -600,7 +620,7 @@ public class UIManager : MonoBehaviour
             + Vector3.up * heightOffset;
         
         uiTransform.position = targetPos;
-        uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
+        // uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
     }
     
     private Camera FindCameraComponent()
