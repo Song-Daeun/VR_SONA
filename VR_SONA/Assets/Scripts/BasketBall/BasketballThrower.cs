@@ -20,10 +20,51 @@ public class BasketballThrower : MonoBehaviour
 
     private InputAction throwAction;
 
+    // void OnEnable()
+    // {
+    //     var inputAsset = GetComponent<PlayerInput>()?.actions;
+    //     throwAction = inputAsset?.FindAction("BasketBall"); 
+
+    //     if (throwAction != null)
+    //     {
+    //         throwAction.Enable();
+    //         throwAction.performed += OnThrowPressed;
+    //     }
+    // }
+
+    // void OnDisable()
+    // {
+    //     if (throwAction != null)
+    //     {
+    //         throwAction.performed -= OnThrowPressed;
+    //         throwAction.Disable();
+    //     }
+    // }
+
+    // void Update()
+    // {
+    //     Debug.Log("Update 실행 중");
+    //     // XR Device Simulator용 키보드 입력 추가 (T키 = 왼손 X버튼)
+    //     if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
+    //     {
+    //         ThrowNewBall();
+    //         lastThrowTime = Time.time;
+    //     }
+    // }
+
+    // void OnThrowPressed(InputAction.CallbackContext ctx)
+    // {
+    //     if (Time.time - lastThrowTime > throwCooldown)
+    //     {
+    //         ThrowNewBall();
+    //         lastThrowTime = Time.time;
+    //     }
+    // }
     void OnEnable()
     {
         var inputAsset = GetComponent<PlayerInput>()?.actions;
-        throwAction = inputAsset?.FindAction("BasketBall"); 
+        // throwAction = inputAsset?.FindAction("BasketBall"); 
+        throwAction = inputAsset.FindActionMap("XRI LeftHand Interaction").FindAction("BasketBall");
 
         if (throwAction != null)
         {
@@ -38,17 +79,6 @@ public class BasketballThrower : MonoBehaviour
         {
             throwAction.performed -= OnThrowPressed;
             throwAction.Disable();
-        }
-    }
-
-    void Update()
-    {
-        Debug.Log("Update 실행 중");
-        // XR Device Simulator용 키보드 입력 추가 (T키 = 왼손 X버튼)
-        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
-        {
-            ThrowNewBall();
-            lastThrowTime = Time.time;
         }
     }
 

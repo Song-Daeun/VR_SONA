@@ -325,21 +325,21 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     // 디버그용
     // ================================ //
-    void Update()
-    {
-#if UNITY_EDITOR
-        // 디버그용: S 키로 스펠북 테스트 (메인 씬에서만)
-        if (Input.GetKeyDown(KeyCode.S) && !isInMissionScene)
-        {
-            ActivateSpellBook();
-        }
+//     void Update()
+//     {
+// #if UNITY_EDITOR
+//         // 디버그용: S 키로 스펠북 테스트 (메인 씬에서만)
+//         if (Input.GetKeyDown(KeyCode.S) && !isInMissionScene)
+//         {
+//             ActivateSpellBook();
+//         }
         
-        // 디버그용: 현재 상태 출력
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            Debug.Log($"🔍 SpellBook 상태 - Active: {isSpellBookActive}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
-        }
-#endif
-    }
+//         // 디버그용: 현재 상태 출력
+//         if (Input.GetKeyDown(KeyCode.P))
+//         {
+//             string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+//             Debug.Log($"🔍 SpellBook 상태 - Active: {isSpellBookActive}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
+//         }
+// #endif
+//     }
 }

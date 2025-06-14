@@ -17,12 +17,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MissionBasketballScene.unity
     guid: e6efda5f24580f44e8172884c8abac32
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/InteractionScene.unity
     guid: e8ed2ece4feddf648914b0a15bbc1178
   - enabled: 1
     path: Assets/Scenes/MissionWaterRushScene.unity
     guid: 8b5ea052824fe4751911b5a4b954c6aa
+  - enabled: 1
+    path: Assets/Scenes/MainGameScene 1.unity
+    guid: d343a2c4377d2c94fa3047608585ceaf
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 95958a0a35677e145b2ae0ebeb5bcce1, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}

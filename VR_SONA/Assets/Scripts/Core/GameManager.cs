@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -731,36 +732,36 @@ public class GameManager : MonoBehaviour
     }
 
     // 디버그 시스템 
-    void Update()
-    {
-#if UNITY_EDITOR
-        HandleDevelopmentDebugInputs();
-#endif
-    }
+//     void Update()
+//     {
+// #if UNITY_EDITOR
+//         HandleDevelopmentDebugInputs();
+// #endif
+//     }
 
-#if UNITY_EDITOR
-    private void HandleDevelopmentDebugInputs()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Debug.Log("디버그: 현재 빙고 상태 강제 체크");
-            CheckForBingoCompletion();
-        }
+// #if UNITY_EDITOR
+//     private void HandleDevelopmentDebugInputs()
+//     {
+//         if (Input.GetKeyDown(KeyCode.G))
+//         {
+//             Debug.Log("디버그: 현재 빙고 상태 강제 체크");
+//             CheckForBingoCompletion();
+//         }
         
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            string currentLocation = currentTileIndex == -1 ? "Start" : tileNames[currentTileIndex];
-            Debug.Log($"디버그: 현재 위치 = {currentLocation} (인덱스: {currentTileIndex})");
-        }
+//         if (Input.GetKeyDown(KeyCode.T))
+//         {
+//             string currentLocation = currentTileIndex == -1 ? "Start" : tileNames[currentTileIndex];
+//             Debug.Log($"디버그: 현재 위치 = {currentLocation} (인덱스: {currentTileIndex})");
+//         }
         
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Debug.Log("디버그: 강제 턴 시작");
-            ResetTurnState();
-            StartTurn();
-        }
-    }
-#endif
+//         if (Input.GetKeyDown(KeyCode.R))
+//         {
+//             Debug.Log("디버그: 강제 턴 시작");
+//             ResetTurnState();
+//             StartTurn();
+//         }
+//     }
+// #endif
 
     // 공개 접근자 메서드들 
     public string GetCurrentTileName()
