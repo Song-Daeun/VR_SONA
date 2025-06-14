@@ -1849,6 +1849,58 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &710741673
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 710741675}
+  - component: {fileID: 710741674}
+  m_Layer: 0
+  m_Name: BasketballThrower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &710741674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710741673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a1aef382cbd449b9b7d4a6deeeb953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basketballPrefab: {fileID: 1786901554}
+  throwOrigin: {fileID: 1413850843}
+  throwForce: 14
+  spinForce: 3
+  throwCooldown: 1
+  forwardMultiplier: 1
+  upwardMultiplier: 0.9
+  throwAngle: 35
+--- !u!4 &710741675
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710741673}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 774.1858, y: 44.32, z: 997.3066}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &722218424 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 73c2999be80b3be4e816d348fea624e1, type: 3}
@@ -4638,3 +4690,4 @@ SceneRoots:
   - {fileID: 1051285101}
   - {fileID: 1226174717}
   - {fileID: 1225533404}
+  - {fileID: 710741675}

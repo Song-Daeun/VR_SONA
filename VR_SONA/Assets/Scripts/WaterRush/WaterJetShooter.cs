@@ -193,6 +193,8 @@ public class WaterJetShooter : MonoBehaviour
                 rb.AddForce(forceVector, ForceMode.Impulse);
             }
 
+            Destroy(drop, 3f);
+
             yield return new WaitForSeconds(spawnInterval);
         }
 
