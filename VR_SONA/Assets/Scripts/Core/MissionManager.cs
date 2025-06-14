@@ -175,9 +175,7 @@ public class MissionManager : MonoBehaviour
                 Debug.Log($"💾 미션 성공 상태 저장: 타일 {currentMissionTileIndex} → 좌표 ({tileCoords.x}, {tileCoords.y})");
             }
         }
-
-        // ❌ 제거: MissionCameraManager.RestoreCameraFromMission();
-
+        
         // 미션 씬 언로드
         SceneLoader.Instance.UnloadMissionScene();
 

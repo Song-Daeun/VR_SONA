@@ -24,9 +24,17 @@ public class GameEndManager : MonoBehaviour
     public TextMeshProUGUI successTitle;       // 성공 제목
     public TextMeshProUGUI successMessage;     // 성공 메시지
 
-    [Header("Buttons")]
-    public Button restartButton;               // 재시작 버튼
-    public Button exitButton;                  // 게임 종료 버튼
+    [Header("Coin Lack Panel Buttons")]
+    public Button coinLackRestartButton;       // 코인 부족 패널 재시작 버튼
+    public Button coinLackExitButton;          // 코인 부족 패널 종료 버튼
+
+    [Header("Time Up Panel Buttons")]
+    public Button timeUpRestartButton;         // 시간 만료 패널 재시작 버튼
+    public Button timeUpExitButton;            // 시간 만료 패널 종료 버튼
+
+    [Header("Success Panel Buttons")]
+    public Button successRestartButton;        // 성공 패널 재시작 버튼
+    public Button successExitButton;           // 성공 패널 종료 버튼
 
     [Header("Settings")]
     public float panelDisplayTime = 5f;        // 패널 표시 시간
@@ -76,14 +84,55 @@ public class GameEndManager : MonoBehaviour
 
     private void SetupButtonEvents()
     {
-        if (restartButton != null)
+        // 코인 부족 패널 버튼들
+        if (coinLackRestartButton != null)
         {
-            restartButton.onClick.AddListener(RestartGame);
+            coinLackRestartButton.onClick.AddListener(RestartGame);
+        }
+        if (coinLackExitButton != null)
+        {
+            coinLackExitButton.onClick.AddListener(ExitGame);
         }
 
-        if (exitButton != null)
+        // 시간 만료 패널 버튼들
+        if (timeUpRestartButton != null)
         {
-            exitButton.onClick.AddListener(ExitGame);
+            timeUpRestartButton.onClick.AddListener(RestartGame);
+        }
+        if (timeUpExitButton != null)
+        {
+            timeUpExitButton.onClick.AddListener(ExitGame);
+        }
+
+        // 성공 패널 버튼들
+        if (successRestartButton != null)
+        {
+            successRestartButton.onClick.AddListener(RestartGame);
+        }
+        if (successExitButton != null)
+        {
+            successExitButton.onClick.AddListener(ExitGame);
+        }
+
+        Debug.Log("GameEndManager 버튼 이벤트 설정 완료");
+    }
+
+    // ================================ //
+    // 게임 종료 시 모든 게임플레이 UI 숨기기
+    // ================================ //
+    private void HideAllGameplayUI()
+    {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowDiceUI(false);
+            UIManager.Instance.ShowMissionPrompt(false);
+            UIManager.Instance.ShowSpellBookUI(false);
+            
+            Debug.Log("모든 게임플레이 UI 숨김 처리 완료");
+        }
+        else
+        {
+            Debug.LogWarning("UIManager.Instance를 찾을 수 없어 UI 숨김 처리 실패");
         }
     }
 
@@ -92,8 +141,14 @@ public class GameEndManager : MonoBehaviour
     // ================================ //
     public void EndGameDueToCoinLack()
     {
-        if (isGameEnded) return;
+        if (isGameEnded || PlayerState.IsGameEnded()) return;
 
+        // PlayerState에 게임 상태 설정
+        PlayerState.SetGameFailedCoinLack();
+        
+        // 모든 게임플레이 UI 숨기기
+        HideAllGameplayUI();
+        
         isGameEnded = true;
         Time.timeScale = 0f; // 게임 일시정지
 
@@ -118,8 +173,14 @@ public class GameEndManager : MonoBehaviour
     // ================================ //
     public void EndGameDueToTimeUp()
     {
-        if (isGameEnded) return;
+        if (isGameEnded || PlayerState.IsGameEnded()) return;
 
+        // PlayerState에 게임 상태 설정
+        PlayerState.SetGameFailedTimeUp();
+        
+        // 모든 게임플레이 UI 숨기기
+        HideAllGameplayUI();
+        
         isGameEnded = true;
         Time.timeScale = 0f; // 게임 일시정지
 
@@ -154,8 +215,14 @@ public class GameEndManager : MonoBehaviour
     // ================================ //
     public void EndGameDueToSuccess()
     {
-        if (isGameEnded) return;
+        if (isGameEnded || PlayerState.IsGameEnded()) return;
 
+        // PlayerState에 게임 상태 설정
+        PlayerState.SetGameSuccess();
+        
+        // 모든 게임플레이 UI 숨기기
+        HideAllGameplayUI();
+        
         isGameEnded = true;
         Time.timeScale = 0f; // 게임 일시정지
 
@@ -172,7 +239,7 @@ public class GameEndManager : MonoBehaviour
     }
 
     // ================================ //
-    // 공통 패널 표시 메서드
+    // 공통 패널 표시 메서드 (VR용으로 수정)
     // ================================ //
     private void ShowGameEndPanel(GameObject panel)
     {
@@ -180,13 +247,24 @@ public class GameEndManager : MonoBehaviour
         {
             gameEndCanvas.SetActive(true);
             
-            // Canvas를 Screen Space - Overlay로 설정
+            // VR용 Canvas 설정 (UIManager 방식 참고)
             Canvas canvas = gameEndCanvas.GetComponent<Canvas>();
             if (canvas != null)
             {
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.renderMode = RenderMode.WorldSpace;
+                canvas.worldCamera = FindCameraComponent();
                 canvas.sortingOrder = 1000; // 최상위에 표시
+                
+                // 스케일 설정 (UIManager 참고)
+                RectTransform canvasRect = gameEndCanvas.GetComponent<RectTransform>();
+                if (canvasRect != null)
+                {
+                    canvasRect.localScale = Vector3.one * 0.01f; // UIManager와 동일
+                }
             }
+            
+            // 카메라 앞에 위치 설정
+            PositionUIInFrontOfCamera();
         }
 
         if (panel != null)
@@ -198,9 +276,31 @@ public class GameEndManager : MonoBehaviour
         StartCoroutine(AutoRestartAfterDelay());
     }
 
-    // ================================ //
-    // 빙고 완성 여부 확인 (GameManager에서 복사)
-    // ================================ //
+    // VR용 카메라 찾기 및 위치 설정 메서드들
+    private Camera FindCameraComponent()
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null) return mainCamera;
+        
+        return FindObjectOfType<Camera>();
+    }
+
+    private void PositionUIInFrontOfCamera()
+    {
+        Camera camera = FindCameraComponent();
+        if (camera == null || gameEndCanvas == null) return;
+        
+        // 카메라 앞 적당한 거리에 배치 (UIManager 방식)
+        float distance = 2f;
+        Vector3 targetPos = camera.transform.position + camera.transform.forward * distance;
+        targetPos.y = camera.transform.position.y; // 카메라와 같은 높이
+        
+        gameEndCanvas.transform.position = targetPos;
+        gameEndCanvas.transform.rotation = Quaternion.LookRotation(targetPos - camera.transform.position);
+    }
+
+    // 나머지 메서드들은 기존과 동일...
+    
     private bool CheckForBingoCompletion()
     {
         if (BingoBoard.Instance == null)
@@ -211,7 +311,6 @@ public class GameEndManager : MonoBehaviour
 
         int totalCompletedLines = 0;
         
-        // 가로줄 체크
         for (int row = 0; row < 3; row++)
         {
             if (IsHorizontalLineCompleted(row))
@@ -220,7 +319,6 @@ public class GameEndManager : MonoBehaviour
             }
         }
         
-        // 세로줄 체크
         for (int col = 0; col < 3; col++)
         {
             if (IsVerticalLineCompleted(col))
@@ -229,13 +327,12 @@ public class GameEndManager : MonoBehaviour
             }
         }
         
-        // 대각선 체크
-        if (IsDiagonalLineCompleted(true))  // 좌상→우하
+        if (IsDiagonalLineCompleted(true))
         {
             totalCompletedLines++;
         }
         
-        if (IsDiagonalLineCompleted(false)) // 우상→좌하
+        if (IsDiagonalLineCompleted(false))
         {
             totalCompletedLines++;
         }
@@ -294,29 +391,24 @@ public class GameEndManager : MonoBehaviour
         return isCompleted;
     }
 
-    // ================================ //
-    // 자동 재시작 (선택사항)
-    // ================================ //
     private IEnumerator AutoRestartAfterDelay()
     {
         yield return new WaitForSecondsRealtime(panelDisplayTime);
         
-        // 자동 재시작 대신 버튼 강조 표시 등으로 변경 가능
-        if (restartButton != null)
+        if (successRestartButton != null)
         {
-            // 버튼 강조 효과 등을 추가할 수 있음
             Debug.Log("자동 재시작 시간 도달 - 버튼을 눌러 재시작하세요");
         }
     }
 
-    // ================================ //
-    // 버튼 이벤트 핸들러
-    // ================================ //
     private void RestartGame()
     {
         Debug.Log("게임 재시작");
         
         Time.timeScale = 1f; // 게임 시간 복구
+        
+        // PlayerState 리셋
+        PlayerState.ResetGameState();
         
         // 현재 씬 재로드
         UnityEngine.SceneManagement.SceneManager.LoadScene(
@@ -330,7 +422,9 @@ public class GameEndManager : MonoBehaviour
         
         Time.timeScale = 1f; // 게임 시간 복구
         
-        // 에디터에서는 플레이 모드 중단, 빌드에서는 애플리케이션 종료
+        // PlayerState 리셋
+        PlayerState.ResetGameState();
+        
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -338,12 +432,9 @@ public class GameEndManager : MonoBehaviour
 #endif
     }
 
-    // ================================ //
-    // 공개 메서드 - 다른 스크립트에서 호출
-    // ================================ //
     public bool IsGameEnded()
     {
-        return isGameEnded;
+        return isGameEnded || PlayerState.IsGameEnded();
     }
 
     public void ResetGameEndState()
@@ -351,17 +442,15 @@ public class GameEndManager : MonoBehaviour
         isGameEnded = false;
         Time.timeScale = 1f;
         
+        PlayerState.ResetGameState();
+        
         if (gameEndCanvas != null)
             gameEndCanvas.SetActive(false);
     }
 
-    // ================================ //
-    // 디버그용
-    // ================================ //
 #if UNITY_EDITOR
     void Update()
     {
-        // 디버그용: 키보드 입력으로 게임 종료 테스트
         if (Input.GetKeyDown(KeyCode.F1))
         {
             EndGameDueToCoinLack();
@@ -375,6 +464,11 @@ public class GameEndManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F3))
         {
             EndGameDueToSuccess();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            PlayerState.LogCurrentState();
         }
     }
 #endif

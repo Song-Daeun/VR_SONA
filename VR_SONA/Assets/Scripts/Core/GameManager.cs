@@ -553,7 +553,7 @@ public class GameManager : MonoBehaviour
         
         Debug.Log($"총 완성된 빙고 줄 수: {totalCompletedLines}/8");
         
-        return totalCompletedLines >= 2;
+        return totalCompletedLines >= 1;
     }
 
     private int CountCompletedHorizontalLines()
