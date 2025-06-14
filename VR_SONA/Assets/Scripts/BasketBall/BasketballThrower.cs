@@ -43,8 +43,9 @@ public class BasketballThrower : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("Update 실행 중");
         // XR Device Simulator용 키보드 입력 추가 (T키 = 왼손 X버튼)
-        if (Input.GetKeyDown(KeyCode.B) && Time.time - lastThrowTime > throwCooldown)
+        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
         {
             ThrowNewBall();
             lastThrowTime = Time.time;
@@ -74,5 +75,7 @@ public class BasketballThrower : MonoBehaviour
 
         rb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         rb.AddTorque(Vector3.right * spinForce, ForceMode.Impulse);
+
+        Destroy(newBall, 3f);
     }
 }
