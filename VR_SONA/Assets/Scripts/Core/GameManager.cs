@@ -112,7 +112,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("새로운 턴 시작 - 주사위를 굴려주세요");
         
         isDiceRolling = false; 
-        ActivateDiceUI();      
+        if (PlayerState.CanShowUI())
+        {
+            ActivateDiceUI(); 
+        }     
     }
 
     private void ActivateDiceUI()
@@ -300,8 +303,18 @@ public class GameManager : MonoBehaviour
         if (!HasSufficientCoinsForMission())
         {
             Debug.Log("코인이 부족하여 미션을 시작할 수 없습니다");
-            DisplayInsufficientCoinsMessage();
-            StartTurn(); // 다음 턴으로
+            
+            // 코인 부족 시 게임 종료
+            if (GameEndManager.Instance != null)
+            {
+                GameEndManager.Instance.EndGameDueToCoinLack();
+            }
+            else
+            {
+                // 기존 코드 (fallback)
+                DisplayInsufficientCoinsMessage();
+                StartTurn();
+            }
             return;
         }
 
@@ -458,7 +471,7 @@ public class GameManager : MonoBehaviour
             
             if (CheckForBingoCompletion())
             {
-                ProcessGameVictory();
+                ProcessGameSuccess();
                 return; 
             }
         }
@@ -523,8 +536,9 @@ public class GameManager : MonoBehaviour
     }
 
     // 빙고 완성 체크 시스템 
-    private bool CheckForBingoCompletion()
+    public bool CheckForBingoCompletion()
     {
+        // 기존 코드 그대로 사용하되, public으로 변경하여 GameEndManager에서도 사용 가능하게 함
         if (BingoBoard.Instance == null)
         {
             Debug.LogError("BingoBoard.Instance가 null입니다");
@@ -539,7 +553,7 @@ public class GameManager : MonoBehaviour
         
         Debug.Log($"총 완성된 빙고 줄 수: {totalCompletedLines}/8");
         
-        return totalCompletedLines >= 2;
+        return totalCompletedLines >= 1;
     }
 
     private int CountCompletedHorizontalLines()
@@ -647,21 +661,30 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("게임 시간이 만료되었습니다!");
         
-        Time.timeScale = 0f;
-        
-        bool hasAchievedBingo = CheckForBingoCompletion();
-        
-        if (hasAchievedBingo)
+        // GameEndManager를 통해 시간 만료 처리
+        if (GameEndManager.Instance != null)
         {
-            ProcessPartialVictory();
+            GameEndManager.Instance.EndGameDueToTimeUp();
         }
         else
         {
-            ProcessGameDefeat();
+            // 기존 코드 (fallback)
+            Time.timeScale = 0f;
+            
+            bool hasAchievedBingo = CheckForBingoCompletion();
+            
+            if (hasAchievedBingo)
+            {
+                ProcessPartialSuccess();
+            }
+            else
+            {
+                ProcessGameDefeat();
+            }
         }
     }
 
-    private void ProcessPartialVictory()
+    private void ProcessPartialSuccess()
     {
         Debug.Log("부분 승리 달성! (시간 부족하지만 빙고 완성)");
         Invoke(nameof(RestartEntireGame), 3f);
@@ -673,16 +696,25 @@ public class GameManager : MonoBehaviour
         Invoke(nameof(RestartEntireGame), 3f);
     }
 
-    private void ProcessGameVictory()
+    private void ProcessGameSuccess()
     {
-        Debug.Log("완전 승리 달성! 빙고 2줄 이상 완성!");
+        Debug.Log("빙고 2줄 이상 완성");
         
-        Time.timeScale = 0f;
-        DisplayVictoryUI();
-        Invoke(nameof(RestartEntireGame), 5f);
+        // GameEndManager를 통해 성공 처리
+        if (GameEndManager.Instance != null)
+        {
+            GameEndManager.Instance.EndGameDueToSuccess();
+        }
+        else
+        {
+            // 기존 코드 (fallback)
+            Time.timeScale = 0f;
+            DisplaySuccessUI();
+            Invoke(nameof(RestartEntireGame), 5f);
+        }
     }
 
-    private void DisplayVictoryUI()
+    private void DisplaySuccessUI()
     {
         if (UIManager.Instance != null)
         {

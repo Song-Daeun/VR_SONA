@@ -17,10 +17,16 @@ public class MissionManager : MonoBehaviour
     public GameObject missionCanvas;
 
     // 타일별 미션 타입 매핑 (이미지 기준)
+    // private readonly int[] tileMissionTypes = {
+    //     1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+    //     2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+    //     2, 1      // Suncheon(미션2), Egypt(미션1)
+    // };
+
     private readonly int[] tileMissionTypes = {
-        1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+        2, 2, 2,  // Netherlands(미션1), Germany(미션2), USA(미션1)
         2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-        2, 1      // Suncheon(미션2), Egypt(미션1)
+        2, 2      // Suncheon(미션2), Egypt(미션1)
     };
 
     // ================================ //
@@ -169,9 +175,7 @@ public class MissionManager : MonoBehaviour
                 Debug.Log($"💾 미션 성공 상태 저장: 타일 {currentMissionTileIndex} → 좌표 ({tileCoords.x}, {tileCoords.y})");
             }
         }
-
-        // ❌ 제거: MissionCameraManager.RestoreCameraFromMission();
-
+        
         // 미션 씬 언로드
         SceneLoader.Instance.UnloadMissionScene();
 
@@ -182,7 +186,10 @@ public class MissionManager : MonoBehaviour
         GameManager.Instance.OnMissionResult(success);
 
         // Dice씬 로드
-        DiceManager.Instance.DiceButtonClicked();
+        if (PlayerState.CanShowUI()) 
+        { 
+            DiceManager.Instance.DiceButtonClicked();
+        }
 
         // 현재 미션 타일 인덱스 초기화
         currentMissionTileIndex = -1;
