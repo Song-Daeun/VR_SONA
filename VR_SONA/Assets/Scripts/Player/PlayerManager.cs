@@ -28,6 +28,11 @@ public class PlayerManager : MonoBehaviour
     public static System.Action<string, int> OnTileArrived;
     public static System.Action OnSpellBookTileArrived;
 
+    // 오프셋 설정 추가
+    [Header("Position Offset Settings")]
+    public Vector3 tilePositionOffset = new Vector3(0f, 0f, -50f); // Z축으로 -10만큼 앞쪽에 배치
+
+    
     // 싱글톤 초기화
     private void Awake()
     {
@@ -185,7 +190,7 @@ public class PlayerManager : MonoBehaviour
         currentTileIndex = targetIndex; // 타일 인덱스도 업데이트
 
         Debug.Log($"목표 타일: {targetTile.name}");
-        Vector3 targetPosition = CalculateSafeLandingPosition(targetTile);
+        Vector3 targetPosition = CalculatePlayerPositionOnTile(targetTile);
         Debug.Log($"목표 위치: {targetPosition}");
         
         // 일반 이동에서는 미션 메시지를 PlayerManager에서 표시하지 않음
@@ -229,7 +234,7 @@ public class PlayerManager : MonoBehaviour
         currentDiceResult = tileIndex + 1;
         currentTileIndex = tileIndex; // 타일 인덱스 업데이트
 
-        Vector3 targetPosition = CalculateSafeLandingPosition(targetTile);
+        Vector3 targetPosition = CalculatePlayerPositionOnTile(targetTile);
         Debug.Log($"텔레포트 목표 위치: {targetPosition}");
         
         StartCoroutine(MoveToPosition(targetPosition, teleportDuration, false, true));
@@ -257,7 +262,7 @@ public class PlayerManager : MonoBehaviour
         currentDiceResult = -1;
         currentTileIndex = -1; // Start 타일은 -1 인덱스
 
-        Vector3 targetPosition = CalculateSafeLandingPosition(startTile);
+        Vector3 targetPosition = CalculatePlayerPositionOnTile(startTile);
         Debug.Log($"Start 타일 목표 위치: {targetPosition}");
         
         // Start 타일로 이동할 때는 GameManager에게 알리지 않음 (특별한 경우)
@@ -399,20 +404,6 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
-    // public string GetCurrentTileName()
-    // {
-    //     if (currentTileIndex == -1)
-    //     {
-    //         return startTile != null ? startTile.name : "Start (설정되지 않음)";
-    //     }
-
-    //     if (IsValidTileIndex(currentTileIndex))
-    //     {
-    //         return tileList[currentTileIndex].name;
-    //     }
-
-    //     return "알 수 없는 타일";
-    // }
     public string GetCurrentTileName()
     {
         // Start 타일 처리 - 특별한 경우이므로 별도 처리
@@ -667,11 +658,28 @@ public class PlayerManager : MonoBehaviour
         return $"{locationInfo} ({positionInfo})";
     }
 
-// 플레이어 이동 타입을 정의하는 열거형
-public enum PlayerMovementType
-{
-    DiceResult,        // 주사위 결과에 따른 일반 이동
-    TeleportToTile,    // 특정 타일로 텔레포트
-    ReturnToStart      // 시작 위치로 복귀
-}
+    // 플레이어 이동 타입을 정의하는 열거형
+    public enum PlayerMovementType
+    {
+        DiceResult,        // 주사위 결과에 따른 일반 이동
+        TeleportToTile,    // 특정 타일로 텔레포트
+        ReturnToStart      // 시작 위치로 복귀
+    }
+
+    // 타일 위치에 오프셋 적용
+    private Vector3 CalculatePlayerPositionOnTile(Transform tile)
+    {
+        // 타일의 기본 위치 계산
+        Vector3 basePosition = CalculateSafeLandingPosition(tile);
+        
+        // 오프셋 적용 (Z축 방향으로 앞쪽에 배치)
+        Vector3 offsetPosition = basePosition + tilePositionOffset;
+        
+        Debug.Log($"타일 {tile.name} 위치 계산:");
+        Debug.Log($"  기본 위치: {basePosition}");
+        Debug.Log($"  오프셋 적용: {tilePositionOffset}");
+        Debug.Log($"  최종 위치: {offsetPosition}");
+        
+        return offsetPosition;
+    }
 }
