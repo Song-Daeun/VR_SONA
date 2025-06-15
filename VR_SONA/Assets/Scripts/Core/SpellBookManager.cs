@@ -48,7 +48,7 @@ public class SpellBookManager : MonoBehaviour
             ForceDeactivateSpellBook();
         }
         // 메인 씬 복귀 감지
-        else if (sceneName == "MainGameScene" && isInMissionScene)
+        else if (sceneName == "MainGameScene 1" && isInMissionScene)
         {
             isInMissionScene = false;
             Debug.Log($"메인 씬 복귀 감지: {sceneName} - SpellBook 상태 리셋");
@@ -142,13 +142,45 @@ public class SpellBookManager : MonoBehaviour
     {
         Debug.Log("마법서 미션 성공 처리!");
 
-        // 미션 성공 결과를 GameManager(또는 MissionManager)에 전달
+        // SpellBook 전용 건물 건설 처리
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnMissionResult(true); // 성공
+            // 빙고 보드 업데이트 (건물 건설)
+            TriggerSpellBookBuildingConstruction();
+            
+            // 승리 조건 확인
+            bool hasWon = GameManager.Instance.CheckForBingoCompletion();
+            if (hasWon)
+            {
+                // 게임 승리 처리
+                if (GameEndManager.Instance != null)
+                {
+                    GameEndManager.Instance.EndGameDueToSuccess();
+                    return; // 게임 종료이므로 StartTurn 호출 안 함
+                }
+            }
+            
+            // 다음 턴 시작
+            GameManager.Instance.StartTurn();
         }
     }
 
+    private void TriggerSpellBookBuildingConstruction()
+    {
+        if (BingoBoard.Instance != null && PlayerState.LastEnteredTileCoords.x != -1)
+        {
+            Vector2Int coords = PlayerState.LastEnteredTileCoords;
+            
+            Debug.Log($"🔮 SpellBook 건물 건설: 좌표 ({coords.x}, {coords.y})");
+            
+            // 빙고 보드에 성공 표시 및 건물 건설
+            BingoBoard.Instance.OnMissionSuccess(coords.x, coords.y);
+        }
+        else
+        {
+            Debug.LogError("❌ BingoBoard 또는 플레이어 위치 정보가 없어 건물 건설 실패");
+        }
+    }
 
     // ================================ //
     // 시간 보너스 효과
