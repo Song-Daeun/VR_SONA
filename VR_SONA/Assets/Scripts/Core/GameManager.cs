@@ -475,6 +475,12 @@ public class GameManager : MonoBehaviour
     {
         RestorePlayerPositionAfterMission();
         
+        // 미션 완료 후 SpellBook 미션 상태 강제 리셋
+        if (SpellBookManager.Instance != null)
+        {
+            SpellBookManager.Instance.ForceMissionStateReset();
+        }
+        
         if (missionSuccessful)
         {
             ProcessSuccessfulMission();
