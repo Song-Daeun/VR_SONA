@@ -87,6 +87,8 @@ public class SpellBookManager : MonoBehaviour
     // ================================ //
     // 스펠북 활성화 (수정된 중복 호출 방지)
     // ================================ //
+    public bool hasSpellBookActivatedOnce = false;
+
     public void ActivateSpellBook()
     {
         string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -113,28 +115,44 @@ public class SpellBookManager : MonoBehaviour
             }
         }
 
-        // 기존 코루틴 정리
-        StopAllCoroutines();
+        if (!hasSpellBookActivatedOnce)
+        {     
+            // 처음 방문 시 - 기존 코드 그대로 유지
+            StopAllCoroutines();
+            isSpellBookActive = true;
+            lastActivatedScene = currentScene;
 
-        isSpellBookActive = true;
-        lastActivatedScene = currentScene;
+            Debug.Log($"스펠북 최초 활성화! (씬: {currentScene})");
 
-        Debug.Log($"스펠북 활성화! (씬: {currentScene})");
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowSpellBookUI(true);
+            }
 
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.ShowSpellBookUI(true);
-        }
+            bool isAirplane = Random.Range(0, 2) == 0;
 
-        bool isAirplane = Random.Range(0, 2) == 0;
-
-        if (isAirplane)
-        {
-            ShowAirplaneEffect();
+            if (isAirplane)
+            {
+                ShowAirplaneEffect();
+            }
+            else
+            {
+                ShowTimeBonus();
+            }
+            hasSpellBookActivatedOnce = true;
         }
         else
         {
-            ShowTimeBonus();
+            Debug.Log($"이미 스펠북에 한 번 이상 접근 - 바로 주사위씬으로 이동");
+            
+            // UI가 떠있다면 닫기
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowSpellBookUI(false);
+            }
+
+            // 주사위 씬으로 직접 이동하지 않고 OnSpellBookSuccess 호출
+            OnSpellBookSuccess();
         }
     }
 
@@ -142,7 +160,6 @@ public class SpellBookManager : MonoBehaviour
     {
         Debug.Log("마법서 미션 성공 처리!");
 
-        // SpellBook 전용 건물 건설 처리
         if (GameManager.Instance != null)
         {
             // 빙고 보드 업데이트 (건물 건설)
@@ -160,25 +177,47 @@ public class SpellBookManager : MonoBehaviour
                 }
             }
             
-            // 다음 턴 시작
+            // 다음 턴 시작 (딜레이 추가)
+            StartCoroutine(StartTurnWithDelay());
+        }
+    }
+
+    // 새로 추가: 딜레이 후 턴 시작
+    private IEnumerator StartTurnWithDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (GameManager.Instance != null)
+        {
             GameManager.Instance.StartTurn();
         }
     }
 
+    private bool isSpellBookBuildingConstructed = false; // 건물 건설 여부 추적을 위한 변수 추가
+
     private void TriggerSpellBookBuildingConstruction()
     {
+        // 이미 건물이 지어졌다면 건설 건너뛰기
+        if (isSpellBookBuildingConstructed)
+        {
+            Debug.Log("🔮 SpellBook 건물이 이미 건설되어 있습니다.");
+            return;
+        }
+
         if (BingoBoard.Instance != null && PlayerState.LastEnteredTileCoords.x != -1)
         {
             Vector2Int coords = PlayerState.LastEnteredTileCoords;
             
-            Debug.Log($"🔮 SpellBook 건물 건설: 좌표 ({coords.x}, {coords.y})");
+            Debug.Log($"SpellBook 건물 최초 건설: 좌표 ({coords.x}, {coords.y})");
             
             // 빙고 보드에 성공 표시 및 건물 건설
             BingoBoard.Instance.OnMissionSuccess(coords.x, coords.y);
+            
+            // 건물 건설 완료 표시
+            isSpellBookBuildingConstructed = true;
         }
         else
         {
-            Debug.LogError("❌ BingoBoard 또는 플레이어 위치 정보가 없어 건물 건설 실패");
+            Debug.LogError("BingoBoard 또는 플레이어 위치 정보가 없어 건물 건설 실패");
         }
     }
 
