@@ -364,15 +364,8 @@ public class UIManager : MonoBehaviour
     // }
     public void ResetMissionState()
     {
-        Debug.Log("=== UIManager 미션 상태 리셋 ===");
-        Debug.Log($"이전 isInMission: {isInMission}");
-        Debug.Log($"이전 diceUIWasActiveBeforeMission: {diceUIWasActiveBeforeMission}");
-        
         isInMission = false;
         diceUIWasActiveBeforeMission = false;
-        
-        Debug.Log($"리셋 후 isInMission: {isInMission}");
-        Debug.Log("UIManager 미션 상태 리셋 완료");
     }
 
     // ShowDiceUI 메서드도 디버깅 강화
