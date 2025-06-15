@@ -3926,7 +3926,6 @@ GameObject:
   - component: {fileID: 366112926}
   - component: {fileID: 366112925}
   - component: {fileID: 366112924}
-  - component: {fileID: 366112923}
   - component: {fileID: 366112922}
   - component: {fileID: 366112921}
   m_Layer: 0
@@ -3971,31 +3970,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ccb74df158e194aa6bc1b782f728bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &366112923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 366112920}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d47c434fe9f0df4589b69c87bf4102f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveInput:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Move Input
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: ef64bd45-d8b0-490e-8ced-eee6933018fd
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  moveSpeed: 2
 --- !u!143 &366112924
 CharacterController:
   m_ObjectHideFlags: 0
@@ -4091,7 +4065,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bc72d2ecc8add47b2fe00d40318500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LeftHand: {fileID: 234833784}
+  m_LeftHand: {fileID: 0}
   m_RightHand: {fileID: 1536437614}
   m_LeftController: {fileID: 17207545}
   m_RightController: {fileID: 1077705180}

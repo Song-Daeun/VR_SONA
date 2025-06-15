@@ -9309,7 +9309,6 @@ GameObject:
   m_Component:
   - component: {fileID: 487437114}
   - component: {fileID: 487437115}
-  - component: {fileID: 487437116}
   - component: {fileID: 487437117}
   m_Layer: 0
   m_Name: Input Action Manager
@@ -9340,27 +9339,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 487437113}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ActionAssets:
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
---- !u!114 &487437116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 487437113}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ActionAssets:
-  - {fileID: -944628639613478452, guid: 9282452fc0d0a1449a82d7388a5fda6a, type: 3}
 --- !u!114 &487437117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13183,7 +13168,7 @@ MonoBehaviour:
   m_Camera: {fileID: 1542407372}
   m_OriginBaseGameObject: {fileID: 658061108}
   m_CameraFloorOffsetObject: {fileID: 574605501}
-  m_RequestedTrackingOriginMode: 1
+  m_RequestedTrackingOriginMode: 2
   m_CameraYOffset: 1.1176
 --- !u!1 &660040011
 GameObject:
@@ -21686,6 +21671,10 @@ PrefabInstance:
     - target: {fileID: 8562094982488297833, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8562094982488297833, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8964201159322119753, guid: 0a1b56ee33dfd4efb8ea10d8dcf9acf0, type: 3}
       propertyPath: m_Enabled
@@ -34854,7 +34843,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

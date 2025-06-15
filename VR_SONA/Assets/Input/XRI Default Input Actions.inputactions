@@ -1799,10 +1799,10 @@
                 {
                     "name": "",
                     "id": "fbe84733-41b0-4d1c-91cf-84ed10da71ec",
-                    "path": "<Keyboard>/b",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Generic XR Controller",
                     "action": "WaterRush",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2925,6 +2925,11 @@
                     "isOR": false
                 }
             ]
+        },
+        {
+            "name": "New Control Scheme",
+            "bindingGroup": "New Control Scheme",
+            "devices": []
         }
     ]
 }

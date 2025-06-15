@@ -23,17 +23,17 @@ public class MissionManager : MonoBehaviour
     //     2, 1      // Suncheon(미션2), Egypt(미션1)
     // };
 
-    // private readonly int[] tileMissionTypes = {
-    //     2, 2, 2,  // Netherlands(미션1), Germany(미션2), USA(미션1)
-    //     2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-    //     2, 2      // Suncheon(미션2), Egypt(미션1)
-    // };
-
     private readonly int[] tileMissionTypes = {
-        1, 1, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
-        1, 1, 1,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-        1, 1      // Suncheon(미션2), Egypt(미션1)
+        2, 2, 2,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+        2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+        2, 2      // Suncheon(미션2), Egypt(미션1)
     };
+
+    // private readonly int[] tileMissionTypes = {
+    //     1, 1, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+    //     1, 1, 1,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+    //     1, 1      // Suncheon(미션2), Egypt(미션1)
+    // };
 
     // ================================ //
     // 미션 결과 저장용 변수

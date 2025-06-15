@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
         
         // 현재 씬이 메인 게임 씬인지 확인
         string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (currentScene != "MainGameScene") // 여기서 "MainGameScene"을 실제 메인 씬 이름으로 변경
+        if (currentScene != "MainGameScene 1") // 여기서 "MainGameScene"을 실제 메인 씬 이름으로 변경
         {
             Debug.Log($"메인 씬이 아닌 곳에서 SpellBook 이벤트 차단: {currentScene}");
             ResetTurnState();
