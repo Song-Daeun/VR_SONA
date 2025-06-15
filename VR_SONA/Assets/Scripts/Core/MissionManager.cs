@@ -17,11 +17,11 @@ public class MissionManager : MonoBehaviour
     public GameObject missionCanvas;
 
     // 타일별 미션 타입 매핑 (이미지 기준)
-    // private readonly int[] tileMissionTypes = {
-    //     1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
-    //     2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-    //     2, 1      // Suncheon(미션2), Egypt(미션1)
-    // };
+    private readonly int[] tileMissionTypes = {
+        1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+        2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+        2, 1      // Suncheon(미션2), Egypt(미션1)
+    };
 
     // private readonly int[] tileMissionTypes = {
     //     2, 2, 2,  // Netherlands(미션1), Germany(미션2), USA(미션1)
@@ -29,11 +29,11 @@ public class MissionManager : MonoBehaviour
     //     2, 2      // Suncheon(미션2), Egypt(미션1)
     // };
 
-    private readonly int[] tileMissionTypes = {
-        1, 1, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
-        1, 1, 1,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-        1, 1      // Suncheon(미션2), Egypt(미션1)
-    };
+    // private readonly int[] tileMissionTypes = {
+    //     1, 1, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+    //     1, 1, 1,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+    //     1, 1      // Suncheon(미션2), Egypt(미션1)
+    // };
 
     // ================================ //
     // 미션 결과 저장용 변수
@@ -146,21 +146,52 @@ public class MissionManager : MonoBehaviour
         StartCoroutine(ResetUIAfterDelay());
     }
 
+    // private System.Collections.IEnumerator ResetUIAfterDelay()
+    // {
+    //     // 오브젝트 활성화 후 잠시 대기
+    //     yield return new WaitForSeconds(0.1f);
+
+    //     // UIManager 인스턴스 재확인
+    //     if (UIManager.Instance == null)
+    //     {
+    //         Debug.LogWarning("⚠️ UIManager.Instance가 null입니다. 다시 찾는 중...");
+    //         UIManager uiManager = FindObjectOfType<UIManager>();
+    //         if (uiManager != null)
+    //         {
+    //             Debug.Log("✅ UIManager를 다시 찾았습니다.");
+    //         }
+    //     }
+    // }
     private System.Collections.IEnumerator ResetUIAfterDelay()
     {
+        Debug.Log("=== ResetUIAfterDelay 시작 ===");
+        
         // 오브젝트 활성화 후 잠시 대기
         yield return new WaitForSeconds(0.1f);
         
-        // UIManager 인스턴스 재확인
-        if (UIManager.Instance == null)
+        // UIManager 상태 리셋 추가
+        if (UIManager.Instance != null)
+        {
+            Debug.Log("UIManager 미션 상태 리셋 시작");
+            UIManager.Instance.ResetMissionState();
+            Debug.Log("UIManager 미션 상태 리셋 완료");
+        }
+        else
         {
             Debug.LogWarning("⚠️ UIManager.Instance가 null입니다. 다시 찾는 중...");
             UIManager uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
                 Debug.Log("✅ UIManager를 다시 찾았습니다.");
+                uiManager.ResetMissionState();
+            }
+            else
+            {
+                Debug.LogError("❌ UIManager를 찾을 수 없습니다!");
             }
         }
+        
+        Debug.Log("=== ResetUIAfterDelay 완료 ===");
     }
 
     // ================================ //
@@ -181,7 +212,7 @@ public class MissionManager : MonoBehaviour
                 Debug.Log($"💾 미션 성공 상태 저장: 타일 {currentMissionTileIndex} → 좌표 ({tileCoords.x}, {tileCoords.y})");
             }
         }
-        
+
         // 미션 씬 언로드
         SceneLoader.Instance.UnloadMissionScene();
 
@@ -192,10 +223,11 @@ public class MissionManager : MonoBehaviour
         GameManager.Instance.OnMissionResult(success);
 
         // Dice씬 로드
-        if (PlayerState.CanShowUI()) 
-        { 
-            DiceManager.Instance.DiceButtonClicked();
-        }
+        // if (PlayerState.CanShowUI())
+        // {
+        //     // DiceManager.Instance.DiceButtonClicked();
+        //     UIManager.Instance.ShowDiceUI(true);
+        // }
 
         // 현재 미션 타일 인덱스 초기화
         currentMissionTileIndex = -1;
@@ -204,15 +236,69 @@ public class MissionManager : MonoBehaviour
     // ================================ //
     // 미션 결과 수집 (각 미션씬에서 호출)
     // ================================ //
+    // public void ReturnFromMission()
+    // {
+    //     bool missionResult = false;
+
+    //     // 미션1(Basketball) 결과 확인
+    //     if (BasGameManager.MissionResult.HasValue)
+    //     {
+    //         missionResult = BasGameManager.MissionResult.Value;
+    //         Debug.Log($"🏀 Basketball 미션 결과: {(missionResult ? "성공" : "실패")}");
+
+    //         // 결과 초기화
+    //         BasGameManager.MissionResult = null;
+    //     }
+    //     // 미션2(WaterRush) 결과 확인  
+    //     else if (WaterCollisionHandler.missionCompleted)
+    //     {
+    //         // WaterRush는 BasGameManager.MissionResult도 사용하므로 우선 확인
+    //         if (BasGameManager.MissionResult.HasValue)
+    //         {
+    //             missionResult = BasGameManager.MissionResult.Value;
+    //             BasGameManager.MissionResult = null;
+    //         }
+    //         else
+    //         {
+    //             // fallback: missionCompleted만 true인 경우 (구체적 성공/실패 불명)
+    //             missionResult = true; // 일단 성공으로 처리
+    //         }
+
+    //         Debug.Log($"💧 WaterRush 미션 결과: {(missionResult ? "성공" : "실패")}");
+
+    //         // WaterRush 상태 초기화
+    //         WaterCollisionHandler.missionCompleted = false;
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("⚠️ 미션 결과를 찾을 수 없습니다. 실패로 처리합니다.");
+    //         missionResult = false;
+    //     }
+
+    //     // 미션 완료 처리
+    //     OnMissionCompleted(missionResult);
+    // }
     public void ReturnFromMission()
     {
         bool missionResult = false;
+        bool resultFound = false;
+
+        Debug.Log("=== ReturnFromMission 디버그 시작 ===");
+        
+        // 현재 씬 이름으로 미션 타입 확인
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        Debug.Log($"현재 씬: {currentScene}");
+
+        // BasGameManager.MissionResult 상태 확인
+        Debug.Log($"BasGameManager.MissionResult: {(BasGameManager.MissionResult.HasValue ? BasGameManager.MissionResult.Value.ToString() : "null")}");
+        Debug.Log($"WaterCollisionHandler.missionCompleted: {WaterCollisionHandler.missionCompleted}");
 
         // 미션1(Basketball) 결과 확인
         if (BasGameManager.MissionResult.HasValue)
         {
             missionResult = BasGameManager.MissionResult.Value;
-            Debug.Log($"🏀 Basketball 미션 결과: {(missionResult ? "성공" : "실패")}");
+            resultFound = true;
+            Debug.Log($"🏀 Basketball/기타 미션 결과: {(missionResult ? "성공" : "실패")}");
             
             // 결과 초기화
             BasGameManager.MissionResult = null;
@@ -220,28 +306,35 @@ public class MissionManager : MonoBehaviour
         // 미션2(WaterRush) 결과 확인  
         else if (WaterCollisionHandler.missionCompleted)
         {
-            // WaterRush는 BasGameManager.MissionResult도 사용하므로 우선 확인
-            if (BasGameManager.MissionResult.HasValue)
-            {
-                missionResult = BasGameManager.MissionResult.Value;
-                BasGameManager.MissionResult = null;
-            }
-            else
-            {
-                // fallback: missionCompleted만 true인 경우 (구체적 성공/실패 불명)
-                missionResult = true; // 일단 성공으로 처리
-            }
-            
-            Debug.Log($"💧 WaterRush 미션 결과: {(missionResult ? "성공" : "실패")}");
+            missionResult = true; // WaterCollisionHandler.missionCompleted가 true면 성공
+            resultFound = true;
+            Debug.Log($"💧 WaterRush 미션 결과: 성공 (missionCompleted=true)");
             
             // WaterRush 상태 초기화
             WaterCollisionHandler.missionCompleted = false;
         }
-        else
+        
+        // 결과를 찾지 못한 경우의 처리 개선
+        if (!resultFound)
         {
-            Debug.LogWarning("⚠️ 미션 결과를 찾을 수 없습니다. 실패로 처리합니다.");
-            missionResult = false;
+            Debug.LogWarning("⚠️ 미션 결과를 찾을 수 없습니다!");
+            Debug.Log("씬 기반으로 기본 결과 설정 시도...");
+            
+            // 씬 이름으로 기본 결과 설정 (임시 방편)
+            if (currentScene.Contains("Basketball") || currentScene.Contains("Mission"))
+            {
+                missionResult = true; // 일단 성공으로 처리 (디버깅용)
+                Debug.Log("🔧 농구/기타 미션 - 임시로 성공 처리");
+            }
+            else
+            {
+                missionResult = false;
+                Debug.Log("🔧 알 수 없는 미션 - 실패 처리");
+            }
         }
+
+        Debug.Log($"최종 미션 결과: {(missionResult ? "성공" : "실패")}");
+        Debug.Log("=== OnMissionCompleted 호출 ===");
 
         // 미션 완료 처리
         OnMissionCompleted(missionResult);
@@ -271,27 +364,27 @@ public class MissionManager : MonoBehaviour
     private Vector2Int GetTileCoordsFromIndex(int tileIndex)
     {
         // GameManager의 실제 타일 이름을 기반으로 좌표 매핑
-        if (GameManager.Instance == null) 
+        if (GameManager.Instance == null)
         {
             Debug.LogError("GameManager.Instance가 null입니다");
             return new Vector2Int(-1, -1);
         }
-        
+
         string[] tileNames = GameManager.Instance.GetAllTileNames();
         if (tileIndex < 0 || tileIndex >= tileNames.Length)
         {
             Debug.LogError($"잘못된 타일 인덱스: {tileIndex}");
             return new Vector2Int(-1, -1);
         }
-        
+
         string tileName = tileNames[tileIndex];
         Vector2Int coords = GameManager.Instance.GetBingoCoordinatesForTile(tileName);
-        
+
         if (coords.x == -1)
         {
             Debug.LogWarning($"타일 '{tileName}'에 대한 빙고 좌표를 찾을 수 없습니다");
         }
-        
+
         return coords;
     }
 

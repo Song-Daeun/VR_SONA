@@ -196,31 +196,50 @@ public class GameManager : MonoBehaviour
         
         // 현재 씬이 메인 게임 씬인지 확인
         string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (currentScene != "MainGameScene") // 여기서 "MainGameScene"을 실제 메인 씬 이름으로 변경
+        if (currentScene != "MainGameScene 1") // 여기서 "MainGameScene"을 실제 메인 씬 이름으로 변경
         {
             Debug.Log($"메인 씬이 아닌 곳에서 SpellBook 이벤트 차단: {currentScene}");
             ResetTurnState();
             return;
         }
         
-        // 🆕 현재 타일이 정말 SpellBook인지 재확인
+        // 현재 타일이 정말 SpellBook인지 재확인
         if (GetCurrentTileName() != "SpellBook")
         {
             Debug.Log($"현재 타일이 SpellBook이 아님: {GetCurrentTileName()} - 이벤트 차단");
             ResetTurnState();
             return;
         }
-        
+
         if (SpellBookManager.Instance != null)
         {
             SpellBookManager.Instance.ResetSpellBookState();
-            SpellBookManager.Instance.ActivateSpellBook();
+            // SpellBookManager.Instance.ActivateSpellBook();
 
-            SpellBookManager.Instance.OnSpellBookSuccess(); // SpellBook 성공 처리
+            // SpellBookManager.Instance.OnSpellBookSuccess(); // SpellBook 성공 처리
+            StartCoroutine(ActivateSpellBookAfterDelay());
         }
         else
         {
             Debug.LogError("SpellBookManager.Instance를 찾을 수 없습니다");
+        }
+
+        ResetTurnState();
+    }
+
+    // 수정중 
+    private IEnumerator ActivateSpellBookAfterDelay()
+    {
+        // 한 프레임 대기
+        yield return null;
+
+        Debug.Log("SpellBook 활성화 시도 시작");
+
+        if (SpellBookManager.Instance != null)
+        {
+            SpellBookManager.Instance.ActivateSpellBook();
+            SpellBookManager.Instance.OnSpellBookSuccess();
+            Debug.Log("SpellBook 활성화 및 성공 처리 완료");
         }
 
         ResetTurnState();
@@ -330,7 +349,8 @@ public class GameManager : MonoBehaviour
     private void ProcessMissionRejection()
     {
         Debug.Log("미션 거절됨 - 다음 턴으로 진행합니다");
-        StartTurn();
+        // StartTurn();
+        ActivateDiceUI();
     }
 
     // 코인 관리 시스템 
@@ -554,7 +574,7 @@ public class GameManager : MonoBehaviour
         
         Debug.Log($"총 완성된 빙고 줄 수: {totalCompletedLines}/8");
         
-        return totalCompletedLines >= 1;
+        return totalCompletedLines >= 2;
     }
 
     private int CountCompletedHorizontalLines()

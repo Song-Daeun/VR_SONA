@@ -33,8 +33,9 @@ public class BGMSceneController : MonoBehaviour
                 SwitchToBGM(bgmBasketball);
                 break;
 
-            case "MainGameScene":
-            case "InteractionScene":
+            // case "MainGameScene":
+            case "MainGameScene 1":
+            // case "InteractionScene":
                 SwitchToBGM(bgmMain);
                 break;
         }

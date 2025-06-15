@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour
     public float teleportDuration = 0.1f; // 텔레포트용 빠른 이동
 
     [Header("Landing Settings")]
-    public float heightOffset = 9.0f;
+    public float heightOffset = 1.6f;
     public LayerMask groundLayerMask = -1;
     public float raycastDistance = 10.0f;
 
