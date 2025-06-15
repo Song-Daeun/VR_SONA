@@ -192,20 +192,32 @@ public class SpellBookManager : MonoBehaviour
         }
     }
 
+    private bool isSpellBookBuildingConstructed = false; // 건물 건설 여부 추적을 위한 변수 추가
+
     private void TriggerSpellBookBuildingConstruction()
     {
+        // 이미 건물이 지어졌다면 건설 건너뛰기
+        if (isSpellBookBuildingConstructed)
+        {
+            Debug.Log("🔮 SpellBook 건물이 이미 건설되어 있습니다.");
+            return;
+        }
+
         if (BingoBoard.Instance != null && PlayerState.LastEnteredTileCoords.x != -1)
         {
             Vector2Int coords = PlayerState.LastEnteredTileCoords;
             
-            Debug.Log($"🔮 SpellBook 건물 건설: 좌표 ({coords.x}, {coords.y})");
+            Debug.Log($"SpellBook 건물 최초 건설: 좌표 ({coords.x}, {coords.y})");
             
             // 빙고 보드에 성공 표시 및 건물 건설
             BingoBoard.Instance.OnMissionSuccess(coords.x, coords.y);
+            
+            // 건물 건설 완료 표시
+            isSpellBookBuildingConstructed = true;
         }
         else
         {
-            Debug.LogError("❌ BingoBoard 또는 플레이어 위치 정보가 없어 건물 건설 실패");
+            Debug.LogError("BingoBoard 또는 플레이어 위치 정보가 없어 건물 건설 실패");
         }
     }
 
