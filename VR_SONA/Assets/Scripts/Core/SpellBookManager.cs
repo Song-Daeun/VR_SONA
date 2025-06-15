@@ -20,6 +20,10 @@ public class SpellBookManager : MonoBehaviour
     private SpellBookState currentState = SpellBookState.Inactive;
     private bool isInMissionScene = false; // 미션 씬 상태 추적
     private string lastActivatedScene = ""; // 마지막 활성화된 씬 추적
+    
+    // ★ 핵심 추가: 영구적인 완료 상태 추적
+    private bool hasEverBeenUsed = false; // 게임 세션 중 한 번이라도 사용했는지
+    private bool isSpellBookBuildingConstructed = false; // 건물 건설 여부 추적
 
     private void Awake()
     {
@@ -58,26 +62,24 @@ public class SpellBookManager : MonoBehaviour
             // 미션 씬에서는 SpellBook 강제 비활성화
             ForceDeactivateSpellBook();
         }
-        // 메인 씬 복귀 감지 (더 포괄적으로)
+        // 메인 씬 복귀 감지
         else if (sceneName == "MainGameScene 1")
         {
             if (isInMissionScene)
             {
-                Debug.Log($"메인 씬 복귀 감지: {sceneName} - SpellBook 상태 리셋");
+                Debug.Log($"메인 씬 복귀 감지: {sceneName}");
                 isInMissionScene = false;
-                // 메인 씬 복귀 시 상태 완전 리셋
-                ResetSpellBookState();
+                // ★ 중요: 메인 씬 복귀 시에는 완료 상태를 유지하되, 진행 상태만 리셋
+                if (hasEverBeenUsed)
+                {
+                    currentState = SpellBookState.Completed; // 이미 사용된 상태로 유지
+                    Debug.Log("SpellBook 이미 사용됨 - Completed 상태 유지");
+                }
+                else
+                {
+                    currentState = SpellBookState.Inactive; // 아직 사용 안했으면 Inactive
+                }
             }
-            else
-            {
-                Debug.Log($"메인 씬 로드 감지 (미션 복귀 아님): {sceneName}");
-            }
-        }
-        // DiceScene 언로드 후에도 미션 상태 리셋
-        else if (sceneName != "DiceScene" && isInMissionScene)
-        {
-            Debug.Log($"기타 씬 로드 감지 - 미션 상태 리셋: {sceneName}");
-            isInMissionScene = false;
         }
     }
 
@@ -95,10 +97,14 @@ public class SpellBookManager : MonoBehaviour
         }
     }
 
-    // 🆕 SpellBook 강제 비활성화 메서드
+    // SpellBook 강제 비활성화 메서드
     private void ForceDeactivateSpellBook()
     {
-        currentState = SpellBookState.Inactive;
+        // ★ 상태는 건드리지 않고 UI만 닫기
+        if (currentState == SpellBookState.EffectInProgress)
+        {
+            currentState = SpellBookState.Inactive; // 진행 중이었다면 중단
+        }
         
         // UI 강제 닫기
         if (UIManager.Instance != null)
@@ -112,13 +118,22 @@ public class SpellBookManager : MonoBehaviour
         Debug.Log("SpellBook 강제 비활성화 완료");
     }
 
-    // SpellBook 상태 완전 리셋
+    // ★ 수정: SpellBook 상태 리셋 메서드 (완료 상태는 유지)
     public void ResetSpellBookState()
     {
-        currentState = SpellBookState.Inactive;
+        // ★ hasEverBeenUsed는 리셋하지 않음 (영구 기록)
+        if (hasEverBeenUsed)
+        {
+            currentState = SpellBookState.Completed; // 이미 사용했다면 완료 상태 유지
+        }
+        else
+        {
+            currentState = SpellBookState.Inactive; // 아직 사용 안했다면 비활성
+        }
+        
         lastActivatedScene = "";
         
-        Debug.Log("SpellBook 상태 완전 리셋 완료");
+        Debug.Log($"SpellBook 상태 리셋 완료 - hasEverBeenUsed: {hasEverBeenUsed}, currentState: {currentState}");
     }
 
     // 강제 미션 상태 리셋 (외부에서 호출 가능)
@@ -130,12 +145,13 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // 메인 활성화 로직 (단순화)
+    // 메인 활성화 로직 (수정됨)
     // ================================ //
     public void ActivateSpellBook()
     {
         Debug.Log($"=== ActivateSpellBook 호출됨 ===");
         Debug.Log($"현재 상태: {currentState}");
+        Debug.Log($"hasEverBeenUsed: {hasEverBeenUsed}");
         Debug.Log($"isInMissionScene: {isInMissionScene}");
         
         // 미션 씬에서는 차단
@@ -155,8 +171,18 @@ public class SpellBookManager : MonoBehaviour
             return;
         }
         
-        // 상태에 따른 처리
+        // ★ 수정된 상태별 분기 처리
         Debug.Log($"상태별 분기 처리 시작: {currentState}");
+        
+        // ★ 핵심 수정: hasEverBeenUsed를 우선 체크
+        if (hasEverBeenUsed)
+        {
+            Debug.Log("이미 사용된 SpellBook - 재방문 메시지 표시");
+            ShowAlreadyUsedMessage();
+            return;
+        }
+        
+        // ★ 아직 사용되지 않은 경우에만 상태에 따른 처리
         switch (currentState)
         {
             case SpellBookState.Inactive:
@@ -165,8 +191,7 @@ public class SpellBookManager : MonoBehaviour
                 break;
                 
             case SpellBookState.Completed:
-                Debug.Log("재방문 처리 시작");
-                // 이미 완료된 경우 - "이미 사용함" 메시지 표시 후 바로 다음 턴
+                Debug.Log("재방문 처리 시작 (상태는 Completed이지만 hasEverBeenUsed는 false - 이상한 상황)");
                 ShowAlreadyUsedMessage();
                 break;
                 
@@ -198,7 +223,10 @@ public class SpellBookManager : MonoBehaviour
             if (hasWon)
             {
                 Debug.Log("🎉 빙고 완성! 스펠북 효과 건너뛰고 즉시 게임 종료");
-                // 상태 변경하지 않고 바로 게임 종료 
+                
+                // ★ 사용됨 표시
+                hasEverBeenUsed = true;
+                currentState = SpellBookState.Completed;
                 
                 // 게임 승리 처리
                 if (GameEndManager.Instance != null)
@@ -318,13 +346,15 @@ public class SpellBookManager : MonoBehaviour
     }
     
     // ================================ //
-    // 스펠북 완료 처리 (통합)
+    // 스펠북 완료 처리 (통합) - 수정됨
     // ================================ //
     private void CompleteSpellBook()
     {
+        // ★ 핵심 수정: 영구 사용 표시
+        hasEverBeenUsed = true;
         currentState = SpellBookState.Completed;
         
-        Debug.Log("스펠북 완료 - 게임 진행");
+        Debug.Log($"스펠북 완료 - 영구 사용 표시: hasEverBeenUsed = {hasEverBeenUsed}");
 
         // 다음 턴 시작 (승리하지 않은 경우에만 여기까지 옴)
         StartNextTurn();
@@ -393,8 +423,6 @@ public class SpellBookManager : MonoBehaviour
             Debug.LogError("GameManager.Instance가 null!");
         }
     }
-
-    private bool isSpellBookBuildingConstructed = false; // 건물 건설 여부 추적을 위한 변수 추가
 
     private void TriggerSpellBookBuildingConstruction()
     {
@@ -503,23 +531,15 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // 디버그용
+    // 디버그용 상태 확인 메서드 추가
     // ================================ //
-//     void Update()
-//     {
-// #if UNITY_EDITOR
-//         // 디버그용: S 키로 스펠북 테스트 (메인 씬에서만)
-//         if (Input.GetKeyDown(KeyCode.S) && !isInMissionScene)
-//         {
-//             ActivateSpellBook();
-//         }
-        
-//         // 디버그용: 현재 상태 출력
-//         if (Input.GetKeyDown(KeyCode.P))
-//         {
-//             string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-//             Debug.Log($"🔍 SpellBook 상태 - State: {currentState}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
-//         }
-// #endif
-//     }
+    public void DebugCurrentState()
+    {
+        Debug.Log($"=== SpellBook 디버그 상태 ===");
+        Debug.Log($"currentState: {currentState}");
+        Debug.Log($"hasEverBeenUsed: {hasEverBeenUsed}");
+        Debug.Log($"isInMissionScene: {isInMissionScene}");
+        Debug.Log($"isSpellBookBuildingConstructed: {isSpellBookBuildingConstructed}");
+        Debug.Log($"lastActivatedScene: {lastActivatedScene}");
+    }
 }
