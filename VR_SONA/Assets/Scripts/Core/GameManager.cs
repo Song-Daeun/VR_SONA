@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
 
         if (SpellBookManager.Instance != null)
         {
-            // 🔥 단순히 활성화만 호출 - 완료 처리는 SpellBookManager가 자체적으로 처리
+            // 단순히 활성화만 호출 - 완료 처리는 SpellBookManager가 자체적으로 처리
             SpellBookManager.Instance.ActivateSpellBook();
         }
         else
@@ -475,16 +475,47 @@ public class GameManager : MonoBehaviour
     {
         RestorePlayerPositionAfterMission();
         
+        // 미션 완료 후 SpellBook 미션 상태 강제 리셋
+        if (SpellBookManager.Instance != null)
+        {
+            SpellBookManager.Instance.ForceMissionStateReset();
+        }
+        
+        bool gameEnded = false; // 게임 종료 여부 추적
+        
         if (missionSuccessful)
         {
             ProcessSuccessfulMission();
+            
+            // 승리로 게임이 종료되었는지 확인
+            if (PlayerState.IsGameEnded())
+            {
+                gameEnded = true;
+            }
         }
         else
         {
             ProcessFailedMission();
         }
 
-        StartTurn(); // 미션 결과와 관계없이 다음 턴 시작
+        // 게임이 종료되지 않았다면 코인 부족 확인
+        if (!gameEnded)
+        {
+            // 미션 완료 후 코인 부족 확인
+            if (!HasSufficientCoinsForMission())
+            {
+                Debug.Log("미션 완료 후 코인 부족 감지 - 게임 종료");
+                
+                if (GameEndManager.Instance != null)
+                {
+                    GameEndManager.Instance.EndGameDueToCoinLack();
+                    return; // 게임 종료이므로 StartTurn 호출하지 않음
+                }
+            }
+            
+            // 승리도 안하고 코인도 충분하다면 다음 턴 시작
+            StartTurn();
+        }
     }
 
     private void ProcessSuccessfulMission()
@@ -499,7 +530,7 @@ public class GameManager : MonoBehaviour
             if (CheckForBingoCompletion())
             {
                 ProcessGameSuccess();
-                return; 
+                return; // 승리 시 여기서 return으로 함수 종료
             }
         }
         else
