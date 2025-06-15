@@ -145,6 +145,8 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   - {fileID: -944628639613478452, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
+  - {fileID: 2254618445481795051, guid: 89831c608b6eaed4fa29e8404bd6c4df, type: 2}
+  - {fileID: 1016246875491515814, guid: 2411955d6398c814ebfeecf5adbfdc62, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -165,8 +167,8 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.DefaultCompany.VRSONA
-    Standalone: com.DefaultCompany.VRSONA
+    Android: com.VRSONA.VRSONA
+    Standalone: com.VRSONA.VRSONA
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -435,7 +437,7 @@ PlayerSettings:
     m_GraphicsJobMode: 0
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: AndroidPlayer
-    m_APIs: 0b000000
+    m_APIs: 15000000
     m_Automatic: 0
   - m_BuildTarget: iOSSupport
     m_APIs: 10000000

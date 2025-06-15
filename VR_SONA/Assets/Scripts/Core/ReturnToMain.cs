@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MissionReturnButton : MonoBehaviour
+public class ReturnToMain : MonoBehaviour
 {
     // ================================ //
     // 돌아가기 버튼 처리

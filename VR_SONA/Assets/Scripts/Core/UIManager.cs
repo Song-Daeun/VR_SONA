@@ -330,29 +330,101 @@ public class UIManager : MonoBehaviour
     //         }
     //     }
     // }
+    // public void ShowDiceUI(bool show)
+    // {
+    //     if (!show)
+    //     {
+    //         diceGroup.SetActive(false);
+    //         return;
+    //     }
+
+    //     // 간단한 차단 로직
+    //     if (DiceManager.Instance?.IsDiceSceneLoaded() == true) return;
+    //     if (isInMission) return;
+
+    //     // 카메라 찾기 (한 번만)
+    //     if (cameraTransform == null)
+    //         cameraTransform = Camera.main?.transform ?? FindObjectOfType<Camera>()?.transform;
+
+    //     if (cameraTransform == null)
+    //     {
+    //         Debug.LogError("카메라를 찾을 수 없습니다!");
+    //         return;
+    //     }
+
+    //     // 플레이어 앞 2미터, 위로 0.5미터 위치에 배치
+    //     Vector3 targetPos = cameraTransform.position 
+    //                     + cameraTransform.forward * 7f 
+    //                     + Vector3.up * 0.5f;
+
+    //     diceGroup.transform.position = targetPos;
+    //     Vector3 lookDirection = targetPos - cameraTransform.position;
+    //     diceGroup.transform.rotation = Quaternion.LookRotation(lookDirection);
+    //     diceGroup.SetActive(true);
+    // }
+    public void ResetMissionState()
+    {
+        Debug.Log("=== UIManager 미션 상태 리셋 ===");
+        Debug.Log($"이전 isInMission: {isInMission}");
+        Debug.Log($"이전 diceUIWasActiveBeforeMission: {diceUIWasActiveBeforeMission}");
+        
+        isInMission = false;
+        diceUIWasActiveBeforeMission = false;
+        
+        Debug.Log($"리셋 후 isInMission: {isInMission}");
+        Debug.Log("UIManager 미션 상태 리셋 완료");
+    }
+
+    // ShowDiceUI 메서드도 디버깅 강화
     public void ShowDiceUI(bool show)
     {
+        Debug.Log($"=== ShowDiceUI 호출: show = {show} ===");
+        Debug.Log($"현재 isInMission: {isInMission}");
+        Debug.Log($"DiceManager?.IsDiceSceneLoaded(): {DiceManager.Instance?.IsDiceSceneLoaded()}");
+        
         if (!show)
         {
-            diceGroup.SetActive(false);
+            if (diceGroup != null)
+            {
+                diceGroup.SetActive(false);
+                Debug.Log("주사위 UI 비활성화");
+            }
             return;
         }
 
-        // 간단한 차단 로직
-        if (DiceManager.Instance?.IsDiceSceneLoaded() == true) return;
-        if (isInMission) return;
+        // 차단 조건 상세 체크
+        if (DiceManager.Instance?.IsDiceSceneLoaded() == true)
+        {
+            Debug.Log("❌ DiceScene이 로드되어 있어서 주사위 UI 표시 차단");
+            return;
+        }
+        
+        if (isInMission)
+        {
+            Debug.Log("❌ 미션 진행 중(isInMission=true)이어서 주사위 UI 표시 차단");
+            return;
+        }
 
-        // 카메라 찾기 (한 번만)
+        // diceGroup 존재 확인
+        if (diceGroup == null)
+        {
+            Debug.LogError("❌ diceGroup이 null입니다!");
+            return;
+        }
+
+        Debug.Log("✅ 모든 조건 통과 - 주사위 UI 활성화 진행");
+
+        // 카메라 찾기
         if (cameraTransform == null)
             cameraTransform = Camera.main?.transform ?? FindObjectOfType<Camera>()?.transform;
 
         if (cameraTransform == null)
         {
-            Debug.LogError("카메라를 찾을 수 없습니다!");
+            Debug.LogError("❌ 카메라를 찾을 수 없습니다!");
             return;
         }
 
-        // 플레이어 앞 2미터, 위로 0.5미터 위치에 배치
+        // UI 위치 설정 및 활성화
         Vector3 targetPos = cameraTransform.position 
                         + cameraTransform.forward * 7f 
                         + Vector3.up * 0.5f;
@@ -361,6 +433,8 @@ public class UIManager : MonoBehaviour
         Vector3 lookDirection = targetPos - cameraTransform.position;
         diceGroup.transform.rotation = Quaternion.LookRotation(lookDirection);
         diceGroup.SetActive(true);
+        
+        Debug.Log($"✅ 주사위 UI 활성화 완료 - 위치: {targetPos}");
     }
 
     // ShowMissionPrompt 메소드도 수정해서 확실하게 차단
@@ -378,7 +452,7 @@ public class UIManager : MonoBehaviour
                     diceGroup.SetActive(false);
                     Debug.Log("미션 프롬프트 표시로 인해 주사위 UI 숨김");
                 }
-                
+
                 if (cameraTransform != null)
                 {
                     PositionUIInFrontOfCamera(missionPromptGroup.transform, missionUIDistance, missionUIHeightOffset);
