@@ -109,17 +109,17 @@ public class WaterCollisionHandler : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            float currentTime = Time.time - startTime;
-            Debug.Log($"[WaterCollision] === 현재 상태 ===");
-            Debug.Log($"경과 시간: {currentTime:F2}초");
-            Debug.Log($"미션 완료: {missionCompleted}");
-            Debug.Log($"SUCCESS 활성화: {successText.activeInHierarchy}");
-            Debug.Log($"FAIL 활성화: {failText.activeInHierarchy}");
-            Debug.Log($"실패 타이머 실행 중: {failCoroutine != null}");
-        }
-    }
+    // void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.P))
+    //     {
+    //         float currentTime = Time.time - startTime;
+    //         Debug.Log($"[WaterCollision] === 현재 상태 ===");
+    //         Debug.Log($"경과 시간: {currentTime:F2}초");
+    //         Debug.Log($"미션 완료: {missionCompleted}");
+    //         Debug.Log($"SUCCESS 활성화: {successText.activeInHierarchy}");
+    //         Debug.Log($"FAIL 활성화: {failText.activeInHierarchy}");
+    //         Debug.Log($"실패 타이머 실행 중: {failCoroutine != null}");
+    //     }
+    // }
 }

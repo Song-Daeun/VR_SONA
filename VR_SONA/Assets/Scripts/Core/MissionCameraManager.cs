@@ -79,7 +79,7 @@ public class MissionCameraManager : MonoBehaviour
     {
         // UIScene에서 XR Origin (XR Rig) 직접 찾기
         // UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("UIScene");
-        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("MainGameScene");
+        UnityEngine.SceneManagement.Scene uiScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("MainGameScene 1");
         
         if (uiScene.isLoaded)
         {

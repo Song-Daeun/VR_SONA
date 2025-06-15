@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class GameEndManager : MonoBehaviour
 {
@@ -448,28 +449,28 @@ public class GameEndManager : MonoBehaviour
             gameEndCanvas.SetActive(false);
     }
 
-#if UNITY_EDITOR
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            EndGameDueToCoinLack();
-        }
+// #if UNITY_EDITOR
+//     void Update()
+//     {
+//         if (Input.GetKeyDown(KeyCode.F1))
+//         {
+//             EndGameDueToCoinLack();
+//         }
         
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            EndGameDueToTimeUp();
-        }
+//         if (Input.GetKeyDown(KeyCode.F2))
+//         {
+//             EndGameDueToTimeUp();
+//         }
         
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            EndGameDueToSuccess();
-        }
+//         if (Input.GetKeyDown(KeyCode.F3))
+//         {
+//             EndGameDueToSuccess();
+//         }
 
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            PlayerState.LogCurrentState();
-        }
-    }
-#endif
+//         if (Input.GetKeyDown(KeyCode.F4))
+//         {
+//             PlayerState.LogCurrentState();
+//         }
+//     }
+// #endif
 }

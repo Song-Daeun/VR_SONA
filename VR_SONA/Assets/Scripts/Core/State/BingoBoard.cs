@@ -301,25 +301,25 @@ public class BingoBoard : MonoBehaviour
     // 디버그 및 테스트
     // ================================ //
     // 테스트용: B 키 누르면 현재 플레이어 위치에 건물 생성
-    void Update()
-    {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Debug.Log("🔍 B 키 눌림 감지됨!");
+//     void Update()
+//     {
+// #if UNITY_EDITOR
+//         if (Input.GetKeyDown(KeyCode.B))
+//         {
+//             Debug.Log("🔍 B 키 눌림 감지됨!");
 
-            Vector2Int coords = GetPlayerTileCoords();
-            if (coords.x == -1)
-            {
-                Debug.LogWarning("🚫 플레이어가 타일 위에 없음");
-                return;
-            }
+//             Vector2Int coords = GetPlayerTileCoords();
+//             if (coords.x == -1)
+//             {
+//                 Debug.LogWarning("🚫 플레이어가 타일 위에 없음");
+//                 return;
+//             }
 
-            GameObject tileGO = coordToTile[coords];
-            Debug.Log("🎯 타일 찾음: " + tileGO.name);
-            SetBuildingPrefabFromTile(tileGO, coords.x, coords.y);
-            OnMissionSuccess(coords.x, coords.y);
-        }
-#endif
-    }
+//             GameObject tileGO = coordToTile[coords];
+//             Debug.Log("🎯 타일 찾음: " + tileGO.name);
+//             SetBuildingPrefabFromTile(tileGO, coords.x, coords.y);
+//             OnMissionSuccess(coords.x, coords.y);
+//         }
+// #endif
+//     }
 }

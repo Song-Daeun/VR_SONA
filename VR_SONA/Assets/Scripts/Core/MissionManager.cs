@@ -17,17 +17,23 @@ public class MissionManager : MonoBehaviour
     public GameObject missionCanvas;
 
     // 타일별 미션 타입 매핑 (이미지 기준)
-    private readonly int[] tileMissionTypes = {
-        1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
-        2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
-        2, 1      // Suncheon(미션2), Egypt(미션1)
-    };
+    // private readonly int[] tileMissionTypes = {
+    //     1, 2, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+    //     2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+    //     2, 1      // Suncheon(미션2), Egypt(미션1)
+    // };
 
     // private readonly int[] tileMissionTypes = {
     //     2, 2, 2,  // Netherlands(미션1), Germany(미션2), USA(미션1)
     //     2, 2, 2,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
     //     2, 2      // Suncheon(미션2), Egypt(미션1)
     // };
+
+    private readonly int[] tileMissionTypes = {
+        1, 1, 1,  // Netherlands(미션1), Germany(미션2), USA(미션1)
+        1, 1, 1,  // SpellBook(미션2), Japan(미션2), Seoul(미션2)
+        1, 1      // Suncheon(미션2), Egypt(미션1)
+    };
 
     // ================================ //
     // 미션 결과 저장용 변수
@@ -292,27 +298,27 @@ public class MissionManager : MonoBehaviour
     // ================================ //
     // 디버그용 메소드
     // ================================ //
-    void Update()
-    {
-#if UNITY_EDITOR
-        // 디버그용: M 키로 현재 미션 상태 출력
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            Debug.Log($"🔍 현재 미션 타일 인덱스: {currentMissionTileIndex}");
+//     void Update()
+//     {
+// #if UNITY_EDITOR
+//         // 디버그용: M 키로 현재 미션 상태 출력
+//         if (Input.GetKeyDown(KeyCode.M))
+//         {
+//             Debug.Log($"🔍 현재 미션 타일 인덱스: {currentMissionTileIndex}");
             
-            if (BingoBoard.Instance != null)
-            {
-                // 모든 타일의 미션 완료 상태 출력
-                for (int x = 0; x < 3; x++)
-                {
-                    for (int y = 0; y < 3; y++)
-                    {
-                        bool isCleared = BingoBoard.Instance.IsTileMissionCleared(x, y);
-                        Debug.Log($"📋 타일 ({x}, {y}): {(isCleared ? "완료" : "미완료")}");
-                    }
-                }
-            }
-        }
-#endif
-    }
+//             if (BingoBoard.Instance != null)
+//             {
+//                 // 모든 타일의 미션 완료 상태 출력
+//                 for (int x = 0; x < 3; x++)
+//                 {
+//                     for (int y = 0; y < 3; y++)
+//                     {
+//                         bool isCleared = BingoBoard.Instance.IsTileMissionCleared(x, y);
+//                         Debug.Log($"📋 타일 ({x}, {y}): {(isCleared ? "완료" : "미완료")}");
+//                     }
+//                 }
+//             }
+//         }
+// #endif
+//     }
 }
