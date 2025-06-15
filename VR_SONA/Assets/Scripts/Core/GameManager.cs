@@ -27,17 +27,23 @@ public class GameManager : MonoBehaviour
         "Egypt"      
     };
 
+    // ================================ //
     // 게임 상태 추적 변수들
+    // ================================ //
     private int currentTileIndex = -1; // 현재 위치: -1=Start타일, 0~7=일반타일들
     private int currentCoins;          // 현재 보유 코인 수
     private bool isDiceRolling = false; // 주사위 굴리는 중인지 확인
 
+    // ================================ //
     // 미션 시스템을 위한 플레이어 위치 백업 시스템
+    // ================================ //
     private Vector3 playerPositionBeforeMission;    
     private Quaternion playerRotationBeforeMission; 
     private bool hasStoredPlayerPosition = false;   
 
+    // ================================ //
     // 빙고 좌표 매핑 
+    // ================================ //
     private System.Collections.Generic.Dictionary<string, Vector2Int> tileToCoords = 
         new System.Collections.Generic.Dictionary<string, Vector2Int>()
     {
@@ -51,6 +57,9 @@ public class GameManager : MonoBehaviour
         { "Egypt", new Vector2Int(2, 1) }       
     };
 
+    // ================================ //
+    // Unity 생명주기
+    // ================================ //
     private void Awake()
     {
         if (Instance == null)
@@ -75,6 +84,18 @@ public class GameManager : MonoBehaviour
         InitializeGameSystems();
     }
     
+    private void OnDestroy()
+    {
+        // 메모리 누수 방지
+        PlayerManager.OnTileArrived -= OnTileArrivedEvent;
+        PlayerManager.OnSpellBookTileArrived -= OnSpellBookArrivedEvent;
+        
+        Debug.Log("GameManager 이벤트 구독 해제 완료");
+    }
+
+    // ================================ //
+    // 게임 시스템 초기화
+    // ================================ //
     private void InitializeGameSystems()
     {
         Debug.Log("게임 시스템 초기화 시작");
@@ -107,7 +128,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // ================================ //
     // 턴 관리 시스템 
+    // ================================ //
     public void StartTurn()
     {
         Debug.Log("새로운 턴 시작 - 주사위를 굴려주세요");
@@ -132,7 +155,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 공통 상태 초기화 메서드 
+    private void ResetTurnState()
+    {
+        isDiceRolling = false;
+        Debug.Log("턴 상태 초기화 완료");
+    }
+
+    // ================================ //
     // 주사위 결과 처리 시스템 (DiceManager에서 호출)
+    // ================================ //
     public void OnDiceRolled(int diceResult)
     {
         Debug.Log($"OnDiceRolled 호출됨 - 주사위 결과: {diceResult} ===");
@@ -164,6 +196,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // ================================ //
+    // 타일 도착 이벤트 처리 시스템
+    // ================================ //
     // 모든 타일 도착 처리를 통합
     private void OnTileArrivedEvent(string tileName, int tileIndex)
     {
@@ -189,7 +224,7 @@ public class GameManager : MonoBehaviour
         ResetTurnState();
     }
 
-    // SpellBookTile 이벤트 처리
+    // SpellBookTile 이벤트 처리 (개선됨)
     private void OnSpellBookArrivedEvent()
     {
         Debug.Log("이벤트: SpellBook 타일 도착 알림 ===");
@@ -213,33 +248,12 @@ public class GameManager : MonoBehaviour
 
         if (SpellBookManager.Instance != null)
         {
-            SpellBookManager.Instance.ResetSpellBookState();
-            // SpellBookManager.Instance.ActivateSpellBook();
-
-            // SpellBookManager.Instance.OnSpellBookSuccess(); // SpellBook 성공 처리
-            StartCoroutine(ActivateSpellBookAfterDelay());
+            // 🔥 단순히 활성화만 호출 - 완료 처리는 SpellBookManager가 자체적으로 처리
+            SpellBookManager.Instance.ActivateSpellBook();
         }
         else
         {
             Debug.LogError("SpellBookManager.Instance를 찾을 수 없습니다");
-        }
-
-        ResetTurnState();
-    }
-
-    // 수정중 
-    private IEnumerator ActivateSpellBookAfterDelay()
-    {
-        // 한 프레임 대기
-        yield return null;
-
-        Debug.Log("SpellBook 활성화 시도 시작");
-
-        if (SpellBookManager.Instance != null)
-        {
-            SpellBookManager.Instance.ActivateSpellBook();
-            SpellBookManager.Instance.OnSpellBookSuccess();
-            Debug.Log("SpellBook 활성화 및 성공 처리 완료");
         }
 
         ResetTurnState();
@@ -266,15 +280,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("미션 선택 프롬프트 표시 시작");
         ShowMissionSelectionPrompt();
     }
-    
-    private void OnDestroy()
-    {
-        // 메모리 누수 방지
-        PlayerManager.OnTileArrived -= OnTileArrivedEvent;
-        PlayerManager.OnSpellBookTileArrived -= OnSpellBookArrivedEvent;
-        
-        Debug.Log("GameManager 이벤트 구독 해제 완료");
-    }
 
     private void ShowMissionSelectionPrompt()
     {
@@ -293,14 +298,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 공통 상태 초기화 메서드 
-    private void ResetTurnState()
-    {
-        isDiceRolling = false;
-        Debug.Log("턴 상태 초기화 완료");
-    }
-
+    // ================================ //
     // 미션 수락/거절 처리 시스템 
+    // ================================ //
     public void OnMissionDecisionMade(bool missionAccepted)
     {
         Debug.Log($"미션 결정 - 수락: {missionAccepted}");
@@ -353,7 +353,9 @@ public class GameManager : MonoBehaviour
         ActivateDiceUI();
     }
 
+    // ================================ //
     // 코인 관리 시스템 
+    // ================================ //
     public int GetCurrentCoins()
     {
         return currentCoins;
@@ -416,7 +418,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // ================================ //
     // 플레이어 위치 백업/복구 시스템 
+    // ================================ //
     private void BackupPlayerPositionForMission()
     {
         GameObject targetObject = FindPlayerObjectForBackup();
@@ -464,7 +468,9 @@ public class GameManager : MonoBehaviour
         return GameObject.Find("Player");
     }
 
+    // ================================ //
     // 미션 결과 처리 시스템
+    // ================================ //
     public void OnMissionResult(bool missionSuccessful)
     {
         RestorePlayerPositionAfterMission();
@@ -507,7 +513,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("미션 실패! 다음 턴으로 진행합니다");
     }
 
+    // ================================ //
     // 텔레포트 시스템 (SpellBook에서 사용)
+    // ================================ //
     public void TeleportToTile(int targetTileIndex)
     {
         if (targetTileIndex < 0 || targetTileIndex >= tileNames.Length)
@@ -556,7 +564,9 @@ public class GameManager : MonoBehaviour
         Debug.Log($"{tileNames[targetIndex]}에 텔레포트 완료!");
     }
 
+    // ================================ //
     // 빙고 완성 체크 시스템 
+    // ================================ //
     public bool CheckForBingoCompletion()
     {
         // 기존 코드 그대로 사용하되, public으로 변경하여 GameEndManager에서도 사용 가능하게 함
@@ -677,7 +687,9 @@ public class GameManager : MonoBehaviour
         return isCompleted;
     }
 
+    // ================================ //
     // 시간 제한 시스템
+    // ================================ //
     public void OnTimeUp()
     {
         Debug.Log("게임 시간이 만료되었습니다!");
@@ -751,7 +763,9 @@ public class GameManager : MonoBehaviour
         );
     }
 
+    // ================================ //
     // 디버그 시스템 
+    // ================================ //
 //     void Update()
 //     {
 // #if UNITY_EDITOR
@@ -783,7 +797,9 @@ public class GameManager : MonoBehaviour
 //     }
 // #endif
 
+    // ================================ //
     // 공개 접근자 메서드들 
+    // ================================ //
     public string GetCurrentTileName()
     {
         if (currentTileIndex == -1)

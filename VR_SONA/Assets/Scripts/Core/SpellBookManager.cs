@@ -8,8 +8,16 @@ public class SpellBookManager : MonoBehaviour
     [Header("Settings")]
     public float resultDisplayTime = 5f;
     
-    // 중복 호출 방지용 변수들 강화
-    private bool isSpellBookActive = false;
+    // 상태를 더 명확하게 관리
+    public enum SpellBookState
+    {
+        Inactive,           // 비활성
+        FirstVisit,         // 첫 방문 (효과 발동)
+        EffectInProgress,   // 효과 진행 중
+        Completed           // 완료됨
+    }
+    
+    private SpellBookState currentState = SpellBookState.Inactive;
     private bool isInMissionScene = false; // 미션 씬 상태 추적
     private string lastActivatedScene = ""; // 마지막 활성화된 씬 추적
 
@@ -61,7 +69,7 @@ public class SpellBookManager : MonoBehaviour
     // 🆕 SpellBook 강제 비활성화 메서드
     private void ForceDeactivateSpellBook()
     {
-        isSpellBookActive = false;
+        currentState = SpellBookState.Inactive;
         
         // UI 강제 닫기
         if (UIManager.Instance != null)
@@ -78,114 +86,218 @@ public class SpellBookManager : MonoBehaviour
     // SpellBook 상태 완전 리셋
     public void ResetSpellBookState()
     {
-        isSpellBookActive = false;
+        currentState = SpellBookState.Inactive;
         lastActivatedScene = "";
         
         Debug.Log("SpellBook 상태 완전 리셋 완료");
     }
 
     // ================================ //
-    // 스펠북 활성화 (수정된 중복 호출 방지)
+    // 메인 활성화 로직 (단순화)
     // ================================ //
-    public bool hasSpellBookActivatedOnce = false;
-
     public void ActivateSpellBook()
     {
-        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
-        if (isInMissionScene || currentScene == "MissionBasketballScene" || currentScene == "MissionWaterRushScene")
+        // 미션 씬에서는 차단
+        if (isInMissionScene) return;
+        
+        // 현재 타일이 SpellBook이 아니면 차단
+        if (GameManager.Instance?.GetCurrentTileName() != "SpellBook") return;
+        
+        // 상태에 따른 처리
+        switch (currentState)
         {
-            Debug.Log($"미션 씬에서 SpellBook 활성화 시도 차단: {currentScene}");
-            return;
+            case SpellBookState.Inactive:
+                StartFirstVisit();
+                break;
+                
+            case SpellBookState.Completed:
+                // 이미 완료된 경우 - "이미 사용함" 메시지 표시 후 바로 다음 턴
+                ShowAlreadyUsedMessage();
+                break;
+                
+            default:
+                // 효과 진행 중이면 무시
+                Debug.Log("스펠북 효과 진행 중 - 중복 호출 무시");
+                break;
         }
-
-        if (isSpellBookActive && lastActivatedScene == currentScene)
+    }
+    
+    // ================================ //
+    // 첫 방문 시 효과 발동
+    // ================================ //
+    private void StartFirstVisit()
+    {
+        currentState = SpellBookState.EffectInProgress;
+        
+        Debug.Log("스펠북 첫 방문 - 효과 발동");
+        
+        // 🔥 1단계: 먼저 건물 건설 처리
+        TriggerSpellBookBuildingConstruction();
+        
+        // UI 표시
+        if (UIManager.Instance != null)
         {
-            Debug.Log($"같은 씬에서 SpellBook 중복 활성화 차단: {currentScene}");
-            return;
+            UIManager.Instance.ShowSpellBookUI(true);
         }
-
-        if (GameManager.Instance != null)
+        
+        // 랜덤 효과 선택
+        bool isAirplane = Random.Range(0, 2) == 0;
+        
+        if (isAirplane)
         {
-            string currentTileName = GameManager.Instance.GetCurrentTileName();
-            if (currentTileName != "SpellBook")
-            {
-                Debug.Log($"현재 타일이 SpellBook이 아님: {currentTileName} - 활성화 차단");
-                return;
-            }
-        }
-
-        if (!hasSpellBookActivatedOnce)
-        {     
-            // 처음 방문 시 - 기존 코드 그대로 유지
-            StopAllCoroutines();
-            isSpellBookActive = true;
-            lastActivatedScene = currentScene;
-
-            Debug.Log($"스펠북 최초 활성화! (씬: {currentScene})");
-
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.ShowSpellBookUI(true);
-            }
-
-            bool isAirplane = Random.Range(0, 2) == 0;
-
-            if (isAirplane)
-            {
-                ShowAirplaneEffect();
-            }
-            else
-            {
-                ShowTimeBonus();
-            }
-            hasSpellBookActivatedOnce = true;
+            StartAirplaneEffect();
         }
         else
         {
-            Debug.Log($"이미 스펠북에 한 번 이상 접근 - 바로 주사위씬으로 이동");
-            
-            // UI가 떠있다면 닫기
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.ShowSpellBookUI(false);
-            }
-
-            // 주사위 씬으로 직접 이동하지 않고 OnSpellBookSuccess 호출
-            OnSpellBookSuccess();
+            StartTimeBonusEffect();
         }
     }
-
-    public void OnSpellBookSuccess()
+    
+    // ================================ //
+    // 비행기 효과 (사용자 선택 필요)
+    // ================================ //
+    private void StartAirplaneEffect()
     {
-        Debug.Log("마법서 미션 성공 처리!");
-
+        Debug.Log("비행기 효과 시작");
+        
+        StartCoroutine(AirplaneEffectFlow());
+    }
+    
+    private IEnumerator AirplaneEffectFlow()
+    {
+        // 1단계: "비행기!" 메시지 표시
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowSpellBookResult("비행기!");
+        }
+        
+        yield return new WaitForSeconds(2f);
+        
+        // 2단계: 타일 선택 패널 표시
+        if (UIManager.Instance != null)
+        {
+            bool[] tileStates = GetTileStates();
+            UIManager.Instance.ShowSpellBookAirplanePanel();
+            UIManager.Instance.UpdateSpellBookTileButtons(tileStates, OnTileSelected);
+        }
+        
+        // 여기서는 턴을 끝내지 않음 - 사용자 선택을 기다림
+    }
+    
+    private void OnTileSelected(int buttonIndex)
+    {
+        // 타일 선택 완료
+        int x = buttonIndex / 3;
+        int y = buttonIndex % 3;
+        string targetTileName = BingoBoard.GetTileNameByCoords(x, y);
+        
+        Debug.Log($"타일 선택됨: {targetTileName}");
+        
+        // UI 닫기
+        CloseSpellBookUI();
+        
+        // 텔레포트 실행
+        TeleportPlayerToTile(targetTileName);
+        
+        // 스펠북 완료 처리
+        CompleteSpellBook();
+    }
+    
+    // ================================ //
+    // 시간 보너스 효과 (자동 완료)
+    // ================================ //
+    private void StartTimeBonusEffect()
+    {
+        Debug.Log("시간 보너스 효과 시작");
+        
+        StartCoroutine(TimeBonusEffectFlow());
+    }
+    
+    private IEnumerator TimeBonusEffectFlow()
+    {
+        // 1단계: "+30초" 메시지 표시
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowSpellBookResult("+30초");
+        }
+        
+        // 2단계: 실제 시간 추가
+        AddGameTime(30f);
+        
+        // 3단계: 표시 시간 대기
+        yield return new WaitForSeconds(resultDisplayTime);
+        
+        // 4단계: UI 닫기 및 완료 처리
+        CloseSpellBookUI();
+        CompleteSpellBook();
+    }
+    
+    // ================================ //
+    // 스펠북 완료 처리 (통합)
+    // ================================ //
+    private void CompleteSpellBook()
+    {
+        currentState = SpellBookState.Completed;
+        
+        Debug.Log("스펠북 완료 - 게임 진행");
+        
+        // 🔥 건물 건설은 StartFirstVisit에서 이미 처리했으므로 여기서는 제거
+        
+        // 승리 조건 확인
         if (GameManager.Instance != null)
         {
-            // 빙고 보드 업데이트 (건물 건설)
-            TriggerSpellBookBuildingConstruction();
-            
-            // 승리 조건 확인
             bool hasWon = GameManager.Instance.CheckForBingoCompletion();
             if (hasWon)
             {
-                // 게임 승리 처리
-                if (GameEndManager.Instance != null)
-                {
-                    GameEndManager.Instance.EndGameDueToSuccess();
-                    return; // 게임 종료이므로 StartTurn 호출 안 함
-                }
+                GameEndManager.Instance?.EndGameDueToSuccess();
+                return;
             }
-            
-            // 다음 턴 시작 (딜레이 추가)
-            StartCoroutine(StartTurnWithDelay());
+        }
+        
+        // 다음 턴 시작
+        StartNextTurn();
+    }
+    
+    // 이미 완료된 스펠북에 재방문 시 - "이미 사용함" 메시지 표시
+    private void ShowAlreadyUsedMessage()
+    {
+        Debug.Log("이미 완료된 스펠북 - '이미 사용함' 메시지 표시");
+        
+        StartCoroutine(ShowAlreadyUsedFlow());
+    }
+    
+    private IEnumerator ShowAlreadyUsedFlow()
+    {
+        // UI 표시
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowSpellBookUI(true);
+            UIManager.Instance.ShowSpellBookResult("이미 사용함");
+        }
+        
+        // 3초간 메시지 표시
+        yield return new WaitForSeconds(3f);
+        
+        // UI 닫기
+        CloseSpellBookUI();
+        
+        // 다음 턴 시작
+        StartNextTurn();
+    }
+    
+    // ================================ //
+    // UI 정리 및 턴 시작
+    // ================================ //
+    private void CloseSpellBookUI()
+    {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowSpellBookUI(false);
         }
     }
-
-    // 새로 추가: 딜레이 후 턴 시작
-    private IEnumerator StartTurnWithDelay()
+    
+    private void StartNextTurn()
     {
-        yield return new WaitForSeconds(0.5f);
         if (GameManager.Instance != null)
         {
             GameManager.Instance.StartTurn();
@@ -222,60 +334,6 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // 시간 보너스 효과
-    // ================================ //
-    private void ShowTimeBonus()
-    {
-        Debug.Log("시간 보너스 효과 발동!");
-        
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.ShowSpellBookResult("+30초");
-            Debug.Log("UIManager.ShowSpellBookResult() 호출됨");
-        }
-        else
-        {
-            Debug.LogError("UIManager.Instance가 null입니다!");
-        }
-        
-        AddGameTime(30f);
-        StartCoroutine(CloseSpellBookAfterDelay());
-    }
-
-    // ================================ //
-    // 비행기 효과 (텔레포트)
-    // ================================ //
-    private void ShowAirplaneEffect()
-    {
-        Debug.Log("비행기 효과 발동!");
-        
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.ShowSpellBookResult("비행기!");
-            Debug.Log("UIManager.ShowSpellBookResult() 호출됨 (비행기)");
-        }
-        else
-        {
-            Debug.LogError("UIManager.Instance가 null입니다!");
-        }
-        
-        StartCoroutine(ShowAirplanePanelAfterDelay());
-    }
-
-    private IEnumerator ShowAirplanePanelAfterDelay()
-    {           
-        yield return new WaitForSeconds(2f);
-        
-        if (UIManager.Instance != null)
-        {
-
-            bool[] tileStates = GetTileStates();
-            UIManager.Instance.ShowSpellBookAirplanePanel();
-            UIManager.Instance.UpdateSpellBookTileButtons(tileStates, OnTileButtonClicked);
-        }
-    }
-
-    // ================================ //
     // 타일 상태 확인
     // ================================ //
     private bool[] GetTileStates()
@@ -304,18 +362,6 @@ public class SpellBookManager : MonoBehaviour
         }
         
         return tileStates;
-    }
-
-    private void OnTileButtonClicked(int buttonIndex)
-    {
-        int x = buttonIndex / 3;
-        int y = buttonIndex % 3;
-        string targetTileName = BingoBoard.GetTileNameByCoords(x, y);
-        
-        Debug.Log($"✈️ {targetTileName} 타일로 텔레포트!");
-        
-        CloseSpellBook();
-        TeleportPlayerToTile(targetTileName);
     }
 
     // ================================ //
@@ -367,33 +413,6 @@ public class SpellBookManager : MonoBehaviour
     }
 
     // ================================ //
-    // UI 닫기 (수정됨)
-    // ================================ //
-    private IEnumerator CloseSpellBookAfterDelay()
-    {
-        yield return new WaitForSeconds(resultDisplayTime);
-        CloseSpellBook();
-        
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.StartTurn();
-        }
-    }
-
-    private void CloseSpellBook()
-    {
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.ShowSpellBookUI(false);
-        }
-        
-        // 🆕 상태 리셋 시 씬 정보도 함께 업데이트
-        isSpellBookActive = false;
-        
-        Debug.Log("스펠북 UI 닫힘");
-    }
-
-    // ================================ //
     // 디버그용
     // ================================ //
 //     void Update()
@@ -409,7 +428,7 @@ public class SpellBookManager : MonoBehaviour
 //         if (Input.GetKeyDown(KeyCode.P))
 //         {
 //             string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-//             Debug.Log($"🔍 SpellBook 상태 - Active: {isSpellBookActive}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
+//             Debug.Log($"🔍 SpellBook 상태 - State: {currentState}, InMission: {isInMissionScene}, Scene: {currentScene}, LastScene: {lastActivatedScene}");
 //         }
 // #endif
 //     }
