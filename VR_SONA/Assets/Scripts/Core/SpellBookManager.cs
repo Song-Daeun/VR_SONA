@@ -121,7 +121,7 @@ public class SpellBookManager : MonoBehaviour
         Debug.Log("SpellBook 상태 완전 리셋 완료");
     }
 
-    // 🔥 강제 미션 상태 리셋 (외부에서 호출 가능)
+    // 강제 미션 상태 리셋 (외부에서 호출 가능)
     public void ForceMissionStateReset()
     {
         Debug.Log("=== ForceMissionStateReset 호출 ===");
@@ -187,11 +187,33 @@ public class SpellBookManager : MonoBehaviour
         
         Debug.Log("스펠북 첫 방문 - 효과 발동");
         
-        // 🔥 1단계: 먼저 건물 건설 처리
+        // 1단계: 먼저 건물 건설 처리
         Debug.Log("건물 건설 처리 시작");
         TriggerSpellBookBuildingConstruction();
         
-        // UI 표시
+        // 2단계: 건물 건설 후 즉시 승리 조건 확인
+        if (GameManager.Instance != null)
+        {
+            bool hasWon = GameManager.Instance.CheckForBingoCompletion();
+            if (hasWon)
+            {
+                Debug.Log("🎉 빙고 완성! 스펠북 효과 건너뛰고 즉시 게임 종료");
+                // 상태 변경하지 않고 바로 게임 종료 
+                
+                // 게임 승리 처리
+                if (GameEndManager.Instance != null)
+                {
+                    GameEndManager.Instance.EndGameDueToSuccess();
+                }
+                return; // 여기서 바로 종료, 효과 진행하지 않음
+            }
+            else
+            {
+                Debug.Log("아직 빙고 미완성 - 스펠북 효과 계속 진행");
+            }
+        }
+        
+        // 3단계: 승리하지 않았다면 UI 표시 및 효과 진행
         if (UIManager.Instance != null)
         {
             Debug.Log("SpellBook UI 표시");
@@ -303,21 +325,8 @@ public class SpellBookManager : MonoBehaviour
         currentState = SpellBookState.Completed;
         
         Debug.Log("스펠북 완료 - 게임 진행");
-        
-        // 🔥 건물 건설은 StartFirstVisit에서 이미 처리했으므로 여기서는 제거
-        
-        // 승리 조건 확인
-        if (GameManager.Instance != null)
-        {
-            bool hasWon = GameManager.Instance.CheckForBingoCompletion();
-            if (hasWon)
-            {
-                GameEndManager.Instance?.EndGameDueToSuccess();
-                return;
-            }
-        }
-        
-        // 다음 턴 시작
+
+        // 다음 턴 시작 (승리하지 않은 경우에만 여기까지 옴)
         StartNextTurn();
     }
     
