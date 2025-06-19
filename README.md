@@ -128,6 +128,7 @@ Mission 2인 워터러시 게임에서는 키보드 스페이스키와 컨트롤
 | 게임 성공 | 코인 부족 | 시간 초과 |
 |:---:|:---:|:---:|
 |<img src="https://github.com/user-attachments/assets/14411d1a-ade2-4f94-a546-a14f566aee5e" width="80%">|<img src="https://github.com/user-attachments/assets/9fa68059-330e-423e-9232-c62ffc9a2783" width="80%">|<img src="https://github.com/user-attachments/assets/a6fb639d-f4a9-4f0d-9cca-daed0f00eb6d" width="80%">|
+
 빙고를 완성하는 데에 성공하게 되면 성공을 알려주는 패널이 표시된다. 코인을 다 소모하여 미션에 더 이상 참가할 수 없거나, 제한 시간 8분을 넘겼을 경우 게임에 실패했다는 패널이 표시된다. 다시 시작 버튼을 클릭하면 게임을 재시작할 수 있으며, 나가기를 누르면 게임이 종료된다.
 
 ## Role Distribution
