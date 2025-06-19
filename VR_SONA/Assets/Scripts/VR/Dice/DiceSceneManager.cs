@@ -54,65 +54,37 @@ public class DiceSceneManager : MonoBehaviour
             Debug.Log("DiceSceneManager 콜백 설정 완료");
         }
     }
-
-    // PlayerManager 받아와서 씬 초기화화
+    
     public void InitializeScene(PlayerManager player)
     {
         playerManager = player;
         AlignSceneToPlayer();
-        
+
         if (showDebugLogs)
         {
             Debug.Log("DiceScene 초기화 완료");
         }
     }
-
-    // 플레이어 위치에 맞춰 주사위 씬을 정렬
-    // public void AlignSceneToPlayer()
-    // {
-    //     if (planeBottomTransform == null || rootGroupToMove == null || playerManager == null)
-    //     {
-    //         Debug.LogWarning("AlignSceneToPlayer(): 필요한 참조가 없음");
-    //         return;
-    //     }
-    //     Vector3 playerFeet = playerManager.transform.position;
-    //     Vector3 planeBottomPos = planeBottomTransform.position;
-    //     Vector3 offset = playerFeet - planeBottomPos;
-    //     Rigidbody[] rigidbodies = rootGroupToMove.GetComponentsInChildren<Rigidbody>();
-    //     foreach (var rb in rigidbodies)
-    //         rb.isKinematic = true;
-    //     rootGroupToMove.position += offset;
-    //     StartCoroutine(ReenableRigidbodies(rigidbodies));
-    //     Vector3 planeTop = planeBottomTransform.position + Vector3.up * 0.05f;
-    //     Vector3 current = playerManager.transform.position;
-    //     Vector3 adjusted = new Vector3(current.x, planeTop.y, current.z);
-    //     playerManager.transform.position = adjusted;
-    //     Debug.Log($"Plane 정렬 + 플레이어 위치 완료: {adjusted}");
-    // }
+    
     public void AlignSceneToPlayer()
     {
         // XR Origin 찾기
         GameObject xrOrigin = GameObject.Find("XR Origin (XR Rig)");
         if (xrOrigin == null || planeBottomTransform == null || rootGroupToMove == null)
         {
-            Debug.LogWarning("필요한 참조가 없음");
             return;
         }
-        
+
         Vector3 playerFeet = xrOrigin.transform.position;
         Vector3 planeBottomPos = planeBottomTransform.position;
         Vector3 offset = playerFeet - planeBottomPos;
-        
-        // 리지드바디 처리
+
         Rigidbody[] rigidbodies = rootGroupToMove.GetComponentsInChildren<Rigidbody>();
         foreach (var rb in rigidbodies)
             rb.isKinematic = true;
-        
+
         rootGroupToMove.position += offset;
         StartCoroutine(ReenableRigidbodies(rigidbodies));
-        
-        // 플레이어 위치는 변경하지 않음
-        Debug.Log($"주사위 씬을 XR Origin 위치로 정렬 완료: {playerFeet}");
     }
 
     private IEnumerator ReenableRigidbodies(Rigidbody[] rigidbodies)
@@ -130,14 +102,12 @@ public class DiceSceneManager : MonoBehaviour
     // DiceScene 초기 설정 
     private void InitializeDiceScene()
     {
-        // 주사위 초기 위치 저장 
         if (diceRigidbody != null)
         {
             diceInitialPosition = diceRigidbody.transform.position;
             diceInitialRotation = diceRigidbody.transform.rotation;
         }
 
-        // 카메라 자동 연결
         if (diceDetector != null && diceDetector.playerCamera == null)
         {
             Camera mainCamera = Camera.main;
@@ -145,7 +115,6 @@ public class DiceSceneManager : MonoBehaviour
                 diceDetector.playerCamera = mainCamera;
         }
 
-        // 초기 UI 메시지 표시
         if (resultUI != null)
         {
             resultUI.ShowCustomMessage("주사위를 굴려주세요");
@@ -159,7 +128,6 @@ public class DiceSceneManager : MonoBehaviour
 
     void Update()
     {
-        // 사용자가 주사위를 잡으면 감지 활성화
         if (!isDetectionActivated && grabInteractable != null && grabInteractable.isSelected)
             ActivateDiceDetection();
 
@@ -168,16 +136,11 @@ public class DiceSceneManager : MonoBehaviour
         CheckDiceState();
     }
 
-    /// <summary>
-    /// 주사위의 물리 상태를 지속적으로 모니터링합니다.
-    /// 주사위가 멈췄는지, 다시 굴러가기 시작했는지 등을 감지합니다.
-    /// </summary>
     private void CheckDiceState()
     {
         float velocity = diceRigidbody.velocity.magnitude;
         float angularVelocity = diceRigidbody.angularVelocity.magnitude;
 
-        // 주사위가 다시 움직이기 시작하면 결과 UI 숨기기
         if (velocity > minVelocityThreshold && isResultDisplayed)
         {
             HideResultUI();
@@ -222,9 +185,6 @@ public class DiceSceneManager : MonoBehaviour
         isProcessingResult = false;
     }
 
-    /// <summary>
-    /// 주사위가 멈췄을 때 결과를 감지하고 표시합니다.
-    /// </summary>
     private void ShowDiceResult()
     {
         if (diceDetector == null || resultUI == null) return;
@@ -238,24 +198,20 @@ public class DiceSceneManager : MonoBehaviour
 
         if (showDebugLogs)
         {
-            Debug.Log($"🎲 주사위 결과 감지: {result}");
+            Debug.Log($"주사위 결과 감지: {result}");
         }
 
         // 결과 처리 시작
         OnDiceResultDetected(result);
     }
 
-    /// <summary>
-    /// 주사위 결과가 확정되었을 때 호출됩니다.
-    /// 전체 게임 플로우를 관리하는 핵심 메소드입니다.
-    /// </summary>
     public void OnDiceResultDetected(int result)
     {
         if (isProcessingResult)
         {
             if (showDebugLogs)
             {
-                Debug.LogWarning("⚠️ 이미 결과 처리 중입니다.");
+                Debug.LogWarning("이미 결과 처리 중입니다.");
             }
             return;
         }
@@ -264,18 +220,13 @@ public class DiceSceneManager : MonoBehaviour
         StartCoroutine(HandleDiceResultFlow(result));
     }
 
-    /// <summary>
-    /// 주사위 결과부터 플레이어 이동, 미션 표시까지의 전체 흐름을 관리합니다.
-    /// 이 코루틴이 게임의 턴 진행을 담당하는 핵심 로직입니다.
-    /// </summary>
     private IEnumerator HandleDiceResultFlow(int result)
     {
         if (showDebugLogs)
         {
-            Debug.Log($"🎮 게임 플로우 시작 - 주사위 결과: {result}");
+            Debug.Log($"게임 플로우 시작 - 주사위 결과: {result}");
         }
 
-        // 1단계: 결과 UI 표시
         if (resultUI != null)
         {
             resultUI.ShowResult(result, null);
@@ -283,23 +234,21 @@ public class DiceSceneManager : MonoBehaviour
             yield return new WaitForSeconds(totalUITime + uiDisplayDelay);
         }
 
-        // 2단계: 외부 콜백 호출 (주로 GameManager에게 결과 전달)
         if (onDiceResultCallback != null)
         {
             onDiceResultCallback.Invoke(result);
             
             if (showDebugLogs)
             {
-                Debug.Log($"📞 결과 콜백 호출됨: {result}");
+                Debug.Log($"결과 콜백 호출됨: {result}");
             }
         }
 
-        // 3단계: 플레이어 이동 처리
         if (playerManager != null)
         {
             if (showDebugLogs)
             {
-                Debug.Log("🚶 플레이어 이동 시작");
+                Debug.Log("플레이어 이동 시작");
             }
             
             playerManager.MovePlayer(result);
@@ -311,48 +260,33 @@ public class DiceSceneManager : MonoBehaviour
                 
                 if (showDebugLogs)
                 {
-                    Debug.Log("✅ 플레이어 이동 완료");
+                    Debug.Log("플레이어 이동 완료");
                 }
             }
         }
         else
         {
-            Debug.LogError("❌ PlayerManager가 설정되지 않았습니다!");
+            Debug.LogError("PlayerManager가 설정되지 않았습니다!");
         }
 
-        // 4단계: 씬 완료 콜백 호출
         if (onDiceSceneCompleteCallback != null)
         {
             onDiceSceneCompleteCallback.Invoke();
             
             if (showDebugLogs)
             {
-                Debug.Log("📞 씬 완료 콜백 호출됨");
+                Debug.Log("씬 완료 콜백 호출됨");
             }
         }
-
-        // 5단계: 미션 메시지 표시 (PlayerManager를 통해)
-        // if (playerManager != null)
-        // {
-        //     playerManager.ShowMissionMessage();
-            
-        //     if (showDebugLogs)
-        //     {
-        //         Debug.Log("📋 미션 메시지 표시됨");
-        //     }
-        // }
 
         isProcessingResult = false;
         
         if (showDebugLogs)
         {
-            Debug.Log("🎮 게임 플로우 완료");
+            Debug.Log("게임 플로우 완료");
         }
     }
 
-    /// <summary>
-    /// 주사위를 초기 위치로 리셋합니다.
-    /// </summary>
     public void ResetDice()
     {
         if (diceRigidbody == null) return;
@@ -367,7 +301,7 @@ public class DiceSceneManager : MonoBehaviour
 
         if (showDebugLogs)
         {
-            Debug.Log("🔄 주사위 리셋 완료");
+            Debug.Log("주사위 리셋 완료");
         }
     }
 
@@ -381,27 +315,19 @@ public class DiceSceneManager : MonoBehaviour
         isDetectionActivated = false;
     }
 
-    /// <summary>
-    /// 사용자가 주사위를 잡았을 때 감지를 활성화합니다.
-    /// </summary>
     public void ActivateDiceDetection()
     {
         if (showDebugLogs)
-            Debug.Log("🎯 주사위 감지 활성화 - 사용자가 주사위를 잡음");
+            Debug.Log("주사위 감지 활성화 - 사용자가 주사위를 잡음");
         
         isDetectionActivated = true;
     }
 
-    // ========================================
-    // 상태 확인 메소드들 (외부에서 상태 조회용)
-    // ========================================
+    // 상태 확인 메소드들 
     public bool IsProcessingResult() => isProcessingResult;
     public bool IsRolling() => isRolling;
     public bool IsResultShown() => resultShown;
 
-    /// <summary>
-    /// 강제로 결과 처리를 중단합니다. (긴급 상황용)
-    /// </summary>
     public void ForceStopResultProcessing()
     {
         StopAllCoroutines();
@@ -410,25 +336,19 @@ public class DiceSceneManager : MonoBehaviour
         
         if (showDebugLogs)
         {
-            Debug.Log("⛔ 결과 처리 강제 중단됨");
+            Debug.Log("결과 처리 강제 중단됨");
         }
     }
 
-    // ========================================
-    // 설정 조정 메소드들
-    // ========================================
+
     public void SetUIDisplayDelay(float delay) => uiDisplayDelay = Mathf.Max(0f, delay);
     public void SetMoveCompleteDelay(float delay) => moveCompleteDelay = Mathf.Max(0f, delay);
 
-    /// <summary>
-    /// 뒤로가기 버튼이 눌렸을 때 호출됩니다.
-    /// DiceResultUI에서 호출하거나 외부에서 강제 종료할 때 사용합니다.
-    /// </summary>
     public void OnBackButtonPressed()
     {
         if (showDebugLogs)
         {
-            Debug.Log("🔙 뒤로가기 버튼 눌림 - 씬 종료 요청");
+            Debug.Log("뒤로가기 버튼 눌림 - 씬 종료 요청");
         }
 
         // 진행 중인 작업이 있으면 중단
@@ -437,7 +357,7 @@ public class DiceSceneManager : MonoBehaviour
             ForceStopResultProcessing();
         }
 
-        // 씬 완료 콜백 호출 (DiceManager가 씬을 언로드하도록)
+        // 씬 완료 콜백 호출
         if (onDiceSceneCompleteCallback != null)
         {
             onDiceSceneCompleteCallback.Invoke();

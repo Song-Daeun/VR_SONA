@@ -7,7 +7,7 @@ public class StartScenePlayer : MonoBehaviour
 {
     [Header("씬별 XR Origin 관리")]
     public bool destroyOnSceneChange = true;  // 씬 전환시 이 XR Origin 제거 여부
-    public string[] scenesToDestroyIn = { "MainGameScene 1" };  // 제거할 씬 목록
+    public string[] scenesToDestroyIn = { "MainGameScene" };
     
     private void Start()
     {
@@ -16,17 +16,13 @@ public class StartScenePlayer : MonoBehaviour
     }
     
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.Log($"씬 로드됨: {scene.name}");
-        
+    {        
         if (destroyOnSceneChange)
         {
-            // 지정된 씬에서 이 XR Origin 제거
             foreach (string sceneName in scenesToDestroyIn)
             {
                 if (scene.name == sceneName)
                 {
-                    Debug.Log($"씬 '{scene.name}'에서 StartScene XR Origin 제거");
                     Destroy(gameObject);
                     return;
                 }
@@ -36,7 +32,6 @@ public class StartScenePlayer : MonoBehaviour
     
     private void OnDestroy()
     {
-        // 이벤트 구독 해제
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

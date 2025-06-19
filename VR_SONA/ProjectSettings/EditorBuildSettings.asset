@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/StartScene.unity
     guid: c78ac1a10171f449fb5fb574e32292cc
   - enabled: 0
@@ -24,7 +24,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MissionWaterRushScene.unity
     guid: 8b5ea052824fe4751911b5a4b954c6aa
   - enabled: 1
-    path: Assets/Scenes/MainGameScene 1.unity
+    path: Assets/Scenes/MainGameScene.unity
     guid: d343a2c4377d2c94fa3047608585ceaf
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 95958a0a35677e145b2ae0ebeb5bcce1, type: 2}

@@ -50,8 +50,6 @@ public class DiceResultDetector : MonoBehaviour
         // Grab 이벤트 등록
         if (grabInteractable != null)
             grabInteractable.selectEntered.AddListener(OnGrabbed);
-
-        // StartCoroutine(WatchDiceUntilStop());
     }
 
     private void OnGrabbed(SelectEnterEventArgs args)
@@ -117,7 +115,6 @@ public class DiceResultDetector : MonoBehaviour
         DiceSceneManager sceneManager = FindObjectOfType<DiceSceneManager>();
         if (sceneManager != null)
         {
-            Debug.Log("DiceSceneManager.OnDiceResultDetected() 호출");
             sceneManager.OnDiceResultDetected(result);
         }
     }
@@ -234,15 +231,7 @@ public class DiceResultDetector : MonoBehaviour
                 Gizmos.color = Color.blue;
                 Vector3 normal = face.faceObject.TransformDirection(Vector3.back);
                 Gizmos.DrawRay(pos, normal * 0.1f);
-
-#if UNITY_EDITOR
-                UnityEditor.Handles.color = (i == lowestFaceIndex) ? Color.red : Color.green;
-                UnityEditor.Handles.Label(pos + normal * 0.05f, face.number.ToString());
-#endif
             }
         }
-
-        Gizmos.color = Color.white;
-        Gizmos.DrawRay(transform.position, Vector3.down * 0.5f);
     }
 }

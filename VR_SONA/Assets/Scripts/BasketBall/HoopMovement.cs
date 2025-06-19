@@ -20,7 +20,7 @@ public class HoopMovement : MonoBehaviour
         if (ringTransform != null)
         {
             ringRb = ringTransform.GetComponent<Rigidbody>();
-            ringLocalOffset = ringTransform.localPosition; // 자식 위치 저장!
+            ringLocalOffset = ringTransform.localPosition;
         }
         else
         {

@@ -15,15 +15,13 @@ public class GoalTrigger : MonoBehaviour
         if (triggerType == TriggerType.Top)
         {
             passedTop = true;
-            Debug.Log("Top 통과");
         }
         else if (triggerType == TriggerType.Bottom)
         {
             if (passedTop)
             {
-                ScoreManager.Instance.AddScore(1);       // 점수 UI 반영
-                BasGameManager.Instance.AddGoal();          // 성공 조건 반영
-                Debug.Log("득점 AddGoal 호출됨");
+                ScoreManager.Instance.AddScore(1);       
+                BasGameManager.Instance.AddGoal();    
                 passedTop = false;
             }
         }

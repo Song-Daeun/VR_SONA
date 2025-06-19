@@ -6,39 +6,37 @@ using UnityEngine.InputSystem;
 
 public class GameEndManager : MonoBehaviour
 {
-    // ================================ //
     // Singleton & References
-    // ================================ //
     public static GameEndManager Instance;
 
     [Header("Game End UI Panels")]
-    public GameObject gameEndCanvas;           // 게임 종료 전체 캔버스
-    public GameObject coinLackPanel;           // 코인 부족 패널
-    public GameObject timeUpPanel;             // 시간 만료 패널
-    public GameObject successPanel;            // 성공 패널
+    public GameObject gameEndCanvas;           
+    public GameObject coinLackPanel;       
+    public GameObject timeUpPanel;             
+    public GameObject successPanel;            
 
     [Header("UI Components")]
-    public TextMeshProUGUI coinLackTitle;      // 코인 부족 제목
-    public TextMeshProUGUI coinLackMessage;    // 코인 부족 메시지
-    public TextMeshProUGUI timeUpTitle;        // 시간 만료 제목
-    public TextMeshProUGUI timeUpMessage;      // 시간 만료 메시지
-    public TextMeshProUGUI successTitle;       // 성공 제목
-    public TextMeshProUGUI successMessage;     // 성공 메시지
+    public TextMeshProUGUI coinLackTitle;      
+    public TextMeshProUGUI coinLackMessage;    
+    public TextMeshProUGUI timeUpTitle;      
+    public TextMeshProUGUI timeUpMessage;      
+    public TextMeshProUGUI successTitle;      
+    public TextMeshProUGUI successMessage;     
 
     [Header("Coin Lack Panel Buttons")]
-    public Button coinLackRestartButton;       // 코인 부족 패널 재시작 버튼
-    public Button coinLackExitButton;          // 코인 부족 패널 종료 버튼
+    public Button coinLackRestartButton;     
+    public Button coinLackExitButton;          
 
     [Header("Time Up Panel Buttons")]
-    public Button timeUpRestartButton;         // 시간 만료 패널 재시작 버튼
-    public Button timeUpExitButton;            // 시간 만료 패널 종료 버튼
+    public Button timeUpRestartButton;     
+    public Button timeUpExitButton;          
 
     [Header("Success Panel Buttons")]
-    public Button successRestartButton;        // 성공 패널 재시작 버튼
-    public Button successExitButton;           // 성공 패널 종료 버튼
+    public Button successRestartButton;       
+    public Button successExitButton;      
 
     [Header("Settings")]
-    public float panelDisplayTime = 5f;        // 패널 표시 시간
+    public float panelDisplayTime = 5f;       
 
     // 게임 종료 상태 추적
     private bool isGameEnded = false;
@@ -62,9 +60,7 @@ public class GameEndManager : MonoBehaviour
         SetupButtonEvents();
     }
 
-    // ================================ //
     // UI 초기화
-    // ================================ //
     private void InitializeGameEndUI()
     {
         // 모든 패널 비활성화
@@ -85,7 +81,6 @@ public class GameEndManager : MonoBehaviour
 
     private void SetupButtonEvents()
     {
-        // 코인 부족 패널 버튼들
         if (coinLackRestartButton != null)
         {
             coinLackRestartButton.onClick.AddListener(RestartGame);
@@ -95,7 +90,6 @@ public class GameEndManager : MonoBehaviour
             coinLackExitButton.onClick.AddListener(ExitGame);
         }
 
-        // 시간 만료 패널 버튼들
         if (timeUpRestartButton != null)
         {
             timeUpRestartButton.onClick.AddListener(RestartGame);
@@ -105,7 +99,6 @@ public class GameEndManager : MonoBehaviour
             timeUpExitButton.onClick.AddListener(ExitGame);
         }
 
-        // 성공 패널 버튼들
         if (successRestartButton != null)
         {
             successRestartButton.onClick.AddListener(RestartGame);
@@ -114,13 +107,9 @@ public class GameEndManager : MonoBehaviour
         {
             successExitButton.onClick.AddListener(ExitGame);
         }
-
-        Debug.Log("GameEndManager 버튼 이벤트 설정 완료");
     }
 
-    // ================================ //
-    // 게임 종료 시 모든 게임플레이 UI 숨기기
-    // ================================ //
+    // 게임 종료 시 모든 UI 숨기기
     private void HideAllGameplayUI()
     {
         if (UIManager.Instance != null)
@@ -128,8 +117,6 @@ public class GameEndManager : MonoBehaviour
             UIManager.Instance.ShowDiceUI(false);
             UIManager.Instance.ShowMissionPrompt(false);
             UIManager.Instance.ShowSpellBookUI(false);
-            
-            Debug.Log("모든 게임플레이 UI 숨김 처리 완료");
         }
         else
         {
@@ -137,23 +124,18 @@ public class GameEndManager : MonoBehaviour
         }
     }
 
-    // ================================ //
     // 코인 부족으로 인한 게임 종료
-    // ================================ //
     public void EndGameDueToCoinLack()
     {
         if (isGameEnded || PlayerState.IsGameEnded()) return;
 
-        // PlayerState에 게임 상태 설정
         PlayerState.SetGameFailedCoinLack();
         
-        // 모든 게임플레이 UI 숨기기
         HideAllGameplayUI();
         
         isGameEnded = true;
-        Time.timeScale = 0f; // 게임 일시정지
+        Time.timeScale = 0f;
 
-        Debug.Log("게임 종료: 코인 부족");
 
         // UI 텍스트 설정
         if (coinLackTitle != null)
@@ -169,28 +151,23 @@ public class GameEndManager : MonoBehaviour
         ShowGameEndPanel(coinLackPanel);
     }
 
-    // ================================ //
     // 시간 만료로 인한 게임 종료
-    // ================================ //
     public void EndGameDueToTimeUp()
     {
         if (isGameEnded || PlayerState.IsGameEnded()) return;
 
-        // PlayerState에 게임 상태 설정
         PlayerState.SetGameFailedTimeUp();
         
-        // 모든 게임플레이 UI 숨기기
         HideAllGameplayUI();
         
         isGameEnded = true;
-        Time.timeScale = 0f; // 게임 일시정지
+        Time.timeScale = 0f; 
 
         Debug.Log("게임 종료: 시간 만료");
 
         // 빙고 완성 여부 확인
         bool hasAchievedBingo = CheckForBingoCompletion();
 
-        // UI 텍스트 설정
         if (timeUpTitle != null)
         {
             timeUpTitle.text = hasAchievedBingo ? "시간 만료 - 부분 성공!" : "시간 만료 - 실패";
@@ -211,23 +188,17 @@ public class GameEndManager : MonoBehaviour
         ShowGameEndPanel(timeUpPanel);
     }
 
-    // ================================ //
-    // 성공으로 인한 게임 종료
-    // ================================ //
+    // 게임 성공
     public void EndGameDueToSuccess()
     {
         if (isGameEnded || PlayerState.IsGameEnded()) return;
 
-        // PlayerState에 게임 상태 설정
         PlayerState.SetGameSuccess();
         
-        // 모든 게임플레이 UI 숨기기
         HideAllGameplayUI();
         
         isGameEnded = true;
-        Time.timeScale = 0f; // 게임 일시정지
-
-        Debug.Log("게임 종료: 성공");
+        Time.timeScale = 0f; 
 
         // UI 텍스트 설정
         if (successTitle != null)
@@ -239,28 +210,26 @@ public class GameEndManager : MonoBehaviour
         ShowGameEndPanel(successPanel);
     }
 
-    // ================================ //
-    // 공통 패널 표시 메서드 (VR용으로 수정)
-    // ================================ //
+    // 공통 패널 표시
     private void ShowGameEndPanel(GameObject panel)
     {
         if (gameEndCanvas != null)
         {
             gameEndCanvas.SetActive(true);
             
-            // VR용 Canvas 설정 (UIManager 방식 참고)
+            // VR용 Canvas 설정
             Canvas canvas = gameEndCanvas.GetComponent<Canvas>();
             if (canvas != null)
             {
                 canvas.renderMode = RenderMode.WorldSpace;
                 canvas.worldCamera = FindCameraComponent();
-                canvas.sortingOrder = 1000; // 최상위에 표시
+                canvas.sortingOrder = 1000; 
                 
-                // 스케일 설정 (UIManager 참고)
+                // 스케일 설정
                 RectTransform canvasRect = gameEndCanvas.GetComponent<RectTransform>();
                 if (canvasRect != null)
                 {
-                    canvasRect.localScale = Vector3.one * 0.01f; // UIManager와 동일
+                    canvasRect.localScale = Vector3.one * 0.01f;
                 }
             }
             
@@ -273,11 +242,11 @@ public class GameEndManager : MonoBehaviour
             panel.SetActive(true);
         }
 
-        // 일정 시간 후 자동 재시작 (선택사항)
+        // 일정 시간 후 자동 재시작
         StartCoroutine(AutoRestartAfterDelay());
     }
 
-    // VR용 카메라 찾기 및 위치 설정 메서드들
+    // 카메라 찾기 및 위치 설정 메서드들
     private Camera FindCameraComponent()
     {
         Camera mainCamera = Camera.main;
@@ -290,8 +259,7 @@ public class GameEndManager : MonoBehaviour
     {
         Camera camera = FindCameraComponent();
         if (camera == null || gameEndCanvas == null) return;
-        
-        // 카메라 앞 적당한 거리에 배치 (UIManager 방식)
+
         float distance = 2f;
         Vector3 targetPos = camera.transform.position + camera.transform.forward * distance;
         targetPos.y = camera.transform.position.y; // 카메라와 같은 높이
@@ -300,18 +268,15 @@ public class GameEndManager : MonoBehaviour
         gameEndCanvas.transform.rotation = Quaternion.LookRotation(targetPos - camera.transform.position);
     }
 
-    // 나머지 메서드들은 기존과 동일...
-    
     private bool CheckForBingoCompletion()
     {
         if (BingoBoard.Instance == null)
         {
-            Debug.LogError("BingoBoard.Instance가 null입니다");
             return false;
         }
 
         int totalCompletedLines = 0;
-        
+
         for (int row = 0; row < 3; row++)
         {
             if (IsHorizontalLineCompleted(row))
@@ -319,7 +284,7 @@ public class GameEndManager : MonoBehaviour
                 totalCompletedLines++;
             }
         }
-        
+
         for (int col = 0; col < 3; col++)
         {
             if (IsVerticalLineCompleted(col))
@@ -327,19 +292,19 @@ public class GameEndManager : MonoBehaviour
                 totalCompletedLines++;
             }
         }
-        
+
         if (IsDiagonalLineCompleted(true))
         {
             totalCompletedLines++;
         }
-        
+
         if (IsDiagonalLineCompleted(false))
         {
             totalCompletedLines++;
         }
-        
+
         Debug.Log($"총 완성된 빙고 줄 수: {totalCompletedLines}/8");
-        
+
         return totalCompletedLines >= 2;
     }
 
@@ -419,8 +384,6 @@ public class GameEndManager : MonoBehaviour
 
     private void ExitGame()
     {
-        Debug.Log("게임 종료");
-        
         Time.timeScale = 1f; // 게임 시간 복구
         
         // PlayerState 리셋
@@ -448,29 +411,4 @@ public class GameEndManager : MonoBehaviour
         if (gameEndCanvas != null)
             gameEndCanvas.SetActive(false);
     }
-
-// #if UNITY_EDITOR
-//     void Update()
-//     {
-//         if (Input.GetKeyDown(KeyCode.F1))
-//         {
-//             EndGameDueToCoinLack();
-//         }
-        
-//         if (Input.GetKeyDown(KeyCode.F2))
-//         {
-//             EndGameDueToTimeUp();
-//         }
-        
-//         if (Input.GetKeyDown(KeyCode.F3))
-//         {
-//             EndGameDueToSuccess();
-//         }
-
-//         if (Input.GetKeyDown(KeyCode.F4))
-//         {
-//             PlayerState.LogCurrentState();
-//         }
-//     }
-// #endif
 }

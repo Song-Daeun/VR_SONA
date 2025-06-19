@@ -4,12 +4,12 @@ using UnityEngine;
 public class PlayerPositionSync : MonoBehaviour
 {
     [Header("동기화 설정")]
-    public Transform playerTransform; // Player 오브젝트
-    public Transform playerPositionTransform; // PlayerPosition 오브젝트
+    public Transform playerTransform; 
+    public Transform playerPositionTransform;
     
     [Header("동기화 옵션")]
     public bool syncPosition = true;
-    public bool syncRotation = false; // 회전은 보통 동기화 안 함
+    public bool syncRotation = false;
     public bool smoothSync = true;
     public float syncSpeed = 10f;
     
@@ -18,9 +18,8 @@ public class PlayerPositionSync : MonoBehaviour
 
     private void Start()
     {
-        // 컴포넌트 자동 할당
         if (playerTransform == null)
-            playerTransform = this.transform; // Player 오브젝트가 이 스크립트를 가지고 있다고 가정
+            playerTransform = this.transform; 
             
         if (playerPositionTransform == null)
             playerPositionTransform = transform.Find("PlayerPosition");
@@ -98,7 +97,6 @@ public class PlayerPositionSync : MonoBehaviour
         
         if (CanSync())
         {
-            Debug.Log($"PlayerPositionSync 초기화 완료!");
             Debug.Log($"Player: {playerTransform.name}");
             Debug.Log($"PlayerPosition: {playerPositionTransform.name}");
         }
@@ -113,22 +111,20 @@ public class PlayerPositionSync : MonoBehaviour
         }
     }
 
-    // PlayerManager가 이동을 완료했을 때 호출
+    // PlayerManager가 이동을 완료
     public void OnPlayerMovementCompleted()
     {
         if (showDebugLogs)
         {
             Debug.Log("플레이어 이동 완료 - 최종 동기화");
         }
-        
-        // 이동 완료 후 정확한 위치로 최종 동기화
+
         if (CanSync() && syncPosition)
         {
             playerTransform.position = playerPositionTransform.position;
         }
     }
 
-    // 수동으로 즉시 동기화
     public void ForceSynchronize()
     {
         if (!CanSync()) return;
@@ -142,32 +138,28 @@ public class PlayerPositionSync : MonoBehaviour
         {
             playerTransform.rotation = playerPositionTransform.rotation;
         }
-        
-        Debug.Log("강제 동기화 완료");
     }
 
-    // 동기화 활성/비활성 토글
     public void SetSyncEnabled(bool enabled)
     {
         this.enabled = enabled;
-        Debug.Log($"PlayerPositionSync {(enabled ? "활성화" : "비활성화")}");
     }
 
     // 디버그용 GUI (Scene 뷰에서 확인)
-    private void OnDrawGizmos()
-    {
-        if (!CanSync()) return;
+//     private void OnDrawGizmos()
+//     {
+//         if (!CanSync()) return;
         
-        // Player 위치 (파란색)
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(playerTransform.position, 1f);
+//         // Player 위치 (파란색)
+//         Gizmos.color = Color.blue;
+//         Gizmos.DrawWireSphere(playerTransform.position, 1f);
         
-        // PlayerPosition 위치 (빨간색)
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(playerPositionTransform.position, 1.2f);
+//         // PlayerPosition 위치 (빨간색)
+//         Gizmos.color = Color.red;
+//         Gizmos.DrawWireSphere(playerPositionTransform.position, 1.2f);
         
-        // 연결선 (노란색)
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(playerTransform.position, playerPositionTransform.position);
-    }
+//         // 연결선 (노란색)
+//         Gizmos.color = Color.yellow;
+//         Gizmos.DrawLine(playerTransform.position, playerPositionTransform.position);
+//     }
 }

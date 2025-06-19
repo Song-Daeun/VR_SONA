@@ -27,9 +27,6 @@ public class WaterJetShooter : MonoBehaviour
 
     void OnEnable()
     {
-        Debug.Log("🔥 직접 액션 만들기 시작");
-        
-        // PlayerInput 완전히 무시하고 직접 생성
         waterJetAction = new InputAction("WaterJet", InputActionType.Button);
         waterJetAction.AddBinding("<XRController>{RightHand}/primaryButton");
         waterJetAction.AddBinding("<Keyboard>/space");
@@ -37,8 +34,6 @@ public class WaterJetShooter : MonoBehaviour
         
         waterJetAction.performed += OnWaterJetPressed;
         waterJetAction.Enable();
-        
-        Debug.Log("✅ 직접 액션 생성 완료!");
     }
 
     void OnDisable()
@@ -52,7 +47,6 @@ public class WaterJetShooter : MonoBehaviour
 
     void OnWaterJetPressed(InputAction.CallbackContext ctx)
     {
-        // 미션이 완료되었으면 아무 동작도 하지 않음
         if (WaterCollisionHandler.missionCompleted)
         {
             return;
@@ -95,16 +89,14 @@ public class WaterJetShooter : MonoBehaviour
             if (rb != null)
             {
                 Vector3 forwardDir = firePoint.forward.normalized;
-                
-                // Y축 힘을 많이 줄이고 앞으로 더 강하게!
-                float verticalForce = 3.0f; // 고정값 2 (원래 5였음)
-                float horizontalForce = currentForce * 2.6f; // 앞으로 1.5배 더 강하게
+
+                float verticalForce = 3.0f; 
+                float horizontalForce = currentForce * 2.6f; 
                 
                 Vector3 forceVector = forwardDir * horizontalForce;
                 forceVector.y = verticalForce;
 
                 rb.AddForce(forceVector, ForceMode.Impulse);
-                Debug.Log($"🚀 클릭{clickCount}회: 앞={horizontalForce:F1}, 위={verticalForce}");
             }
 
             Destroy(drop, 10f);
