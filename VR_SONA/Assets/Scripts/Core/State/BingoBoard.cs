@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class BingoBoard : MonoBehaviour
 {
-    // ================================ //
-    // 변수 선언
-    // ================================ //
     [Header("Board Size")]
     public int rows = 3;
     public int cols = 3;
@@ -19,9 +16,7 @@ public class BingoBoard : MonoBehaviour
 
     public static BingoBoard Instance { get; private set; }
     
-    // ================================ //
     // 타일 그리드 구조 (공통 사용)
-    // ================================ //
     public static string[,] TileGrid = new string[3, 3]
     {
         { "Netherlands", "Germany", "USA" },
@@ -29,9 +24,6 @@ public class BingoBoard : MonoBehaviour
         { "Suncheon", "Egypt", "Start" }
     };
     
-    // ================================ //
-    // 초기화
-    // ================================ //
     void Awake()
     {
         Instance = this;
@@ -42,9 +34,7 @@ public class BingoBoard : MonoBehaviour
         InitializeTilePositions();
     }
 
-    // ================================ //
     // 타일 위치 초기화
-    // ================================ //
     private void InitializeTilePositions()
     {
         tiles = new TileData[rows, cols];
@@ -70,36 +60,27 @@ public class BingoBoard : MonoBehaviour
                     {
                         tiles[x, y].isMissionCleared = true;
                         tiles[x, y].isOccupied = true;
-                        Debug.Log($"🏠 Start 타일 ({x}, {y}): 시작부터 점령됨");
                     }
                     else
                     {
-                        // 건물 프리팹 자동 설정 (Start 타일 제외)
                         SetBuildingPrefabFromTile(go, x, y);
                     }
-
-                    Debug.Log($"✅ tilePositions[{x},{y}] = {tileName}");
                 }
                 else
                 {
-                    Debug.LogError($"❌ 타일 '{tileName}'을 찾지 못했습니다.");
+                    Debug.LogError($"타일 '{tileName}'을 찾지 못했습니다.");
                 }
             }
         }
-
-        Debug.Log("✅ 이름 기반 타일 초기화 완료");
     }
 
-    // ================================ //
     // 플레이어 가까운 타일 위치 반환 
-    // ================================ //
     public Vector2Int GetPlayerTileCoords()
     {
         GameObject player = GameObject.FindGameObjectWithTag("MainCamera");
 
         if (player == null)
         {
-            Debug.LogWarning("🚫 PlayerXR 태그가 지정된 오브젝트를 찾을 수 없습니다.");
             return new Vector2Int(-1, -1);
         }
 
@@ -130,14 +111,11 @@ public class BingoBoard : MonoBehaviour
         return closestCoord;
     }
 
-    // ================================ //
     // 미션 성공 시 해당 위치에 건물 생성
-    // ================================ //
     public void OnMissionSuccess(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
         {
-            Debug.LogError($"❌ 잘못된 좌표: ({x}, {y})");
             return;
         }
 
@@ -148,29 +126,18 @@ public class BingoBoard : MonoBehaviour
 
         if (building == null)
         {
-            Debug.LogWarning($"🚫 buildingPrefab이 설정되지 않았습니다. ({x}, {y})");
             return;
         }
 
-        // 건물 원래 위치 저장
         Vector3 targetPos = building.transform.position;
-
-        // 위에서 떨어지게 초기 위치 세팅
         building.transform.position = targetPos + Vector3.up * 10f;
-
-        // 비활성화 되어 있는 오브젝트 활성화
         building.SetActive(true);
-
-        // 디버그 출력
-        Debug.Log($"🏗 기존 건물 오브젝트 활성화됨 → 위치: {targetPos}, 이름: {building.name}");
 
         // 떨어지는 연출
         StartCoroutine(DropBuilding(building, targetPos));
     }
 
-    // ================================ //
     // 건물 생성 애니메이션
-    // ================================ //
     private IEnumerator DropBuilding(GameObject obj, Vector3 targetPos)
     {
         float time = 0f;
@@ -188,9 +155,7 @@ public class BingoBoard : MonoBehaviour
         obj.transform.position = targetPos;
     }
 
-    // ================================ //
     // 해당 타일의 국가 이름에 맞는 건물 프리팹을 자동으로 설정
-    // ================================ //
     public void SetBuildingPrefabFromTile(GameObject tileGO, int x, int y)
     {
         string countryName = tileGO.name.Replace("Tile", "");
@@ -199,11 +164,10 @@ public class BingoBoard : MonoBehaviour
         if (building != null)
         {
             tiles[x, y].buildingPrefab = building.gameObject;
-            Debug.Log($"✅ {countryName} 건물 프리팹 설정 완료 ({x}, {y})");
         }
         else
         {
-            Debug.LogWarning($"❗ '{countryName}Building' 오브젝트를 찾지 못했습니다.");
+            Debug.LogWarning($"'{countryName}Building' 오브젝트를 찾지 못했습니다.");
         }
     }
 
@@ -217,11 +181,7 @@ public class BingoBoard : MonoBehaviour
         return null;
     }
 
-    // ================================ //
-    // 공통 유틸리티 메소드
-    // ================================ //
     // 타일 이름으로 좌표 반환
-    // ================================ //
     public static Vector2Int GetTileCoordsByName(string tileName)
     {
         for (int x = 0; x < 3; x++)
@@ -234,28 +194,20 @@ public class BingoBoard : MonoBehaviour
                 }
             }
         }
-        
-        Debug.LogWarning($"⚠️ 타일 '{tileName}'의 좌표를 찾을 수 없습니다.");
         return new Vector2Int(-1, -1);
     }
 
-    // ================================ //
     // 좌표로 타일 이름 반환
-    // ================================ //
     public static string GetTileNameByCoords(int x, int y)
     {
         if (x >= 0 && x < 3 && y >= 0 && y < 3)
         {
             return TileGrid[x, y];
         }
-        
-        Debug.LogWarning($"⚠️ 잘못된 좌표: ({x}, {y})");
         return "";
     }
 
-    // ================================ //
     // 타일 상태 관리
-    // ================================ //
     public GameObject GetTileGameObject(int x, int y)
     {
         Vector2Int coord = new Vector2Int(x, y);
@@ -263,63 +215,30 @@ public class BingoBoard : MonoBehaviour
         {
             return coordToTile[coord];
         }
-
-        Debug.LogWarning($"🚫 coordToTile에 ({x}, {y}) 좌표가 없음");
         return null;
     }
 
-    // ================================ //
     // 미션 완료 상태 설정 (MissionManager에서 호출)
-    // ================================ //
     public void SetTileMissionCleared(int x, int y, bool cleared)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
         {
-            Debug.LogError($"❌ 잘못된 좌표: ({x}, {y})");
+            Debug.LogError($"잘못된 좌표: ({x}, {y})");
             return;
         }
 
         tiles[x, y].isMissionCleared = cleared;
-        Debug.Log($"💾 타일 ({x}, {y}) 미션 완료 상태: {cleared}");
+        Debug.Log($"타일 ({x}, {y}) 미션 완료 상태: {cleared}");
     }
 
-    // ================================ //
     // 미션 완료 상태 확인 (GameManager에서 호출)
-    // ================================ //
     public bool IsTileMissionCleared(int x, int y)
     {
         if (x < 0 || x >= rows || y < 0 || y >= cols)
         {
-            Debug.LogError($"❌ 잘못된 좌표: ({x}, {y})");
             return false;
         }
 
         return tiles[x, y].isMissionCleared;
     }
-
-    // ================================ //
-    // 디버그 및 테스트
-    // ================================ //
-    // 테스트용: B 키 누르면 현재 플레이어 위치에 건물 생성
-//     void Update()
-//     {
-// #if UNITY_EDITOR
-//         if (Input.GetKeyDown(KeyCode.B))
-//         {
-//             Debug.Log("🔍 B 키 눌림 감지됨!");
-
-//             Vector2Int coords = GetPlayerTileCoords();
-//             if (coords.x == -1)
-//             {
-//                 Debug.LogWarning("🚫 플레이어가 타일 위에 없음");
-//                 return;
-//             }
-
-//             GameObject tileGO = coordToTile[coords];
-//             Debug.Log("🎯 타일 찾음: " + tileGO.name);
-//             SetBuildingPrefabFromTile(tileGO, coords.x, coords.y);
-//             OnMissionSuccess(coords.x, coords.y);
-//         }
-// #endif
-//     }
 }

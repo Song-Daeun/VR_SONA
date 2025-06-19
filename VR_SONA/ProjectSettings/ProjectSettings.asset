@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: VRSONA
-  productName: VRSONA
+  companyName: VR_Final
+  productName: VR_Demo
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -145,8 +145,6 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   - {fileID: -944628639613478452, guid: 0be0028c24f2a4c14a96b6aa39055933, type: 3}
-  - {fileID: 2254618445481795051, guid: 89831c608b6eaed4fa29e8404bd6c4df, type: 2}
-  - {fileID: 1016246875491515814, guid: 2411955d6398c814ebfeecf5adbfdc62, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -167,7 +165,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.VRSONA.VRSONA
+    Android: com.VR_Final.VR_Demo
     Standalone: com.VRSONA.VRSONA
   buildNumber:
     Standalone: 0

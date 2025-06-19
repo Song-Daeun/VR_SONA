@@ -60,73 +60,46 @@ public class UIManager : MonoBehaviour
 
     private void InitializeUISystem()
     {
-        Debug.Log("UIManager 초기화: 주사위 버튼 이벤트 연결");
-        
         ConnectDiceButtonToDiceManager();
         ConnectMissionButtons();
-        
-        // 플레이어 이동 완료 후 UI 활성화
         StartCoroutine(WaitForPlayerAndInitializeUI());
-        
-        // 카메라 자동 찾기
         FindCameraTransform();
-        
-        Debug.Log("UIManager 초기화 완료");
     }
 
     // 플레이어가 준비된 후 UI 초기화
     private IEnumerator WaitForPlayerAndInitializeUI()
     {
-        Debug.Log("플레이어 준비 상태 확인 시작...");
-        
-        // PlayerManager가 존재할 때까지 대기
         while (PlayerManager.Instance == null)
         {
-            Debug.Log("PlayerManager 인스턴스 대기 중...");
             yield return new WaitForSeconds(0.1f);
         }
-        
-        Debug.Log("PlayerManager 인스턴스 발견됨");
-        
-        // 플레이어가 이동 중이 아닐 때까지 대기
+
         while (PlayerManager.Instance.IsMoving())
         {
-            Debug.Log("플레이어 이동 완료 대기 중...");
             yield return new WaitForSeconds(0.1f);
         }
-        
-        Debug.Log("플레이어 이동 완료 확인됨");
-        
-        // 추가 안전 대기 시간
+
         yield return new WaitForSeconds(0.2f);
-        
-        Debug.Log("UI 초기화 시작 - 플레이어가 완전히 준비됨");
+
         SetupUIAfterPlayerReady();
     }
 
     // 플레이어 준비 완료 후 UI 설정
     private void SetupUIAfterPlayerReady()
     {
-        Debug.Log("플레이어 준비 완료 후 UI 설정 시작");
-        
         if (cameraTransform == null)
         {
             FindCameraTransform();
         }
-        
-        // 플레이어 위치가 안정된 상태에서 UI 활성화
         SetInitialUIStates();
-        
-        Debug.Log("UI 설정 완료 - 플레이어 위치 기준으로 정확히 배치됨");
     }
 
-    // 주사위 버튼을 DiceManager에 직접 연결
+    // 주사위 버튼을 DiceManager에 연결
     private void ConnectDiceButtonToDiceManager()
     {
         if (diceButton != null)
         {
             diceButton.onClick.AddListener(OnDiceButtonClicked);
-            Debug.Log("주사위 버튼이 DiceManager에 연결됨");
         }
         else
         {
@@ -136,8 +109,6 @@ public class UIManager : MonoBehaviour
 
     private void OnDiceButtonClicked()
     {
-        Debug.Log("주사위 버튼 클릭 감지");
-        
         if (DiceManager.Instance != null)
         {
             DiceManager.Instance.LoadDiceScene();
@@ -165,23 +136,17 @@ public class UIManager : MonoBehaviour
     {
         diceUIWasActiveBeforeMission = (diceGroup != null && diceGroup.activeSelf);
         isInMission = true;
-        
-        Debug.Log($"미션 시작: 이전 주사위 UI 상태 = {diceUIWasActiveBeforeMission}");
-        
+
         ShowMissionPrompt(false);
         GameManager.Instance?.OnMissionDecisionMade(true);
     }
 
     private void OnNoClicked()
     {
-        Debug.Log("미션 No 버튼 클릭 - 미션 거부");
-
-        isInMission = false; // ★ 이 줄 추가
+        isInMission = false; 
 
         ShowMissionPrompt(false);
         ShowDiceUI(true);
-
-        Debug.Log("미션 거부 후 주사위 UI 복구 완료");
 
         GameManager.Instance?.OnMissionDecisionMade(false);
 
@@ -205,207 +170,38 @@ public class UIManager : MonoBehaviour
         Debug.Log("UI 초기 상태 설정 완료");
     }
 
-    // 간소화된 주사위 UI 표시
-    // public void ShowDiceUI(bool show)
-    // {
-    //     Debug.Log($"ShowDiceUI 호출: show = {show}");
-
-    //     if (diceGroup != null)
-    //     {
-    //         if (show)
-    //         {
-    //             Debug.Log("주사위 UI 활성화 시작");
-
-    //             // 카메라 참조 확보
-    //             if (cameraTransform == null)
-    //             {
-    //                 FindCameraTransform();
-    //             }
-
-    //             if (cameraTransform != null)
-    //             {
-    //                 Debug.Log($"카메라 위치: {cameraTransform.position}");
-
-    //                 // PlayerManager가 이미 준비되어 있으므로 안전하게 위치 계산 가능
-    //                 if (PlayerManager.Instance != null)
-    //                 {
-    //                     Vector3 playerPos = PlayerManager.Instance.GetPlayerPosition();
-    //                     Debug.Log($"플레이어 위치: {playerPos}");
-    //                 }
-
-    //                 // UI 위치 설정 - 이제 정확한 플레이어 위치 기준으로 계산됨
-    //                 PositionUIInFrontOfCamera(diceGroup.transform, diceUIDistance, diceUIHeightOffset);
-
-    //                 // UI 활성화
-    //                 diceGroup.SetActive(true);
-
-    //                 Debug.Log($"주사위 UI 최종 위치: {diceGroup.transform.position}");
-    //                 Debug.Log("주사위 UI 활성화 완료");
-    //             }
-    //             else
-    //             {
-    //                 Debug.LogError("카메라를 찾을 수 없어서 UI 배치 불가능!");
-    //                 // 그래도 UI는 활성화 (기본 위치에서라도)
-    //                 diceGroup.SetActive(true);
-    //             }
-    //         }
-    //         else
-    //         {
-    //             diceGroup.SetActive(false);
-    //             Debug.Log("주사위 UI 비활성화");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError("diceGroup이 null입니다!");
-    //     }
-    // }
-    // public void ShowDiceUI(bool show)
-    // {
-    //     Debug.Log($"ShowDiceUI 호출: show = {show}");
-
-    //     // DiceScene이 로드되어 있으면 UI 표시를 차단
-    //     if (show && DiceManager.Instance != null && DiceManager.Instance.IsDiceSceneLoaded())
-    //     {
-    //         Debug.Log("DiceScene이 로드되어 있어서 DiceUI 표시를 차단합니다.");
-    //         return; // 여기서 바로 리턴하여 UI 활성화 차단
-    //     }
-
-    //     if (diceGroup != null)
-    //     {
-    //         if (show)
-    //         {
-    //             Debug.Log("주사위 UI 활성화 시작");
-
-    //             // 카메라 참조 확보
-    //             if (cameraTransform == null)
-    //             {
-    //                 FindCameraTransform();
-    //             }
-
-    //             if (cameraTransform != null)
-    //             {
-    //                 Debug.Log($"카메라 위치: {cameraTransform.position}");
-
-    //                 if (PlayerManager.Instance != null)
-    //                 {
-    //                     Vector3 playerPos = PlayerManager.Instance.GetPlayerPosition();
-    //                     Debug.Log($"플레이어 위치: {playerPos}");
-    //                 }
-
-    //                 PositionUIInFrontOfCamera(diceGroup.transform, diceUIDistance, diceUIHeightOffset);
-    //                 diceGroup.SetActive(true);
-
-    //                 Debug.Log($"주사위 UI 최종 위치: {diceGroup.transform.position}");
-    //                 Debug.Log("주사위 UI 활성화 완료");
-    //             }
-    //             else
-    //             {
-    //                 Debug.LogError("카메라를 찾을 수 없어서 UI 배치 불가능!");
-    //                 diceGroup.SetActive(true);
-    //             }
-    //         }
-    //         else
-    //         {
-    //             diceGroup.SetActive(false);
-    //             Debug.Log("주사위 UI 비활성화");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError("diceGroup이 null입니다!");
-    //     }
-    // }
-
-    // // 미션 UI 처리
-    // public void ShowMissionPrompt(bool show)
-    // {
-    //     if (missionPromptGroup != null)
-    //     {
-    //         missionPromptGroup.SetActive(show);
-
-    //         if (show && cameraTransform != null)
-    //         {
-    //             PositionUIInFrontOfCamera(missionPromptGroup.transform, missionUIDistance, missionUIHeightOffset);
-    //         }
-    //     }
-    // }
-    // public void ShowDiceUI(bool show)
-    // {
-    //     if (!show)
-    //     {
-    //         diceGroup.SetActive(false);
-    //         return;
-    //     }
-
-    //     // 간단한 차단 로직
-    //     if (DiceManager.Instance?.IsDiceSceneLoaded() == true) return;
-    //     if (isInMission) return;
-
-    //     // 카메라 찾기 (한 번만)
-    //     if (cameraTransform == null)
-    //         cameraTransform = Camera.main?.transform ?? FindObjectOfType<Camera>()?.transform;
-
-    //     if (cameraTransform == null)
-    //     {
-    //         Debug.LogError("카메라를 찾을 수 없습니다!");
-    //         return;
-    //     }
-
-    //     // 플레이어 앞 2미터, 위로 0.5미터 위치에 배치
-    //     Vector3 targetPos = cameraTransform.position 
-    //                     + cameraTransform.forward * 7f 
-    //                     + Vector3.up * 0.5f;
-
-    //     diceGroup.transform.position = targetPos;
-    //     Vector3 lookDirection = targetPos - cameraTransform.position;
-    //     diceGroup.transform.rotation = Quaternion.LookRotation(lookDirection);
-    //     diceGroup.SetActive(true);
-    // }
     public void ResetMissionState()
     {
         isInMission = false;
         diceUIWasActiveBeforeMission = false;
     }
 
-    // ShowDiceUI 메서드도 디버깅 강화
     public void ShowDiceUI(bool show)
     {
-        Debug.Log($"=== ShowDiceUI 호출: show = {show} ===");
-        Debug.Log($"현재 isInMission: {isInMission}");
-        Debug.Log($"DiceManager?.IsDiceSceneLoaded(): {DiceManager.Instance?.IsDiceSceneLoaded()}");
-        
         if (!show)
         {
             if (diceGroup != null)
             {
                 diceGroup.SetActive(false);
-                Debug.Log("주사위 UI 비활성화");
             }
             return;
         }
 
-        // 차단 조건 상세 체크
         if (DiceManager.Instance?.IsDiceSceneLoaded() == true)
         {
-            Debug.Log("❌ DiceScene이 로드되어 있어서 주사위 UI 표시 차단");
             return;
         }
         
         if (isInMission)
         {
-            Debug.Log("❌ 미션 진행 중(isInMission=true)이어서 주사위 UI 표시 차단");
             return;
         }
 
         // diceGroup 존재 확인
         if (diceGroup == null)
         {
-            Debug.LogError("❌ diceGroup이 null입니다!");
             return;
         }
-
-        Debug.Log("✅ 모든 조건 통과 - 주사위 UI 활성화 진행");
 
         // 카메라 찾기
         if (cameraTransform == null)
@@ -413,7 +209,6 @@ public class UIManager : MonoBehaviour
 
         if (cameraTransform == null)
         {
-            Debug.LogError("❌ 카메라를 찾을 수 없습니다!");
             return;
         }
 
@@ -426,11 +221,8 @@ public class UIManager : MonoBehaviour
         Vector3 lookDirection = targetPos - cameraTransform.position;
         diceGroup.transform.rotation = Quaternion.LookRotation(lookDirection);
         diceGroup.SetActive(true);
-        
-        Debug.Log($"✅ 주사위 UI 활성화 완료 - 위치: {targetPos}");
     }
 
-    // ShowMissionPrompt 메소드도 수정해서 확실하게 차단
     public void ShowMissionPrompt(bool show)
     {
         if (missionPromptGroup != null)
@@ -439,11 +231,9 @@ public class UIManager : MonoBehaviour
 
             if (show)
             {
-                // 미션 프롬프트를 표시할 때 주사위 UI 강제로 숨김
                 if (diceGroup != null)
                 {
                     diceGroup.SetActive(false);
-                    Debug.Log("미션 프롬프트 표시로 인해 주사위 UI 숨김");
                 }
 
                 if (cameraTransform != null)
@@ -573,13 +363,11 @@ public class UIManager : MonoBehaviour
 
                 if (cameraTransform != null)
                 {
-                    float airplanePanelDistance = 0.5f; // 원하는 거리
+                    float airplanePanelDistance = 0.5f; 
                     Vector3 targetPos = cameraTransform.position + cameraTransform.forward * airplanePanelDistance;
-                    // y축을 카메라 높이와 동일하게 맞춤
                     targetPos.y = cameraTransform.position.y;
 
                     canvas.transform.position = targetPos;
-                    // canvas.transform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
                 }
 
                 RectTransform canvasRect = canvas.GetComponent<RectTransform>();
@@ -649,7 +437,6 @@ public class UIManager : MonoBehaviour
                 if (playerCamera != null)
                 {
                     cameraTransform = playerCamera.transform;
-                    Debug.Log("Player 카메라 자동 연결됨");
                     return;
                 }
             }
@@ -658,7 +445,6 @@ public class UIManager : MonoBehaviour
             if (mainCamera != null)
             {
                 cameraTransform = mainCamera.transform;
-                Debug.Log("메인 카메라 자동 연결됨");
                 return;
             }
             
@@ -666,11 +452,8 @@ public class UIManager : MonoBehaviour
             if (cameras.Length > 0)
             {
                 cameraTransform = cameras[0].transform;
-                Debug.Log("첫 번째 카메라 자동 연결됨");
                 return;
             }
-            
-            Debug.LogError("카메라를 찾을 수 없습니다!");
         }
     }
     
@@ -687,7 +470,6 @@ public class UIManager : MonoBehaviour
             + Vector3.up * heightOffset;
         
         uiTransform.position = targetPos;
-        // uiTransform.rotation = Quaternion.LookRotation(targetPos - cameraTransform.position);
     }
     
     private Camera FindCameraComponent()
@@ -704,7 +486,6 @@ public class UIManager : MonoBehaviour
     // 미션 돌아가기 처리
     public static void ReturnFromMission()
     {
-        Debug.Log("미션에서 돌아가기 요청됨");
         Time.timeScale = 1f;
         
         if (MissionManager.Instance != null)

@@ -47,10 +47,6 @@ public class GameBasketballTimer : MonoBehaviour
     private void HandleTimeExpiration()
     {
         isRunning = false;
-        
-        // 직접 BasGameManager를 호출하는 대신 이벤트 발생
         OnTimerExpired?.Invoke();
-        
-        Debug.Log("타이머 종료 - 이벤트 발생!");
     }
 }

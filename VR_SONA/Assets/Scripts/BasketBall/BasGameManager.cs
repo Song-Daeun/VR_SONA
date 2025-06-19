@@ -8,7 +8,6 @@ public class BasGameManager : MonoBehaviour
 {
     public static BasGameManager Instance;
 
-    // UIScene에 결과 전달할 정적 변수
     public static bool? MissionResult = null;
 
     public TMP_Text gameStateText;
@@ -48,15 +47,12 @@ public class BasGameManager : MonoBehaviour
         var timer = FindObjectOfType<GameBasketballTimer>();
         if (timer != null && !timer.IsRunning)
         {
-            Debug.Log("[BasketBall] 타이머가 멈췄음 → 시간 초과 처리");
             EndGame(false);
         }
     }
 
     public void EndGame(bool success)
     {
-        Debug.Log("[BasketBall] EndGame 호출됨");
-
         if (isGameEnded)
         {
             if (success) return;
@@ -65,7 +61,6 @@ public class BasGameManager : MonoBehaviour
 
         isGameEnded = true;
 
-        // 결과 저장 (UIScene에서 읽을 수 있도록)
         MissionResult = success;
 
         FindObjectOfType<GameBasketballTimer>()?.StopTimer();
@@ -80,7 +75,6 @@ public class BasGameManager : MonoBehaviour
         if (returnButton != null) 
         {
             returnButton.SetActive(true);
-            Debug.Log("[BasketBall] returnButton.SetActive(true) 실행됨");
         }
         else
         {
