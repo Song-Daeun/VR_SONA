@@ -11,15 +11,15 @@
 [본 게임의 Build를 위해서는 프로젝트를 clone 받은 이후, 에셋과 SDK를 세팅하면 된다. 그에 대한 과정은 아래에 기재되어 있다.](#contents)
 
 ## Contents
-- [Project Structure](#Project_Structure)
-- [Environment Setting](#Environment_Setting)
-- [User Manual](#User_Manual)
-- [MainGame Structure](#MainGame_Sturcture)
-- [Mission 1 Structure](#Mission_1_Structure)
-- [Mission 2 Structure](#Mission_2_Structure)
-- [Role Distribution](#Role_Distribution)
-- [Conclusion](#Conclusion)
-- [ETC](#ETC)
+- [Project Structure](#project-structure)
+- [Environment Setting](#environment-setting)
+- [User Manual](#user-manual)
+- [MainGame Structure](#maingame-structure)
+- [Mission 1 Structure](#mission-1-structure)
+- [Mission 2 Structure](#mission-2-structure)
+- [Role Distribution](#role-distribution)
+- [Conclusion](#conclusion)
+- [ETC](#etc)
 
 
 ## Project Structure
