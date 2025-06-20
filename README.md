@@ -58,7 +58,7 @@
   ┃ ┣ 📂 Unity.VisualScripting.Generated
   ┃ ┣ 📂 XR
   ┃ ┣ 📂 XRI
-  ┣ 📄README.md
+  ┣ 📄 README.md
   ┗ 📄 .gitignore
 ```
 
