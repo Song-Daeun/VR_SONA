@@ -6,7 +6,7 @@
 |<img src="https://github.com/user-attachments/assets/70ef7f77-2e8e-4b47-99a1-726e7a9b92f6" width="90%">|<img src="https://github.com/user-attachments/assets/496c267b-118d-42a5-a282-871a1efb964b" width="100%">|<img src="https://github.com/user-attachments/assets/3534bef4-aa06-4722-b9c1-d836d4902dd1" width="100%">|
 
 기존 게임의 특색을 살리기 위해 게임을 진행하는 보드판 위를 플레이어가 움직이는 방식으로 구현하였으며, 게임을 진행할 때 시공간적인 제약을 제거하기 위해 1인 플레이로 구성하였다. 보드판 위에서 빙고를 완성해야 하는 새로운 게임 종료조건을 추가하여 사용자의 흥미와 동기를 유발하고자 하였다.
-개발 게임 엔진은 Unity를 사용하였고, 가상현실 HMD는 Oculus Quest 2를 사용하였다.
+개발 게임 엔진은 Unity를 사용하였고, 가상현실 HMD는 Meta Quest 2를 사용하였다.
 
 [본 게임의 Build를 위해서는 프로젝트를 clone 받은 이후, 에셋과 SDK를 세팅하면 된다. 그에 대한 과정은 아래에 기재되어 있다.](#contents)
 
