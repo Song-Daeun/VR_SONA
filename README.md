@@ -1,7 +1,7 @@
 # Amazing World of VR : 부루마불을 기반으로 하는 플래시 게임의 VR 재구성
 본 프로젝트는 고전 게임의 VR 재구성이라는 주제로, 한국의 보드게임을 기반으로 하는 플래시게임인 "Amazing World of AmlaD"를 재구성하여 VR로 구현하는 것을 목표로 한다.
 
-| 메인 게임 | 미션 1 - 농구 게임 | 미션 2 - 워터러시 게임 |
+| 메인 게임 | 미션 1 - 농구 게임 | 미션 2 - 워터러쉬 게임 |
 |:---:|:---:|:---:|
 |<img src="https://github.com/user-attachments/assets/70ef7f77-2e8e-4b47-99a1-726e7a9b92f6" width="90%">|<img src="https://github.com/user-attachments/assets/496c267b-118d-42a5-a282-871a1efb964b" width="100%">|<img src="https://github.com/user-attachments/assets/3534bef4-aa06-4722-b9c1-d836d4902dd1" width="100%">|
 
@@ -106,7 +106,7 @@ StartScene의 게임 시작 버튼을 누르면 MainGameScene으로 전환된다
 
 
 ### Mission 2 Structure
-Mission 2인 워터러시 게임에서는 키보드 스페이스키와 컨트롤러의 A버튼을 클릭하여 물줄기를 쏠 수 있다. 물이 앞으로 얼마나 나가는지를 확인하기 위해 3인칭 시점으로 구현하였으며, 제한시간 10초 내에 물줄기가 꽃에 도달하면 미션을 성공한다.
+Mission 2인 워터러쉬 게임에서는 키보드 스페이스키와 컨트롤러의 A버튼을 클릭하여 물줄기를 쏠 수 있다. 물이 앞으로 얼마나 나가는지를 확인하기 위해 3인칭 시점으로 구현하였으며, 제한시간 10초 내에 물줄기가 꽃에 도달하면 미션을 성공한다.
 |<img src="https://github.com/user-attachments/assets/71cf96e0-2018-4542-bb4d-a0169bad4045" width="100%">|<img src="https://github.com/user-attachments/assets/3230ac57-d110-4018-b672-151f49c42e11" width="100%">|
 |:---:|:---:|
 
@@ -132,9 +132,18 @@ Mission 2인 워터러시 게임에서는 키보드 스페이스키와 컨트롤
 빙고를 완성하는 데에 성공하게 되면 성공을 알려주는 패널이 표시된다. 코인을 다 소모하여 미션에 더 이상 참가할 수 없거나, 제한 시간 8분을 넘겼을 경우 게임에 실패했다는 패널이 표시된다. 다시 시작 버튼을 클릭하면 게임을 재시작할 수 있으며, 나가기를 누르면 게임이 종료된다.
 
 ## Role Distribution
-| **송다은(팀장)** | **이송은(팀원)** | **이나영(팀원)** |
-|:---:|:---:|:---:|
-| • 씬 에셋 배치<br>• 미션 2 개발<br>• BGM 및 애니메이션 관리 | • 미션 및 메인 게임 연동 시스템 관리<br>• 미션 1 개발 | • VR 연동 및 가상현실 환경 구축<br>• 메인게임 통합<br>• 플레이어 상태 관리 |
+<table>
+<tr>
+<th width="33%"><strong>송다은(팀장)</strong></th>
+<th width="33%"><strong>이나영(팀원)</strong></th>
+<th width="34%"><strong>이송은(팀원)</strong></th>
+</tr>
+<tr>
+<td>• 메인 씬 인테리어<br>• 미션 종료 후 미션씬에서 메인게임씬으로의 return 버튼 구현<br> • 게임 정적 UI 구현<br> • 미션 씬 전환 판넬 활성화 <br> • MissionWaterRushScene 구현<br>• 각 씬별 BGM 추가 및 전환<br>• 마법서칸 도달 시 건물 건설</td>
+<td>• 가상현실 환경 구축 및 VR 연동<br>• Additive Scene Load<br>• DiceScene 구현<br> • 메인 게임 통합<br> • XR Input Action System<br> • 씬 전환 시 플레이어 상태 관리<br>• StartScene에서 MainGameScene 전환 <br>• README 작성</td>
+<td>• 메인 게임 보드 배치<br>• StartScene, MissionBasketballScene 구현<br> • MissionWaterRushScene 파이프 에셋 제작 및 배치<br>• StartScene에서 MainGameScene 전환<br>• 메인 게임 로직 구현 <br>• 메인게임 통합<br>• 게임 종료 시 UI 패널 뜨도록 추가 <br>• 마법서칸 이벤트 구현</td>
+</tr>
+</table>
 
 ## Conclusion
 기존 게임의 특징을 유지하며 VR로 재구성하여 사용자에게 몰입감 있는 동적 경험을 제공하여 기존 플래시 게임의 한계를 극복하고자 하였다. 사용자가 가상현실 내의 공간을 탐색하고 직접 주사위를 굴리는 물리적인 동작을 통해 몰입감을 더욱 향상시키고자 하였으며, 제한 시간 내에 목표 달성이라는 긴장감 있는 플레이를 제공하고자 하였다.
