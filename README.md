@@ -3,7 +3,7 @@
 
 | 메인 게임 | 미션 1 - 농구 게임 | 미션 2 - 워터러시 게임 |
 |:---:|:---:|:---:|
-|<img src="https://github.com/user-attachments/assets/70ef7f77-2e8e-4b47-99a1-726e7a9b92f6" width="90%">|<img src="https://github.com/user-attachments/assets/1f3f6ae1-4b48-49e9-a172-fa3f4b2bb030" width="100%">|<img src="https://github.com/user-attachments/assets/9da06d37-e7d9-4a8e-8342-e2a5fdd3f11a" width="100%">|
+|<img src="https://github.com/user-attachments/assets/70ef7f77-2e8e-4b47-99a1-726e7a9b92f6" width="90%">|<img src="https://github.com/user-attachments/assets/496c267b-118d-42a5-a282-871a1efb964b" width="100%">|<img src="https://github.com/user-attachments/assets/3534bef4-aa06-4722-b9c1-d836d4902dd1" width="100%">|
 
 기존 게임의 특색을 살리기 위해 게임을 진행하는 보드판 위를 플레이어가 움직이는 방식으로 구현하였으며, 게임을 진행할 때 시공간적인 제약을 제거하기 위해 1인 플레이로 구성하였다. 보드판 위에서 빙고를 완성해야 하는 새로운 게임 종료조건을 추가하여 사용자의 흥미와 동기를 유발하고자 하였다.
 개발 게임 엔진은 Unity를 사용하였고, 가상현실 HMD는 Oculus Quest 2를 사용하였다.
@@ -88,7 +88,7 @@ StartScene, MainGameScene, MissionBasketballScene, MissonWaterRushScene, DiceSce
 <img src="https://github.com/user-attachments/assets/08081b46-f428-45b1-b196-cf4f8291580c" width="70%">
 </div>
 StartScene의 게임 시작 버튼을 누르면 MainGameScene으로 전환된다. 게임의 모든 UI click interaction은 ray interactor를 사용해서 진행된다. 
-제한 시간 8분 이내에 미션을 성공한 칸으로 2줄 이상의 빙고를 완성하면 게임은 종료된다. 게임 시작 시 플레이어에게 800 코인이 자동으로 지급되며, 미션을 한번씩 참여할 때마아 100코인씩 차감된다.
+제한 시간 8분 이내에 미션을 성공한 칸으로 2줄 이상의 빙고를 완성하면 게임은 종료된다. 게임 시작 시 플레이어에게 800 코인이 자동으로 지급되며, 미션을 한번씩 참여할 때마다 100코인씩 차감된다.
 
 
 |DiceScene 로드|주사위 던지기|결과 출력|
